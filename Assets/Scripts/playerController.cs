@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class playerController : MonoBehaviour, IDamage
 {
@@ -20,13 +21,15 @@ public class playerController : MonoBehaviour, IDamage
     Vector3 playerVel;
 
     int jumpCount;
+    int HPOrig;
 
     float shootTimer;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        HPOrig = HP;
+        updatePlayerUI();
     }
 
     // Update is called once per frame
@@ -108,9 +111,26 @@ public class playerController : MonoBehaviour, IDamage
     {
         HP -= amount;
 
-        if(HP<=0)
+        updatePlayerUI();
+
+        StartCoroutine(damageFlashScreen());
+
+        if (HP<=0)
         {
             gamemanager.instance.youLose();
         }
     }
+
+    public void updatePlayerUI()
+    {
+        gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
+    }
+
+    IEnumerator damageFlashScreen()
+    {
+        gamemanager.instance.playerDamagePanel.SetActive(true);
+        yield return new WaitForSeconds(.1f);
+        gamemanager.instance.playerDamagePanel.SetActive(false);
+    }
+
 }
