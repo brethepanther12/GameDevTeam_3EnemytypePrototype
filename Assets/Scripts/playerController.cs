@@ -137,12 +137,12 @@ public class playerController : MonoBehaviour, IDamage
         if (shield <= 0)
         {
             shield = 0;
-            
+
         }
 
         if (shield > 0)
         {
-            
+
             shield -= amount;
 
             updatePlayerUI();
@@ -172,7 +172,7 @@ public class playerController : MonoBehaviour, IDamage
 
         }
 
-        if (HP<=0)
+        if (HP <= 0)
         {
             gamemanager.instance.youLose();
         }
