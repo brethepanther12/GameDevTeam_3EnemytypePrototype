@@ -108,7 +108,7 @@ public class Pickup : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         HandlePickup(pickup);
-
+        
         Destroy(gameObject);
     }
 }
