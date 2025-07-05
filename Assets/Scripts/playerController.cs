@@ -124,33 +124,37 @@ public class playerController : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
-        if (shield >= 0)
-        {
-            shield -= amount;
 
-            if (shield <= 0 && armor > 0)
-            {
-                armor -= (shield * -1);
-                shield = 0;
-
-            } 
-        }
-        else if (shield <= 0 && armor < 0)
-        {
-
-            HP -= (armor * -1);
-            armor = 0;
-            
-        }
-        else if (shield <= 0 && armor <= 0)
+        if (shield <= 0)
         {
             shield = 0;
-            armor = 0;
+            
+        }
+
+        if (shield > 0)
+        {
+            
+            shield -= amount;
+
+           
+        }
+
+        if (shield == 0 && armor > 0)
+        {
+
+            armor -= amount;
+
+
+        }
+        if (shield == 0 && armor == 0)
+        {
+
             HP -= amount;
+
         }
 
 
-        if (HP<=0)
+        if (HP <= 0)
         {
             gamemanager.instance.youLose();
         }
@@ -163,8 +167,9 @@ public class playerController : MonoBehaviour, IDamage
         if (HP >= maxHP && doesIncreaseMax)
         {
             maxHP += amount;
-            
-        } else if (HP >= maxHP && !doesIncreaseMax)
+
+        }
+        else if (HP >= maxHP && !doesIncreaseMax)
         {
 
             HP = maxHP;
@@ -191,6 +196,9 @@ public class playerController : MonoBehaviour, IDamage
 
     public void GainShield(int amount, bool doesIncreaseMax)
     {
+
+        shield += amount;
+
         if (shield >= maxShield && doesIncreaseMax)
         {
             maxShield += amount;
@@ -227,10 +235,11 @@ public class playerController : MonoBehaviour, IDamage
         {
             shootDamage += amount;
 
-        } else if (isPoweredUp)
+        }
+        else if (isPoweredUp)
         {
             shootDamage *= magnitude;
-            
+
         }
     }
 
