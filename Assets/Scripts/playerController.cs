@@ -168,7 +168,7 @@ public class playerController : MonoBehaviour, IDamage
 
             updatePlayerUI();
 
-            StartCoroutine(damageFlashScreen());
+            StartCoroutine(ShieldDamageFlashScreen());
 
         }
 
@@ -323,13 +323,6 @@ public class playerController : MonoBehaviour, IDamage
         gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
         gamemanager.instance.playerShieldBar.fillAmount = (float)shield / shieldOrig;
         gamemanager.instance.playerArmorBar.fillAmount = (float)armor / armorOrig;
-    }
-
-    IEnumerator damageFlashScreen()
-    {
-        gamemanager.instance.playerDamagePanel.SetActive(true);
-        yield return new WaitForSeconds(.1f);
-        gamemanager.instance.playerDamagePanel.SetActive(false);
     }
 
     IEnumerator ArmorDamageFlashScreen()
