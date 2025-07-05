@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
+
 public class playerController : MonoBehaviour, IDamage
 {
     [SerializeField] CharacterController controller;
@@ -38,13 +39,20 @@ public class playerController : MonoBehaviour, IDamage
     Vector3 playerVel;
 
     int jumpCount;
+    int HPOrig;
+    int armorOrig;
+    int shieldOrig;
 
     float shootTimer;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        HPOrig = HP;
+        armorOrig = armor;
+        shieldOrig = shield;
 
+        updatePlayerUI();
     }
 
     // Update is called once per frame
@@ -118,6 +126,7 @@ public class playerController : MonoBehaviour, IDamage
             {
                 dmg.takeDamage(shootDamage);
             }
+
         }
 
     }
@@ -136,7 +145,10 @@ public class playerController : MonoBehaviour, IDamage
             
             shield -= amount;
 
-           
+            updatePlayerUI();
+
+            StartCoroutine(ShieldDamageFlashScreen());
+
         }
 
         if (shield == 0 && armor > 0)
@@ -144,6 +156,9 @@ public class playerController : MonoBehaviour, IDamage
 
             armor -= amount;
 
+            updatePlayerUI();
+
+            StartCoroutine(ArmorDamageFlashScreen());
 
         }
         if (shield == 0 && armor == 0)
@@ -151,10 +166,13 @@ public class playerController : MonoBehaviour, IDamage
 
             HP -= amount;
 
+            updatePlayerUI();
+
+            StartCoroutine(damageFlashScreen());
+
         }
 
-
-        if (HP <= 0)
+        if (HP<=0)
         {
             gamemanager.instance.youLose();
         }
@@ -175,6 +193,8 @@ public class playerController : MonoBehaviour, IDamage
             HP = maxHP;
         }
 
+        updatePlayerUI();
+
     }
 
     public void GainArmor(int amount, bool doesIncreaseMax)
@@ -191,6 +211,8 @@ public class playerController : MonoBehaviour, IDamage
 
             armor = maxArmor;
         }
+
+        updatePlayerUI();
 
     }
 
@@ -210,6 +232,8 @@ public class playerController : MonoBehaviour, IDamage
             shield = maxShield;
         }
 
+        updatePlayerUI();
+
     }
 
     public void GainAmmo(int amount, bool doesIncreaseMax)
@@ -227,6 +251,8 @@ public class playerController : MonoBehaviour, IDamage
             ammo = maxAmmo;
         }
 
+        updatePlayerUI();
+
     }
 
     public void IncreaseDamage(int amount, int magnitude)
@@ -241,6 +267,8 @@ public class playerController : MonoBehaviour, IDamage
             shootDamage *= magnitude;
 
         }
+
+        updatePlayerUI();
     }
 
     public void IncreaseSpeed(int amount, int magnitude)
@@ -255,6 +283,8 @@ public class playerController : MonoBehaviour, IDamage
             speed *= magnitude;
 
         }
+
+        updatePlayerUI();
     }
 
     public void IncreaseJumpMaxCount(int amount, int magnitude)
@@ -269,11 +299,15 @@ public class playerController : MonoBehaviour, IDamage
             jumpMax *= magnitude;
 
         }
+
+        updatePlayerUI();
     }
 
     public void AddKey(int amount)
     {
         numKeys++;
+
+        updatePlayerUI();
     }
 
     IEnumerator PowerUp(float duration)
@@ -281,6 +315,35 @@ public class playerController : MonoBehaviour, IDamage
         isPoweredUp = true;
         yield return new WaitForSeconds(duration);
         isPoweredUp = false;
+    }
+
+    public void updatePlayerUI()
+    {
+
+        gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
+        gamemanager.instance.playerShieldBar.fillAmount = (float)shield / shieldOrig;
+        gamemanager.instance.playerArmorBar.fillAmount = (float)armor / armorOrig;
+    }
+
+    IEnumerator damageFlashScreen()
+    {
+        gamemanager.instance.playerDamagePanel.SetActive(true);
+        yield return new WaitForSeconds(.1f);
+        gamemanager.instance.playerDamagePanel.SetActive(false);
+    }
+
+    IEnumerator ArmorDamageFlashScreen()
+    {
+        gamemanager.instance.playerArmorDamagePanel.SetActive(true);
+        yield return new WaitForSeconds(.1f);
+        gamemanager.instance.playerArmorDamagePanel.SetActive(false);
+    }
+
+    IEnumerator ShieldDamageFlashScreen()
+    {
+        gamemanager.instance.playerShieldDamagePanel.SetActive(true);
+        yield return new WaitForSeconds(.1f);
+        gamemanager.instance.playerShieldDamagePanel.SetActive(false);
     }
 
 }
