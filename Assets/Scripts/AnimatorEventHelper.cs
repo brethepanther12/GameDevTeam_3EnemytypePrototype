@@ -13,4 +13,13 @@ public class AnimatorEventHelper : MonoBehaviour
     {
         animator.SetBool(paramName, false);
     }
+
+    void OnEnable()
+    {
+        if (animator != null)
+        {
+            animator.Update(0f);
+            animator.Play("Idle", 0, 0f);
+        }
+    }
 }
