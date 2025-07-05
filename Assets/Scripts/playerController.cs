@@ -289,4 +289,15 @@ public class playerController : MonoBehaviour, IDamage
         isPoweredUp = false;
     }
 
+    public void updatePlayerUI()
+    {
+        gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
+    }
+
+    IEnumerator damageFlashScreen()
+    {
+        gamemanager.instance.playerDamagePanel.SetActive(true);
+        yield return new WaitForSeconds(0.1f);
+        gamemanager.instance.playerDamagePanel.SetActive(false);
+    }
 }
