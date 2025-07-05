@@ -1,10 +1,12 @@
 using UnityEngine;
+using System.Collections;
 
-public class NewMonoBehaviourScript : MonoBehaviour
+public class playerController : MonoBehaviour, IDamage
 {
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
 
+    [SerializeField] int HP;
     [SerializeField] int speed;
     [SerializeField] int sprintMod;
     [SerializeField] int jumpVel;
@@ -19,13 +21,15 @@ public class NewMonoBehaviourScript : MonoBehaviour
     Vector3 playerVel;
 
     int jumpCount;
+    int HPOrig;
 
     float shootTimer;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        HPOrig = HP;
+        updatePlayerUI();
     }
 
     // Update is called once per frame
@@ -102,4 +106,31 @@ public class NewMonoBehaviourScript : MonoBehaviour
         }
 
     }
+
+    public void takeDamage(int amount)
+    {
+        HP -= amount;
+
+        updatePlayerUI();
+
+        StartCoroutine(damageFlashScreen());
+
+        if (HP<=0)
+        {
+            gamemanager.instance.youLose();
+        }
+    }
+
+    public void updatePlayerUI()
+    {
+        gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
+    }
+
+    IEnumerator damageFlashScreen()
+    {
+        gamemanager.instance.playerDamagePanel.SetActive(true);
+        yield return new WaitForSeconds(.1f);
+        gamemanager.instance.playerDamagePanel.SetActive(false);
+    }
+
 }

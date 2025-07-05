@@ -109,6 +109,7 @@ public class EnemyAIBase : MonoBehaviour, IDamage
         enemyCurrentHealthPoints -= amount;
         if (enemyCurrentHealthPoints <= 0)
         {
+            gamemanager.instance.updateGameGoal(-1);
             enemyDeath();
         }
         else
