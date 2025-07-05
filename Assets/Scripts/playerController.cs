@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class playerController : MonoBehaviour, IDamage
 {
@@ -6,15 +7,32 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] LayerMask ignoreLayer;
 
     [SerializeField] int HP;
+    [SerializeField] int maxHP;
     [SerializeField] int speed;
     [SerializeField] int sprintMod;
     [SerializeField] int jumpVel;
     [SerializeField] int jumpMax;
     [SerializeField] int gravity;
-
+    [SerializeField] int ammo;
+    [SerializeField] int maxAmmo;
+    [SerializeField] int shield;
+    [SerializeField] int maxShield;
+    [SerializeField] int armor;
+    [SerializeField] int maxArmor;
     [SerializeField] int shootDamage;
+    [SerializeField] int meleeDamage;
     [SerializeField] float shootRate;
     [SerializeField] int shootDist;
+
+    private enum powerUpType
+    {
+        health, shield, armor, ammo, speed, jump, damage
+    }
+
+    bool hasKey;
+    bool isPoweredUp;
+
+    int numKeys;
 
     Vector3 moveDir;
     Vector3 playerVel;
@@ -106,11 +124,154 @@ public class playerController : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
-        HP -= amount;
+        if (shield >= 0)
+        {
+            shield -= amount;
 
-        if(HP<=0)
+            if (shield <= 0 && armor > 0)
+            {
+                armor -= (shield * -1);
+                shield = 0;
+
+            } 
+        }
+        else if (shield <= 0 && armor < 0)
+        {
+
+            HP -= (armor * -1);
+            armor = 0;
+            
+        }
+        else if (shield <= 0 && armor <= 0)
+        {
+            shield = 0;
+            armor = 0;
+            HP -= amount;
+        }
+
+
+        if (HP<=0)
         {
             gamemanager.instance.youLose();
         }
     }
+
+    public void Heal(int amount, bool doesIncreaseMax)
+    {
+        HP += amount;
+
+        if (HP >= maxHP && doesIncreaseMax)
+        {
+            maxHP += amount;
+            
+        } else if (HP >= maxHP && !doesIncreaseMax)
+        {
+
+            HP = maxHP;
+        }
+
+    }
+
+    public void GainArmor(int amount, bool doesIncreaseMax)
+    {
+        armor += amount;
+
+        if (armor >= maxArmor && doesIncreaseMax)
+        {
+            maxArmor += amount;
+
+        }
+        else if (armor >= maxArmor && !doesIncreaseMax)
+        {
+
+            armor = maxArmor;
+        }
+
+    }
+
+    public void GainShield(int amount, bool doesIncreaseMax)
+    {
+        if (shield >= maxShield && doesIncreaseMax)
+        {
+            maxShield += amount;
+
+        }
+        else if (shield >= maxShield && !doesIncreaseMax)
+        {
+
+            shield = maxShield;
+        }
+
+    }
+
+    public void GainAmmo(int amount, bool doesIncreaseMax)
+    {
+        ammo += amount;
+
+        if (ammo >= maxAmmo && doesIncreaseMax)
+        {
+            maxAmmo += amount;
+
+        }
+        else if (ammo >= maxAmmo && !doesIncreaseMax)
+        {
+
+            ammo = maxAmmo;
+        }
+
+    }
+
+    public void IncreaseDamage(int amount, int magnitude)
+    {
+        if (magnitude == 1)
+        {
+            shootDamage += amount;
+
+        } else if (isPoweredUp)
+        {
+            shootDamage *= magnitude;
+            
+        }
+    }
+
+    public void IncreaseSpeed(int amount, int magnitude)
+    {
+        if (magnitude == 1)
+        {
+            speed += amount;
+
+        }
+        else if (isPoweredUp)
+        {
+            speed *= magnitude;
+
+        }
+    }
+
+    public void IncreaseJumpMaxCount(int amount, int magnitude)
+    {
+        if (magnitude == 1)
+        {
+            jumpMax += amount;
+
+        }
+        else if (isPoweredUp)
+        {
+            jumpMax *= magnitude;
+
+        }
+    }
+
+    public void AddKey(int amount)
+    {
+        numKeys++;
+    }
+
+    IEnumerator PowerUp(float duration)
+    {
+        isPoweredUp = true;
+        yield return new WaitForSeconds(duration);
+        isPoweredUp = false;
+    }
+
 }
