@@ -116,6 +116,8 @@ public class playerController : MonoBehaviour, IDamage
     {
         shootTimer = 0;
 
+        --ammo;
+
         RaycastHit hit;
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
         {
@@ -184,7 +186,7 @@ public class playerController : MonoBehaviour, IDamage
     {
         HP += amount;
 
-        if (HP >= maxHP && doesIncreaseMax)
+        if (doesIncreaseMax)
         {
             maxHP += amount;
 
@@ -203,7 +205,7 @@ public class playerController : MonoBehaviour, IDamage
     {
         armor += amount;
 
-        if (armor >= maxArmor && doesIncreaseMax)
+        if (doesIncreaseMax)
         {
             maxArmor += amount;
 
@@ -223,7 +225,7 @@ public class playerController : MonoBehaviour, IDamage
 
         shield += amount;
 
-        if (shield >= maxShield && doesIncreaseMax)
+        if (doesIncreaseMax)
         {
             maxShield += amount;
 
@@ -242,7 +244,7 @@ public class playerController : MonoBehaviour, IDamage
     {
         ammo += amount;
 
-        if (ammo >= maxAmmo && doesIncreaseMax)
+        if (doesIncreaseMax)
         {
             maxAmmo += amount;
 
@@ -322,9 +324,9 @@ public class playerController : MonoBehaviour, IDamage
     public void updatePlayerUI()
     {
 
-        gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
-        gamemanager.instance.playerShieldBar.fillAmount = (float)shield / shieldOrig;
-        gamemanager.instance.playerArmorBar.fillAmount = (float)armor / armorOrig;
+        gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
+        gamemanager.instance.playerShieldBar.fillAmount = (float)shield / maxShield;
+        gamemanager.instance.playerArmorBar.fillAmount = (float)armor / maxArmor;
     }
 
     IEnumerator damageFlashScreen()
