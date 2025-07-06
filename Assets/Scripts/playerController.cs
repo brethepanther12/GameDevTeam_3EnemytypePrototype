@@ -168,15 +168,8 @@ public class playerController : MonoBehaviour, IDamage
 
             updatePlayerUI();
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-            StartCoroutine(ShieldDamageFlashScreen());
-=======
             StartCoroutine(damageFlashScreen());
->>>>>>> Stashed changes
-=======
-            StartCoroutine(damageFlashScreen());
->>>>>>> Stashed changes
+
 
         }
 
@@ -334,11 +327,6 @@ public class playerController : MonoBehaviour, IDamage
         gamemanager.instance.playerArmorBar.fillAmount = (float)armor / armorOrig;
     }
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
     IEnumerator damageFlashScreen()
     {
         gamemanager.instance.playerDamagePanel.SetActive(true);
@@ -346,10 +334,6 @@ public class playerController : MonoBehaviour, IDamage
         gamemanager.instance.playerDamagePanel.SetActive(false);
     }
 
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     IEnumerator ArmorDamageFlashScreen()
     {
         gamemanager.instance.playerArmorDamagePanel.SetActive(true);
