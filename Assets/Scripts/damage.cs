@@ -13,7 +13,7 @@ public class damage : MonoBehaviour
     [SerializeField] int speed;
     [SerializeField] int destroyTime;
 
-    bool isDamageing;
+    bool isDamaging;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -63,7 +63,7 @@ public class damage : MonoBehaviour
 
         IDamage dmg = other.GetComponent<IDamage>();
 
-        if (dmg != null && type == damagetype.DOT && !isDamageing)
+        if (dmg != null && type == damagetype.DOT && !isDamaging)
         {
             StartCoroutine(damageOther(dmg));
         }
@@ -71,9 +71,9 @@ public class damage : MonoBehaviour
 
     IEnumerator damageOther(IDamage d)
     {
-        isDamageing = true;
+        isDamaging = true;
         d.takeDamage(damageAmount);
         yield return new WaitForSeconds(damageRate);
-        isDamageing = false;
+        isDamaging = false;
     }
 }
