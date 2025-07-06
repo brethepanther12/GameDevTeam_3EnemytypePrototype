@@ -16,6 +16,7 @@ public class BatAI : EnemyAIBase
 
 
     //Ceiling detection and attachment
+    [SerializeField] public float batCeilingRange;
     private Transform batCurrentCeiling;
     private Vector3 batRetreatTarget;
     private Vector3 batCeilingAttachPoint;
@@ -106,5 +107,58 @@ public class BatAI : EnemyAIBase
         
         //Setting the enemy Nav to the ceiling point
         enemyNavAgent.SetDestination(batCeilingAttachPoint);
+    }
+
+    //Gets the bottom of ceiling object position from inputted parameter variable
+    private Vector3 GetBottomOfCeiling(Transform ceiling)
+    {
+        Renderer rend = ceiling.GetComponent<Renderer>();
+        //If the parameter is not empty
+        if (rend != null) 
+        { 
+         // A bounding box so the bat can attach only at the bottom
+        Bounds bounds = rend.bounds;
+
+            //Variables for the x, z, and y axis of the ceiling plane
+            float minX, maxX, minZ, maxZ, randomX, randomZ, bottomY;
+
+            //The x-axis of the bottom of the object ceiling
+            minX = bounds.min.x + batCeilingRange;
+            maxX = bounds.max.x - batCeilingRange;
+
+            //The z-axis of the bottom of the object ceiling
+            minZ = bounds.min.z + batCeilingRange;
+            maxZ  = bounds.max.z - batCeilingRange;
+
+            //Setting the random x and z value for the axis
+            randomX = Random.Range(minX, maxX);
+            randomZ = Random.Range(minZ, maxZ);
+
+            //Assigning the y-axis to the bounds y
+            bottomY = bounds.min.y;
+
+            return new Vector3(randomX, bottomY, randomZ);
+        }
+        return ceiling.position;
+    }
+
+    protected override void OnTriggerEnter(Collider other)
+    {
+        base.OnTriggerEnter(other);
+
+        if (other.CompareTag("Player"))
+        {
+            batIsReturningToCeiling = false;
+        }
+    }
+
+    protected override void OnTriggerExit(Collider other)
+    {
+        base.OnTriggerExit(other);
+
+        if (other.CompareTag("Player"))
+        {
+            //Start attaching to ceiling
+        }
     }
 }
