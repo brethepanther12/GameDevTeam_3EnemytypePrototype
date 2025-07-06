@@ -32,6 +32,7 @@ public class playerController : MonoBehaviour, IDamage
 
     bool hasKey;
     bool isPoweredUp;
+    bool hasAmmo;
 
     int numKeys;
 
@@ -114,22 +115,35 @@ public class playerController : MonoBehaviour, IDamage
 
     void shoot()
     {
-        shootTimer = 0;
 
-        --ammo;
-
-        RaycastHit hit;
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
+        if (ammo > 0)
         {
-            //Debug.Log(hit.collider.name);
-            IDamage dmg = hit.collider.GetComponent<IDamage>();
-
-            if (dmg != null)
-            {
-                dmg.takeDamage(shootDamage);
-            }
-
+            hasAmmo = true;
+        } else
+        {
+            hasAmmo = false;
         }
+
+        if (hasAmmo)
+        {
+            shootTimer = 0;
+
+            --ammo;
+
+            RaycastHit hit;
+            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
+            {
+                //Debug.Log(hit.collider.name);
+                IDamage dmg = hit.collider.GetComponent<IDamage>();
+
+                if (dmg != null)
+                {
+                    dmg.takeDamage(shootDamage);
+                }
+
+            }
+        }
+        
 
     }
 
