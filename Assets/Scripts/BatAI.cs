@@ -37,7 +37,34 @@ public class BatAI : EnemyAIBase
     // Update is called once per frame
     protected override void Update()
     {
-        
+        if (enemyPlayerInSight && !batIsRetreating)
+        {
+            float distance = Vector3.Distance(transform.position, enemyPlayerObject.position);
+            if (distance <= batAttackRange && !batHasAttacked)
+            {
+                StartCoroutine(batAttackPlayer());
+            }
+            else
+            {
+                enemyNavAgent.SetDestination(enemyPlayerObject.position);
+                enemyFacePlayer();
+            }
+        }else if (!enemyPlayerInSight && !batIsRetreating && !batIsReturningToCeiling)
+        {
+            batAttachToNearestCeiling();
+        }
+
+        //Moves toward retreat target if currently retreating
+        if (batIsRetreating && Vector3.Distance(transform.position, batRetreatTarget) <= 0.5f)
+        {
+            batIsRetreating = false;
+        }
+        // Move to the ceiling 
+        if (batIsReturningToCeiling && Vector3.Distance(transform.position, batCeilingAttachPoint) <= 0.5f)
+        {
+            transform.rotation = Quaternion.Euler(180f, transform.rotation.eulerAngles.y, 0f);
+            batIsReturningToCeiling  = false;
+        }
     }
 
     private IEnumerator batAttackPlayer()
@@ -70,7 +97,7 @@ public class BatAI : EnemyAIBase
         batHasAttacked = false;
     }
 
-    private void AttachToNearestCeiling()
+    private void batAttachToNearestCeiling()
     {
         // Makes an object array that finds the 'ceiling' objects tagged with that name
         GameObject[] ceilings = GameObject.FindGameObjectsWithTag("Ceiling");
@@ -85,7 +112,7 @@ public class BatAI : EnemyAIBase
         //Assigning the calculated distance between the bat and ceiling.
         float minDistance = Vector3.Distance(transform.position, ceilings[0].transform.position);
 
-        //Starting a loop at the second ceiling and checking each remaining
+        //Starting a loop at the second ceiling and checking each remaining in the array
         for (int i = 1; i < ceilings.Length; i++) 
         {
             //Assigning measurements on how far the bat is from the current ceiling
@@ -104,13 +131,14 @@ public class BatAI : EnemyAIBase
         batCurrentCeiling = ceilings[nearestIndex].transform;
 
         //Call the method to for the bat attaching to the bottom of the ceilings
-        
+        batCeilingAttachPoint = batGetBottomOfCeiling(batCurrentCeiling);
+
         //Setting the enemy Nav to the ceiling point
         enemyNavAgent.SetDestination(batCeilingAttachPoint);
     }
 
     //Gets the bottom of ceiling object position from inputted parameter variable
-    private Vector3 GetBottomOfCeiling(Transform ceiling)
+    private Vector3 batGetBottomOfCeiling(Transform ceiling)
     {
         Renderer rend = ceiling.GetComponent<Renderer>();
         //If the parameter is not empty
@@ -146,6 +174,7 @@ public class BatAI : EnemyAIBase
     {
         base.OnTriggerEnter(other);
 
+        //When the player enders the radius, bat will attack
         if (other.CompareTag("Player"))
         {
             batIsReturningToCeiling = false;
@@ -158,7 +187,8 @@ public class BatAI : EnemyAIBase
 
         if (other.CompareTag("Player"))
         {
-            //Start attaching to ceiling
+            //Start attaching to ceiling when out of range
+            batAttachToNearestCeiling();
         }
     }
 }
