@@ -168,7 +168,11 @@ public class playerController : MonoBehaviour, IDamage
 
             updatePlayerUI();
 
+<<<<<<< Updated upstream
             StartCoroutine(ShieldDamageFlashScreen());
+=======
+            StartCoroutine(damageFlashScreen());
+>>>>>>> Stashed changes
 
         }
 
@@ -177,6 +181,7 @@ public class playerController : MonoBehaviour, IDamage
             gamemanager.instance.youLose();
         }
     }
+
 
     public void Heal(int amount, bool doesIncreaseMax)
     {
@@ -325,6 +330,16 @@ public class playerController : MonoBehaviour, IDamage
         gamemanager.instance.playerArmorBar.fillAmount = (float)armor / armorOrig;
     }
 
+<<<<<<< Updated upstream
+=======
+    IEnumerator damageFlashScreen()
+    {
+        gamemanager.instance.playerDamagePanel.SetActive(true);
+        yield return new WaitForSeconds(.1f);
+        gamemanager.instance.playerDamagePanel.SetActive(false);
+    }
+
+>>>>>>> Stashed changes
     IEnumerator ArmorDamageFlashScreen()
     {
         gamemanager.instance.playerArmorDamagePanel.SetActive(true);
