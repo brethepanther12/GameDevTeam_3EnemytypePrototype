@@ -1364,14 +1364,14 @@ GameObject:
   - component: {fileID: 1715800808}
   - component: {fileID: 1715800807}
   - component: {fileID: 1715800806}
-  - component: {fileID: 1715800811}
   - component: {fileID: 1715800810}
-  m_Layer: 0
+  - component: {fileID: 1715800811}
+  m_Layer: 6
   m_Name: Bat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!135 &1715800806
 SphereCollider:
@@ -1392,7 +1392,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 4.5
+  m_Radius: 8
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1715800807
 MeshRenderer:
@@ -1456,7 +1456,7 @@ Transform:
   m_GameObject: {fileID: 1715800805}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.9453554, y: 3.9264832, z: 1.6166353}
+  m_LocalPosition: {x: 0, y: 5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1477,36 +1477,45 @@ MonoBehaviour:
   enemyCurrentHealthPoints: 5
   enemyHealthPointsMax: 5
   enemyModel: {fileID: 1715800807}
-  enemySpeed: 350
-  enemyNavAgent: {fileID: 1715800811}
+  enemySpeed: 20
+  enemyNavAgent: {fileID: 0}
   enemyPlayerObject: {fileID: 2436139576208605760}
-  batAttackRange: 3
-  batRetreatDistance: 5
-  batAttackCoolDown: 1.5
+  batAttackRange: 1.5
+  batAttackPosition: 1
+  batRetreatDistance: 4
+  rb: {fileID: 1715800811}
+  batAttackCoolDown: 2
   batDamage: 1
   batCeilingRange: 0.5
---- !u!195 &1715800811
-NavMeshAgent:
+  batCeilingRangeThreshold: 0.3
+  batCeilingPoint: 0.2
+--- !u!54 &1715800811
+Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1715800805}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 1
-  m_BaseOffset: 0.5
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 1
 --- !u!1001 &2016946723
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1758,6 +1767,10 @@ PrefabInstance:
     - target: {fileID: 3545599522042494606, guid: c0067411b05502a44a8edf3ad268224c, type: 3}
       propertyPath: shield
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3545599522042494606, guid: c0067411b05502a44a8edf3ad268224c, type: 3}
+      propertyPath: gravity
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 3545599522042494606, guid: c0067411b05502a44a8edf3ad268224c, type: 3}
       propertyPath: maxAmmo

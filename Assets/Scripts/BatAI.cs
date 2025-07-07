@@ -7,6 +7,7 @@ public class BatAI : EnemyAIBase, IDamage
     [SerializeField] public float batAttackRange;
     [SerializeField] public float batAttackPosition;
     [SerializeField] public float batRetreatDistance;
+    [SerializeField] private Rigidbody rb;
     bool batHasAttacked;
     bool batIsRetreating;
 
@@ -19,10 +20,12 @@ public class BatAI : EnemyAIBase, IDamage
     //Ceiling detection and attachment
     [SerializeField] public float batCeilingRange;
     [SerializeField] public float batCeilingRangeThreshold;
+    [SerializeField] public float batCeilingPoint;
     private Transform batCurrentCeiling;
     private Vector3 batRetreatTarget;
     private Vector3 batCeilingAttachPoint;
     private bool batIsReturningToCeiling;
+    private bool batCeilingPointChosen;
 
 
 
@@ -30,11 +33,10 @@ public class BatAI : EnemyAIBase, IDamage
     protected override void Start()
     {
         base.Start();
-
+        rb = GetComponent<Rigidbody>();
         //Gives the Navigation mesh agent an update to give the bat the ability to fly freely
        enemyNavAgent.updateUpAxis = false;
        enemyNavAgent.updateRotation = false;
-        enemyNavAgent.updateUpAxis = false;
     }
 
     // Update is called once per frame
@@ -44,7 +46,7 @@ public class BatAI : EnemyAIBase, IDamage
         {
             enemyMoveToPlayer();
         }
-        else if (!enemyPlayerInSight && !batIsRetreating && !batIsReturningToCeiling)
+        else if (!enemyPlayerInSight && !batIsRetreating && !batIsReturningToCeiling && !batCeilingPointChosen)
         {   
             // Just sets the target point ONCE
             batAttachToNearestCeiling(); 
@@ -53,7 +55,7 @@ public class BatAI : EnemyAIBase, IDamage
         //Moves toward retreat target if currently retreating
         if (batIsRetreating)
         {
-            transform.position = Vector3.MoveTowards(transform.position, batRetreatTarget, enemySpeed * Time.deltaTime);
+            rb.MovePosition(Vector3.MoveTowards(transform.position, batRetreatTarget, enemySpeed * Time.deltaTime));
             batFaceTarget(batRetreatTarget);
             if (Vector3.Distance(transform.position, batRetreatTarget) <= batCeilingRangeThreshold)
             {
@@ -63,13 +65,14 @@ public class BatAI : EnemyAIBase, IDamage
         // Move to the ceiling 
         if (batIsReturningToCeiling)
         {
-            transform.position = Vector3.MoveTowards(transform.position, batCeilingAttachPoint, enemySpeed * Time.deltaTime);
+            rb.MovePosition(Vector3.MoveTowards(transform.position, batCeilingAttachPoint, enemySpeed * Time.deltaTime));
             batFaceTarget(batCeilingAttachPoint);
 
             if (Vector3.Distance(transform.position, batCeilingAttachPoint) <= batCeilingRangeThreshold)
             {
                 transform.rotation = Quaternion.Euler(180f, transform.rotation.eulerAngles.y, 0f);
                 batIsReturningToCeiling = false;
+                batCeilingPointChosen = true;
             }
         }
         if (batIsReturningToCeiling)
@@ -105,7 +108,8 @@ public class BatAI : EnemyAIBase, IDamage
 
         while (Vector3.Distance(transform.position, batRetreatTarget) > 0.2f)
         {
-            transform.position = Vector3.MoveTowards(transform.position, batRetreatTarget, enemySpeed * Time.deltaTime);
+           
+            rb.MovePosition(Vector3.MoveTowards(transform.position, batRetreatTarget, enemySpeed * Time.deltaTime));
             batFaceTarget(batRetreatTarget);
             yield return null;
         }
@@ -118,6 +122,9 @@ public class BatAI : EnemyAIBase, IDamage
 
     private void batAttachToNearestCeiling()
     {
+        // Only choose a latch point if not already doing so
+        if (batCeilingPointChosen) return;
+
         // Makes an object array that finds the 'ceiling' objects tagged with that name
         GameObject[] ceilings = GameObject.FindGameObjectsWithTag("Ceiling");
         // If no game objects are tagged, the function ends here
@@ -125,7 +132,7 @@ public class BatAI : EnemyAIBase, IDamage
 
         //toggle the bool that has the bat return to the ceiling
         batIsReturningToCeiling = true;
-
+        batCeilingPointChosen = false;
         //Stores the index of the closest ceiling in the array
         int nearestIndex = 0;
         //Assigning the calculated distance between the bat and ceiling.
@@ -184,7 +191,7 @@ public class BatAI : EnemyAIBase, IDamage
             randomZ = Random.Range(minZ, maxZ);
 
             //Assigning the y-axis to the bounds y
-            bottomY = bounds.min.y;
+            bottomY = bounds.min.y - batCeilingPoint;
 
             return new Vector3(randomX, bottomY, randomZ);
         }
@@ -196,7 +203,8 @@ public class BatAI : EnemyAIBase, IDamage
         if(enemyPlayerInSight && !batIsRetreating)
         {
             float distance = Vector3.Distance(transform.position, enemyPlayerObject.position);
-
+            batCeilingPointChosen = false;
+            batIsReturningToCeiling = false;
             // If the distance is less than the bat range and the bat has not attacked
             if (distance <= batAttackRange && !batHasAttacked) 
             {
@@ -208,9 +216,12 @@ public class BatAI : EnemyAIBase, IDamage
                 //Aiming slightly below player
                 Vector3 targetPos = enemyPlayerObject.position;
                 targetPos.y += batAttackPosition;
+
+                rb.MovePosition(Vector3.MoveTowards(transform.position, targetPos, enemySpeed * Time.deltaTime));
+                batFaceTarget(targetPos);
                 //Manual flying towards the player
-                transform.position = Vector3.MoveTowards(transform.position, enemyPlayerObject.position, enemySpeed * Time.deltaTime);
-                batFaceTarget(enemyPlayerObject.position);
+                //transform.position = Vector3.MoveTowards(transform.position, enemyPlayerObject.position, enemySpeed * Time.deltaTime);
+                //batFaceTarget(enemyPlayerObject.position);
             }
         }
     }
@@ -255,6 +266,7 @@ public class BatAI : EnemyAIBase, IDamage
 
         if (other.CompareTag("Player"))
         {
+            batCeilingPointChosen = false;
             //Start attaching to ceiling when out of range
             batAttachToNearestCeiling();
         }
