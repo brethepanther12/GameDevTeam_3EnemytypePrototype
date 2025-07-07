@@ -26,7 +26,9 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     protected Vector3 enemyPlayerDirection;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Start()
-    {   //To save the enemy's max health to currently.
+    {
+        
+        //To save the enemy's max health to currently.
         enemyCurrentHealthPoints = enemyHealthPointsMax;
 
         //Assigning the object with "Player" string tag to the Transform var
@@ -40,6 +42,8 @@ public class EnemyAIBase : MonoBehaviour, IDamage
 
         //This assigns the original color of the placed model in the Unity Inspector
         enemyColorOrigin = enemyModel.material.color;
+
+        gamemanager.instance.updateGameGoal(1);
     }
 
     // Update is called once per frame
