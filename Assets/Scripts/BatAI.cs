@@ -30,8 +30,10 @@ public class BatAI : EnemyAIBase, IDamage
         base.Start();
 
         //Gives the Navigation mesh agent an update to give the bat the ability to fly freely
-        enemyNavAgent.updateUpAxis = false;
-        enemyNavAgent.updateRotation = false;
+       // enemyNavAgent.updateUpAxis = false;
+       // enemyNavAgent.updateRotation = false;
+
+
     }
 
     // Update is called once per frame
@@ -170,6 +172,14 @@ public class BatAI : EnemyAIBase, IDamage
         return ceiling.position;
     }
 
+    protected override void enemyMoveToPlayer()
+    {
+        if(enemyPlayerInSight && !batIsRetreating)
+        {
+            float distance = Vector3.Distance(transform.position, enemyPlayerObject.position);
+        }
+    }
+
     protected override void enemyDeath()
     {
         base.enemyDeath();
@@ -179,6 +189,7 @@ public class BatAI : EnemyAIBase, IDamage
     {
        base.takeDamage(amount);
     }
+
     protected override void OnTriggerEnter(Collider other)
     {
         base.OnTriggerEnter(other);
