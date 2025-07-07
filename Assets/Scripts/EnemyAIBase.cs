@@ -27,7 +27,7 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Start()
     {
-        gamemanager.instance.updateGameGoal(1);
+        
         //To save the enemy's max health to currently.
         enemyCurrentHealthPoints = enemyHealthPointsMax;
 
@@ -42,6 +42,8 @@ public class EnemyAIBase : MonoBehaviour, IDamage
 
         //This assigns the original color of the placed model in the Unity Inspector
         enemyColorOrigin = enemyModel.material.color;
+
+        gamemanager.instance.updateGameGoal(1);
     }
 
     // Update is called once per frame
