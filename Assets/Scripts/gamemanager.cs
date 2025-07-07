@@ -10,11 +10,18 @@ public class gamemanager : MonoBehaviour
     [SerializeField] GameObject menuLose;
 
     public Image playerHPBar;
+    public Image playerShieldBar;
+    public Image playerArmorBar;
     public GameObject playerDamagePanel;
+    public GameObject playerShieldDamagePanel;
+    public GameObject playerArmorDamagePanel;
 
     public bool isPaused;
     public GameObject player;
     public playerController playerScript;
+
+    public TMPro.TextMeshProUGUI keyText; 
+    public TMPro.TextMeshProUGUI ammoText;
 
     float timescaleOrig;
 

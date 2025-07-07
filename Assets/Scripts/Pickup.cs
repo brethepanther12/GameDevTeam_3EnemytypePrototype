@@ -27,13 +27,13 @@ public class Pickup : MonoBehaviour
 
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     private void HandlePickup(pickupType type)
@@ -45,7 +45,8 @@ public class Pickup : MonoBehaviour
         {
             return;
 
-        } else
+        }
+        else
         {
             switch (type)
             {
@@ -102,13 +103,13 @@ public class Pickup : MonoBehaviour
                     break;
             }
         }
-            
+
     }
 
     private void OnTriggerEnter(Collider other)
     {
         HandlePickup(pickup);
-
+        
         Destroy(gameObject);
     }
 }

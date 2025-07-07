@@ -10,8 +10,8 @@ public class MainMenuUI : MonoBehaviour
 
     public void startGame()
     {
-        // I have this going to my scene for now for testing purposes.
-        SceneManager.LoadScene("Jack Jowers Scene");
+        
+        SceneManager.LoadScene("MainLevel");
     }
 
     public void quitGame()

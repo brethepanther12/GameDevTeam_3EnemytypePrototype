@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
+
 
 public class playerController : MonoBehaviour, IDamage
 {
@@ -31,6 +33,7 @@ public class playerController : MonoBehaviour, IDamage
 
     bool hasKey;
     bool isPoweredUp;
+    bool hasAmmo;
 
     int numKeys;
 
@@ -39,6 +42,8 @@ public class playerController : MonoBehaviour, IDamage
 
     int jumpCount;
     int HPOrig;
+    int armorOrig;
+    int shieldOrig;
 
     float shootTimer;
 
@@ -46,6 +51,9 @@ public class playerController : MonoBehaviour, IDamage
     void Start()
     {
         HPOrig = HP;
+        armorOrig = armor;
+        shieldOrig = shield;
+
         updatePlayerUI();
     }
 
@@ -53,6 +61,27 @@ public class playerController : MonoBehaviour, IDamage
     void Update()
     {
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
+
+        RaycastHit hit;
+        bool aimingAtEnemy = false;
+
+        if(Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
+        {
+            if (hit.collider.CompareTag("Enemy"))
+            {
+                aimingAtEnemy = true;
+            }
+        }
+
+        GameObject reticle = GameObject.Find("Reticle");
+        if(reticle != null)
+        {
+            ReticleController rc = reticle.GetComponent<ReticleController>();
+            if(rc != null)
+            {
+                rc.SetEnemyAim(aimingAtEnemy);
+            }
+        }
 
         sprint();
 
@@ -108,19 +137,51 @@ public class playerController : MonoBehaviour, IDamage
 
     void shoot()
     {
-        shootTimer = 0;
 
-        RaycastHit hit;
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
+        if (ammo > 0)
         {
-            //Debug.Log(hit.collider.name);
-            IDamage dmg = hit.collider.GetComponent<IDamage>();
-
-            if (dmg != null)
-            {
-                dmg.takeDamage(shootDamage);
-            }
+            hasAmmo = true;
+        } else
+        {
+            hasAmmo = false;
         }
+
+        if (hasAmmo)
+        {
+            shootTimer = 0;
+
+            --ammo;
+
+            RaycastHit hit;
+            bool isEnemy = false;
+
+            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
+            {
+                //Debug.Log(hit.collider.name);
+                IDamage dmg = hit.collider.GetComponent<IDamage>();
+
+                if (dmg != null )
+                {
+                    if (hit.collider.CompareTag("Enemy"))
+                    {
+                        isEnemy = true;
+                    }
+                    dmg.takeDamage(shootDamage);
+                }
+            }
+            GameObject reticle = GameObject.Find("Reticle");
+            if (reticle != null)
+            {
+                ReticleController rc = reticle.GetComponent<ReticleController>();
+                if (rc != null)
+                {
+                    rc.Pulse(isEnemy);
+                }
+            }
+
+            updatePlayerUI();
+        }
+        
 
     }
 
@@ -130,15 +191,18 @@ public class playerController : MonoBehaviour, IDamage
         if (shield <= 0)
         {
             shield = 0;
-            
+
         }
 
         if (shield > 0)
         {
-            
+
             shield -= amount;
 
-           
+            updatePlayerUI();
+
+            StartCoroutine(ShieldDamageFlashScreen());
+
         }
 
         if (shield == 0 && armor > 0)
@@ -146,6 +210,9 @@ public class playerController : MonoBehaviour, IDamage
 
             armor -= amount;
 
+            updatePlayerUI();
+
+            StartCoroutine(ArmorDamageFlashScreen());
 
         }
         if (shield == 0 && armor == 0)
@@ -153,24 +220,25 @@ public class playerController : MonoBehaviour, IDamage
 
             HP -= amount;
 
+            updatePlayerUI();
+
+            StartCoroutine(damageFlashScreen());
+
+
         }
 
-
-        updatePlayerUI();
-
-        StartCoroutine(damageFlashScreen());
-
-        if (HP<=0)
+        if (HP <= 0)
         {
             gamemanager.instance.youLose();
         }
     }
 
+
     public void Heal(int amount, bool doesIncreaseMax)
     {
         HP += amount;
 
-        if (HP >= maxHP && doesIncreaseMax)
+        if (doesIncreaseMax)
         {
             maxHP += amount;
 
@@ -181,13 +249,15 @@ public class playerController : MonoBehaviour, IDamage
             HP = maxHP;
         }
 
+        updatePlayerUI();
+
     }
 
     public void GainArmor(int amount, bool doesIncreaseMax)
     {
         armor += amount;
 
-        if (armor >= maxArmor && doesIncreaseMax)
+        if (doesIncreaseMax)
         {
             maxArmor += amount;
 
@@ -198,6 +268,8 @@ public class playerController : MonoBehaviour, IDamage
             armor = maxArmor;
         }
 
+        updatePlayerUI();
+
     }
 
     public void GainShield(int amount, bool doesIncreaseMax)
@@ -205,7 +277,7 @@ public class playerController : MonoBehaviour, IDamage
 
         shield += amount;
 
-        if (shield >= maxShield && doesIncreaseMax)
+        if (doesIncreaseMax)
         {
             maxShield += amount;
 
@@ -216,13 +288,15 @@ public class playerController : MonoBehaviour, IDamage
             shield = maxShield;
         }
 
+        updatePlayerUI();
+
     }
 
     public void GainAmmo(int amount, bool doesIncreaseMax)
     {
         ammo += amount;
 
-        if (ammo >= maxAmmo && doesIncreaseMax)
+        if (doesIncreaseMax)
         {
             maxAmmo += amount;
 
@@ -232,6 +306,8 @@ public class playerController : MonoBehaviour, IDamage
 
             ammo = maxAmmo;
         }
+
+        updatePlayerUI();
 
     }
 
@@ -247,6 +323,8 @@ public class playerController : MonoBehaviour, IDamage
             shootDamage *= magnitude;
 
         }
+
+        updatePlayerUI();
     }
 
     public void IncreaseSpeed(int amount, int magnitude)
@@ -261,6 +339,8 @@ public class playerController : MonoBehaviour, IDamage
             speed *= magnitude;
 
         }
+
+        updatePlayerUI();
     }
 
     public void IncreaseJumpMaxCount(int amount, int magnitude)
@@ -275,11 +355,25 @@ public class playerController : MonoBehaviour, IDamage
             jumpMax *= magnitude;
 
         }
+
+        updatePlayerUI();
     }
 
     public void AddKey(int amount)
     {
-        numKeys++;
+        numKeys += amount;
+
+        if (numKeys < 0)
+            numKeys = 0;
+
+        hasKey = numKeys > 0;
+
+        updatePlayerUI();
+    }
+
+    public bool HasKey()
+    {
+        return hasKey;
     }
 
     IEnumerator PowerUp(float duration)
@@ -287,6 +381,37 @@ public class playerController : MonoBehaviour, IDamage
         isPoweredUp = true;
         yield return new WaitForSeconds(duration);
         isPoweredUp = false;
+    }
+
+    public void updatePlayerUI()
+    {
+
+        gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
+        gamemanager.instance.playerShieldBar.fillAmount = (float)shield / maxShield;
+        gamemanager.instance.playerArmorBar.fillAmount = (float)armor / maxArmor;
+        gamemanager.instance.ammoText.text = $"{ammo} / {maxAmmo}";
+        gamemanager.instance.keyText.text = "x" + numKeys;
+    }
+
+    IEnumerator damageFlashScreen()
+    {
+        gamemanager.instance.playerDamagePanel.SetActive(true);
+        yield return new WaitForSeconds(.1f);
+        gamemanager.instance.playerDamagePanel.SetActive(false);
+    }
+
+    IEnumerator ArmorDamageFlashScreen()
+    {
+        gamemanager.instance.playerArmorDamagePanel.SetActive(true);
+        yield return new WaitForSeconds(.1f);
+        gamemanager.instance.playerArmorDamagePanel.SetActive(false);
+    }
+
+    IEnumerator ShieldDamageFlashScreen()
+    {
+        gamemanager.instance.playerShieldDamagePanel.SetActive(true);
+        yield return new WaitForSeconds(.1f);
+        gamemanager.instance.playerShieldDamagePanel.SetActive(false);
     }
 
 }
