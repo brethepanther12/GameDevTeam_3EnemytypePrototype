@@ -30,28 +30,14 @@ public class BatAI : EnemyAIBase, IDamage
         base.Start();
 
         //Gives the Navigation mesh agent an update to give the bat the ability to fly freely
-       // enemyNavAgent.updateUpAxis = false;
-       // enemyNavAgent.updateRotation = false;
-
-
+       enemyNavAgent.updateUpAxis = false;
+       enemyNavAgent.updateRotation = false;
     }
 
     // Update is called once per frame
     protected override void Update()
     {
-        if (enemyPlayerInSight && !batIsRetreating)
-        {
-            float distance = Vector3.Distance(transform.position, enemyPlayerObject.position);
-            if (distance <= batAttackRange && !batHasAttacked)
-            {
-                StartCoroutine(batAttackPlayer());
-            }
-            else
-            {
-                enemyNavAgent.SetDestination(enemyPlayerObject.position);
-                enemyFacePlayer();
-            }
-        }else if (!enemyPlayerInSight && !batIsRetreating && !batIsReturningToCeiling)
+        if (!enemyPlayerInSight && !batIsRetreating && !batIsReturningToCeiling)
         {
             batAttachToNearestCeiling();
         }
@@ -90,8 +76,9 @@ public class BatAI : EnemyAIBase, IDamage
         batRetreatTarget = transform.position + directionAwayFromPlayer * batRetreatDistance;
 
         //Then setting the destination of the Nav Agent of the retreat target
-        enemyNavAgent.SetDestination(batRetreatTarget);
-
+        //enemyNavAgent.SetDestination(batRetreatTarget);
+        transform.position = Vector3.MoveTowards(transform.position, batRetreatTarget, enemySpeed * Time.deltaTime);
+        batFaceTarget(batRetreatTarget);
         //Than start the yield return, (for this is going to be a routine, Attack-Retreat!) 
         yield return new WaitForSeconds(batAttackCoolDown);
 
@@ -136,7 +123,9 @@ public class BatAI : EnemyAIBase, IDamage
         batCeilingAttachPoint = batGetBottomOfCeiling(batCurrentCeiling);
 
         //Setting the enemy Nav to the ceiling point
-        enemyNavAgent.SetDestination(batCeilingAttachPoint);
+        //enemyNavAgent.SetDestination(batCeilingAttachPoint);
+        transform.position = Vector3.MoveTowards(transform.position, batCeilingAttachPoint, enemySpeed * Time.deltaTime);
+        batFaceTarget(batCeilingAttachPoint);
     }
 
     //Gets the bottom of ceiling object position from inputted parameter variable
@@ -177,6 +166,32 @@ public class BatAI : EnemyAIBase, IDamage
         if(enemyPlayerInSight && !batIsRetreating)
         {
             float distance = Vector3.Distance(transform.position, enemyPlayerObject.position);
+
+            // If the distance is less than the bat range and the bat has not attacked
+            if (distance <= batAttackRange && !batHasAttacked) 
+            {
+                //Start attacking
+                StartCoroutine(batAttackPlayer());
+            }
+            else 
+            {
+                //Manual flying towards the player
+                transform.position = Vector3.MoveTowards(transform.position, enemyPlayerObject.position, enemySpeed * Time.deltaTime);
+                batFaceTarget(enemyPlayerObject.position);
+            }
+        }
+    }
+
+    protected void batFaceTarget(Vector3 target)
+    {
+        Vector3 direction = (target - transform.position).normalized;
+
+        if (direction == Vector3.zero)
+        {
+            Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+
+            //To interpolate between the bat and the looking direction in a spherical linear area 
+            transform.rotation = Quaternion.Slerp(transform.rotation , lookRotation, Time.deltaTime * 5f);
         }
     }
 
