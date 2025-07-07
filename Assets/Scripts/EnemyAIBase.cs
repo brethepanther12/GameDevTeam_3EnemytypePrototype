@@ -26,7 +26,9 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     protected Vector3 enemyPlayerDirection;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Start()
-    {   //To save the enemy's max health to currently.
+    {
+        gamemanager.instance.updateGameGoal(1);
+        //To save the enemy's max health to currently.
         enemyCurrentHealthPoints = enemyHealthPointsMax;
 
         //Assigning the object with "Player" string tag to the Transform var
