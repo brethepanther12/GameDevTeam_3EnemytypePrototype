@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
 
 
 public class playerController : MonoBehaviour, IDamage
@@ -60,6 +61,27 @@ public class playerController : MonoBehaviour, IDamage
     void Update()
     {
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
+
+        RaycastHit hit;
+        bool aimingAtEnemy = false;
+
+        if(Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
+        {
+            if(hit.collider.GetComponent<IDamage>() != null)
+            {
+                aimingAtEnemy = true;
+            }
+        }
+
+        GameObject reticle = GameObject.Find("Reticle");
+        if(reticle != null)
+        {
+            ReticleController rc = reticle.GetComponent<ReticleController>();
+            if(rc != null)
+            {
+                rc.SetEnemyAim(aimingAtEnemy);
+            }
+        }
 
         sprint();
 
@@ -131,6 +153,8 @@ public class playerController : MonoBehaviour, IDamage
             --ammo;
 
             RaycastHit hit;
+            bool hitEnemy = false;
+
             if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
             {
                 //Debug.Log(hit.collider.name);
@@ -139,8 +163,17 @@ public class playerController : MonoBehaviour, IDamage
                 if (dmg != null)
                 {
                     dmg.takeDamage(shootDamage);
+                    hitEnemy = true;
                 }
-
+            }
+            GameObject reticle = GameObject.Find("Reticle");
+            if (reticle != null)
+            {
+                ReticleController rc = reticle.GetComponent<ReticleController>();
+                if (rc != null)
+                {
+                    rc.Pulse(hitEnemy);
+                }
             }
 
             updatePlayerUI();
