@@ -67,7 +67,7 @@ public class playerController : MonoBehaviour, IDamage
 
         if(Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
         {
-            if(hit.collider.GetComponent<IDamage>() != null)
+            if (hit.collider.CompareTag("Enemy"))
             {
                 aimingAtEnemy = true;
             }
@@ -153,17 +153,20 @@ public class playerController : MonoBehaviour, IDamage
             --ammo;
 
             RaycastHit hit;
-            bool hitEnemy = false;
+            bool isEnemy = false;
 
             if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
             {
                 //Debug.Log(hit.collider.name);
                 IDamage dmg = hit.collider.GetComponent<IDamage>();
 
-                if (dmg != null)
+                if (dmg != null )
                 {
+                    if (hit.collider.CompareTag("Enemy"))
+                    {
+                        isEnemy = true;
+                    }
                     dmg.takeDamage(shootDamage);
-                    hitEnemy = true;
                 }
             }
             GameObject reticle = GameObject.Find("Reticle");
@@ -172,7 +175,7 @@ public class playerController : MonoBehaviour, IDamage
                 ReticleController rc = reticle.GetComponent<ReticleController>();
                 if (rc != null)
                 {
-                    rc.Pulse(hitEnemy);
+                    rc.Pulse(isEnemy);
                 }
             }
 
