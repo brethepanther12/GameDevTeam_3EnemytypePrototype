@@ -37,22 +37,37 @@ public class BatAI : EnemyAIBase, IDamage
     // Update is called once per frame
     protected override void Update()
     {
-        enemyMoveToPlayer();
-        if (!enemyPlayerInSight && !batIsRetreating && !batIsReturningToCeiling)
+        if (enemyPlayerInSight && !batIsRetreating)
         {
-            batAttachToNearestCeiling();
+            enemyMoveToPlayer();
+        }
+        else if (!enemyPlayerInSight && !batIsRetreating && !batIsReturningToCeiling)
+        {   
+            // Just sets the target point ONCE
+            batAttachToNearestCeiling(); 
         }
 
         //Moves toward retreat target if currently retreating
-        if (batIsRetreating && Vector3.Distance(transform.position, batRetreatTarget) <= 0.5f)
+        if (batIsRetreating)
         {
-            batIsRetreating = false;
+            transform.position = Vector3.MoveTowards(transform.position, batRetreatTarget, enemySpeed * Time.deltaTime);
+            batFaceTarget(batRetreatTarget);
+            if (Vector3.Distance(transform.position, batRetreatTarget) <= 0.5f)
+            {
+                batIsRetreating = false;
+            }
         }
         // Move to the ceiling 
-        if (batIsReturningToCeiling && Vector3.Distance(transform.position, batCeilingAttachPoint) <= 0.5f)
+        if (batIsReturningToCeiling)
         {
-            transform.rotation = Quaternion.Euler(180f, transform.rotation.eulerAngles.y, 0f);
-            batIsReturningToCeiling  = false;
+            transform.position = Vector3.MoveTowards(transform.position, batCeilingAttachPoint, enemySpeed * Time.deltaTime);
+            batFaceTarget(batCeilingAttachPoint);
+
+            if (Vector3.Distance(transform.position, batCeilingAttachPoint) <= 0.5f)
+            {
+                transform.rotation = Quaternion.Euler(180f, transform.rotation.eulerAngles.y, 0f);
+                batIsReturningToCeiling = false;
+            }
         }
     }
 
@@ -78,8 +93,8 @@ public class BatAI : EnemyAIBase, IDamage
 
         //Then setting the destination of the Nav Agent of the retreat target
         //enemyNavAgent.SetDestination(batRetreatTarget);
-        transform.position = Vector3.MoveTowards(transform.position, batRetreatTarget, enemySpeed * Time.deltaTime);
-        batFaceTarget(batRetreatTarget);
+        //transform.position = Vector3.MoveTowards(transform.position, batRetreatTarget, enemySpeed * Time.deltaTime);
+        //batFaceTarget(batRetreatTarget);
         //Than start the yield return, (for this is going to be a routine, Attack-Retreat!) 
         yield return new WaitForSeconds(batAttackCoolDown);
 
@@ -125,8 +140,8 @@ public class BatAI : EnemyAIBase, IDamage
 
         //Setting the enemy Nav to the ceiling point
         //enemyNavAgent.SetDestination(batCeilingAttachPoint);
-        transform.position = Vector3.MoveTowards(transform.position, batCeilingAttachPoint, enemySpeed * Time.deltaTime);
-        batFaceTarget(batCeilingAttachPoint);
+       // transform.position = Vector3.MoveTowards(transform.position, batCeilingAttachPoint, enemySpeed * Time.deltaTime);
+        //batFaceTarget(batCeilingAttachPoint);
     }
 
     //Gets the bottom of ceiling object position from inputted parameter variable
