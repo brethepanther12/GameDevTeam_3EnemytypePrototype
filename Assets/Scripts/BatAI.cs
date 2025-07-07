@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class BatAI : EnemyAIBase
+public class BatAI : EnemyAIBase, IDamage
 {
     // Bat enemy's ability to detect the player and retreat at a certain distance.
     [SerializeField] public float batAttackRange;
@@ -170,6 +170,15 @@ public class BatAI : EnemyAIBase
         return ceiling.position;
     }
 
+    protected override void enemyDeath()
+    {
+        base.enemyDeath();
+    }
+
+    public override void takeDamage(int amount)
+    {
+       base.takeDamage(amount);
+    }
     protected override void OnTriggerEnter(Collider other)
     {
         base.OnTriggerEnter(other);
