@@ -37,6 +37,7 @@ public class BatAI : EnemyAIBase, IDamage
     // Update is called once per frame
     protected override void Update()
     {
+        enemyMoveToPlayer();
         if (!enemyPlayerInSight && !batIsRetreating && !batIsReturningToCeiling)
         {
             batAttachToNearestCeiling();
