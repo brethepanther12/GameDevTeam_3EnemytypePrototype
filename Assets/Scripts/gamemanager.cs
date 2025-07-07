@@ -20,6 +20,8 @@ public class gamemanager : MonoBehaviour
     public GameObject player;
     public playerController playerScript;
 
+    public TMPro.TextMeshProUGUI ammoText;
+
     float timescaleOrig;
 
     int gameGoalCount;

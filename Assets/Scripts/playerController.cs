@@ -142,6 +142,8 @@ public class playerController : MonoBehaviour, IDamage
                 }
 
             }
+
+            updatePlayerUI();
         }
         
 
@@ -351,6 +353,7 @@ public class playerController : MonoBehaviour, IDamage
         gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
         gamemanager.instance.playerShieldBar.fillAmount = (float)shield / maxShield;
         gamemanager.instance.playerArmorBar.fillAmount = (float)armor / maxArmor;
+        gamemanager.instance.ammoText.text = $"{ammo} / {maxAmmo}";
     }
 
     IEnumerator damageFlashScreen()
