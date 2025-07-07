@@ -5332,7 +5332,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2142944503}
   - component: {fileID: 2142944504}
-  - component: {fileID: 2142944502}
+  - component: {fileID: 2142944505}
   - component: {fileID: 2142944501}
   - component: {fileID: 2142944500}
   - component: {fileID: 2142944499}
@@ -5419,24 +5419,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2142944498}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &2142944502
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2142944498}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e841f9e028b61149973b5ba15e71c2d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyCurrentHealthPoints: 10
-  enemyHealthPointsMax: 10
-  enemyModel: {fileID: 2142944500}
-  enemySpeed: 3
-  enemyNavAgent: {fileID: 0}
-  enemyPlayerObject: {fileID: 0}
 --- !u!4 &2142944503
 Transform:
   m_ObjectHideFlags: 0
@@ -5466,6 +5448,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyHealthBar: {fileID: 598335976030927818, guid: c899be0231e887b419783c5fb6f38211, type: 3}
   offset: {x: 0, y: 2, z: 0}
+--- !u!114 &2142944505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2142944498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e841f9e028b61149973b5ba15e71c2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyCurrentHealthPoints: 5
+  enemyHealthPointsMax: 5
+  enemyModel: {fileID: 2142944500}
+  enemySpeed: 3
+  enemyNavAgent: {fileID: 0}
+  enemyPlayerObject: {fileID: 0}
 --- !u!1 &2144325581
 GameObject:
   m_ObjectHideFlags: 0
