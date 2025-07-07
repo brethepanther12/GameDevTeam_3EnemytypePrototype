@@ -354,6 +354,7 @@ public class playerController : MonoBehaviour, IDamage
         gamemanager.instance.playerShieldBar.fillAmount = (float)shield / maxShield;
         gamemanager.instance.playerArmorBar.fillAmount = (float)armor / maxArmor;
         gamemanager.instance.ammoText.text = $"{ammo} / {maxAmmo}";
+        gamemanager.instance.keyText.text = "x" + numKeys;
     }
 
     IEnumerator damageFlashScreen()
