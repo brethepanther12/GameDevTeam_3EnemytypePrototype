@@ -32,6 +32,7 @@ public class BatAI : EnemyAIBase, IDamage
         //Gives the Navigation mesh agent an update to give the bat the ability to fly freely
        enemyNavAgent.updateUpAxis = false;
        enemyNavAgent.updateRotation = false;
+        enemyNavAgent.updateUpAxis = false;
     }
 
     // Update is called once per frame
