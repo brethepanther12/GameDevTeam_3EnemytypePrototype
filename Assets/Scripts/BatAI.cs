@@ -70,6 +70,10 @@ public class BatAI : EnemyAIBase, IDamage
                 batIsReturningToCeiling = false;
             }
         }
+        if (batIsReturningToCeiling)
+        {
+            Debug.DrawLine(transform.position, batCeilingAttachPoint, Color.red);
+        }
     }
 
     private IEnumerator batAttackPlayer()
