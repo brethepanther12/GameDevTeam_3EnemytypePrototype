@@ -67,6 +67,8 @@ public class playerController : MonoBehaviour, IDamage
 
         if(Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
         {
+            //Debug.Log("Hit Object: " + hit.collider.name + " | Tag: " + hit.collider.tag + " | Layer: " + LayerMask.LayerToName(hit.collider.gameObject.layer));
+
             if (hit.collider.CompareTag("Enemy"))
             {
                 aimingAtEnemy = true;
