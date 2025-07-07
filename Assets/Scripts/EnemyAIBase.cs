@@ -31,6 +31,12 @@ public class EnemyAIBase : MonoBehaviour, IDamage
         //To save the enemy's max health to currently.
         enemyCurrentHealthPoints = enemyHealthPointsMax;
 
+        EnemyHealthUI ui = GetComponent<EnemyHealthUI>();
+        if (ui != null)
+        {
+            ui.UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+        }
+
         //Assigning the object with "Player" string tag to the Transform var
         enemyPlayerObject = GameObject.FindGameObjectWithTag("Player").transform;
 
@@ -111,6 +117,9 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     public virtual void takeDamage(int amount)
     {
         enemyCurrentHealthPoints -= amount;
+
+        GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+
         if (enemyCurrentHealthPoints <= 0)
         {
             gamemanager.instance.updateGameGoal(-1);

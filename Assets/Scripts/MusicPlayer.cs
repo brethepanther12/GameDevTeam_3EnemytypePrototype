@@ -30,7 +30,7 @@ public class MusicPlayer : MonoBehaviour
         {
             PlayMusic(mainMenuMusic);
         }
-        else if (scene.name == "Jack Jowers Scene")
+        else if (scene.name == "MainLevel")
         {
             PlayMusic(gameMusic);
         }
