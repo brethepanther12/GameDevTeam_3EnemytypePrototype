@@ -326,6 +326,16 @@ public class playerController : MonoBehaviour, IDamage
         numKeys++;
 
         updatePlayerUI();
+
+        if (numKeys > 0)
+        {
+            hasKey = true;
+        }
+    }
+
+    public bool HasKey()
+    {
+        return hasKey;
     }
 
     IEnumerator PowerUp(float duration)
