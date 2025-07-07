@@ -325,14 +325,14 @@ public class playerController : MonoBehaviour, IDamage
 
     public void AddKey(int amount)
     {
-        numKeys++;
+        numKeys += amount;
+
+        if (numKeys < 0)
+            numKeys = 0;
+
+        hasKey = numKeys > 0;
 
         updatePlayerUI();
-
-        if (numKeys > 0)
-        {
-            hasKey = true;
-        }
     }
 
     public bool HasKey()
