@@ -1371,7 +1371,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!135 &1715800806
 SphereCollider:
@@ -1477,7 +1477,7 @@ MonoBehaviour:
   enemyCurrentHealthPoints: 5
   enemyHealthPointsMax: 5
   enemyModel: {fileID: 1715800807}
-  enemySpeed: 4.5
+  enemySpeed: 350
   enemyNavAgent: {fileID: 1715800811}
   enemyPlayerObject: {fileID: 2436139576208605760}
   batAttackRange: 3
