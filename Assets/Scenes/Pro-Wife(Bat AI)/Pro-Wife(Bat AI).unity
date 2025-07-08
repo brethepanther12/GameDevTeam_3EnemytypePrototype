@@ -1056,7 +1056,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1511198924}
   - component: {fileID: 1511198925}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Damage Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1614,10 +1614,10 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 2
+  m_CollisionDetection: 1
 --- !u!1001 &2016946723
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1937,7 +1937,7 @@ SceneRoots:
   - {fileID: 458981303}
   - {fileID: 1587141038}
   - {fileID: 2436139576208605759}
+  - {fileID: 1715800809}
   - {fileID: 1568160479}
   - {fileID: 71009812}
-  - {fileID: 1715800809}
   - {fileID: 1565902302}
