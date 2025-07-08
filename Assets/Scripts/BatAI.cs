@@ -35,8 +35,9 @@ public class BatAI : EnemyAIBase, IDamage
         base.Start();
         rb = GetComponent<Rigidbody>();
         //Gives the Navigation mesh agent an update to give the bat the ability to fly freely
-       enemyNavAgent.updateUpAxis = false;
-       enemyNavAgent.updateRotation = false;
+        enemyNavAgent.updateRotation = false;
+        enemyNavAgent.updateUpAxis = false;
+      
     }
 
     // Update is called once per frame
@@ -54,18 +55,20 @@ public class BatAI : EnemyAIBase, IDamage
 
         //Moves toward retreat target if currently retreating
         if (batIsRetreating)
-        {
+        { /*
             rb.MovePosition(Vector3.MoveTowards(transform.position, batRetreatTarget, enemySpeed * Time.deltaTime));
             batFaceTarget(batRetreatTarget);
             if (Vector3.Distance(transform.position, batRetreatTarget) <= batCeilingRangeThreshold)
             {
                 batIsRetreating = false;
             }
+           */
+            moveToTarget(batRetreatTarget, () => batIsRetreating = false);
         }
         // Move to the ceiling 
         if (batIsReturningToCeiling)
-        {
-            rb.MovePosition(Vector3.MoveTowards(transform.position, batCeilingAttachPoint, enemySpeed * Time.deltaTime));
+        {/*
+           rb.MovePosition(Vector3.MoveTowards(transform.position, batCeilingAttachPoint, enemySpeed * Time.deltaTime));
             batFaceTarget(batCeilingAttachPoint);
 
             if (Vector3.Distance(transform.position, batCeilingAttachPoint) <= batCeilingRangeThreshold)
@@ -74,6 +77,13 @@ public class BatAI : EnemyAIBase, IDamage
                 batIsReturningToCeiling = false;
                 batCeilingPointChosen = true;
             }
+          */
+            moveToTarget(batCeilingAttachPoint, () =>
+            {
+                batIsReturningToCeiling = false;
+                batCeilingPointChosen = true;
+                transform.rotation = Quaternion.Euler(180f, transform.rotation.eulerAngles.y, 0f);
+            });
         }
         if (batIsReturningToCeiling)
         {
@@ -100,19 +110,20 @@ public class BatAI : EnemyAIBase, IDamage
 
         //Setting the target retreat position for the bat to locate and track towards.
         batRetreatTarget = transform.position + directionAwayFromPlayer * batRetreatDistance;
-
-        //Then setting the destination of the Nav Agent of the retreat target
+        /*
+         //Then setting the destination of the Nav Agent of the retreat target
         //enemyNavAgent.SetDestination(batRetreatTarget);
         //transform.position = Vector3.MoveTowards(transform.position, batRetreatTarget, enemySpeed * Time.deltaTime);
         //batFaceTarget(batRetreatTarget);
-
-        while (Vector3.Distance(transform.position, batRetreatTarget) > 0.2f)
+         while (Vector3.Distance(transform.position, batRetreatTarget) > 0.2f)
         {
            
             rb.MovePosition(Vector3.MoveTowards(transform.position, batRetreatTarget, enemySpeed * Time.deltaTime));
             batFaceTarget(batRetreatTarget);
             yield return null;
         }
+         */
+
         //Than start the yield return, (for this is going to be a routine, Attack-Retreat!) 
         yield return new WaitForSeconds(batAttackCoolDown);
 
@@ -131,8 +142,8 @@ public class BatAI : EnemyAIBase, IDamage
         if (ceilings.Length == 0) return;
 
         //toggle the bool that has the bat return to the ceiling
-        batIsReturningToCeiling = true;
-        batCeilingPointChosen = false;
+      //batIsReturningToCeiling = true;
+      //batCeilingPointChosen = false;
         //Stores the index of the closest ceiling in the array
         int nearestIndex = 0;
         //Assigning the calculated distance between the bat and ceiling.
@@ -197,7 +208,16 @@ public class BatAI : EnemyAIBase, IDamage
         }
         return ceiling.position;
     }
+    private void moveToTarget(Vector3 target, System.Action reach)
+    {
+        rb.MovePosition(Vector3.MoveTowards(transform.position, target, enemySpeed * Time.deltaTime));
+        batFaceTarget(target);
 
+        if (Vector3.Distance(transform.position, target) <= batCeilingRangeThreshold)
+        {
+            reach.Invoke();
+        }
+    }
     protected override void enemyMoveToPlayer()
     {
         if(enemyPlayerInSight && !batIsRetreating)
@@ -272,3 +292,4 @@ public class BatAI : EnemyAIBase, IDamage
         }
     }
 }
+
