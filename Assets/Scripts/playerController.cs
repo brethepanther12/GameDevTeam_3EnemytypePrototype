@@ -26,6 +26,9 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] int shootDist;
 
+    [SerializeField] private GameObject impactPrefab;
+    public ParticleSystem muzzleFlash;
+
     private enum powerUpType
     {
         health, shield, armor, ammo, speed, jump, damage
@@ -60,30 +63,7 @@ public class playerController : MonoBehaviour, IDamage
     // Update is called once per frame
     void Update()
     {
-        Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
-
-        RaycastHit hit;
-        bool aimingAtEnemy = false;
-
-        if(Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
-        {
-            //Debug.Log("Hit Object: " + hit.collider.name + " | Tag: " + hit.collider.tag + " | Layer: " + LayerMask.LayerToName(hit.collider.gameObject.layer));
-
-            if (hit.collider.CompareTag("Enemy"))
-            {
-                aimingAtEnemy = true;
-            }
-        }
-
-        GameObject reticle = GameObject.Find("Reticle");
-        if(reticle != null)
-        {
-            ReticleController rc = reticle.GetComponent<ReticleController>();
-            if(rc != null)
-            {
-                rc.SetEnemyAim(aimingAtEnemy);
-            }
-        }
+        CheckReticleTarget(); // color update
 
         sprint();
 
@@ -139,7 +119,7 @@ public class playerController : MonoBehaviour, IDamage
 
     void shoot()
     {
-
+      
         if (ammo > 0)
         {
             hasAmmo = true;
@@ -154,11 +134,16 @@ public class playerController : MonoBehaviour, IDamage
 
             --ammo;
 
+            muzzleFlash.Play();
+
             RaycastHit hit;
             bool isEnemy = false;
 
             if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
             {
+               GameObject impactOb = Instantiate(impactPrefab, hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(impactOb, 1f);
+
                 //Debug.Log(hit.collider.name);
                 IDamage dmg = hit.collider.GetComponent<IDamage>();
 
@@ -416,4 +401,30 @@ public class playerController : MonoBehaviour, IDamage
         gamemanager.instance.playerShieldDamagePanel.SetActive(false);
     }
 
+
+    void CheckReticleTarget()
+    {
+        Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
+
+        RaycastHit hit;
+        bool aimingAtEnemy = false;
+
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
+        {
+            if (hit.collider.CompareTag("Enemy"))
+            {
+                aimingAtEnemy = true;
+            }
+        }
+
+        GameObject reticle = GameObject.Find("Reticle");
+        if (reticle != null)
+        {
+            ReticleController rc = reticle.GetComponent<ReticleController>();
+            if (rc != null)
+            {
+                rc.SetEnemyAim(aimingAtEnemy);
+            }
+        }
+    }
 }
