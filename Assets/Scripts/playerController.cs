@@ -26,8 +26,11 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] int shootDist;
 
+    public Animator animator;
+
     [SerializeField] private GameObject impactPrefab;
     public ParticleSystem muzzleFlash;
+    private bool reloading;
 
     private enum powerUpType
     {
@@ -53,6 +56,8 @@ public class playerController : MonoBehaviour, IDamage
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        ammo = maxAmmo;
+
         HPOrig = HP;
         armorOrig = armor;
         shieldOrig = shield;
@@ -68,6 +73,17 @@ public class playerController : MonoBehaviour, IDamage
         sprint();
 
         movement();
+
+        if (reloading)
+        {
+            return;
+        }
+
+        if (ammo <= 0)
+        {
+            StartCoroutine(Reload());
+            return;
+        }
     }
 
 
@@ -117,6 +133,20 @@ public class playerController : MonoBehaviour, IDamage
         }
     }
 
+    IEnumerator Reload()
+    {
+        reloading = true;
+
+        Debug.Log("Player Reloading");
+
+        animator.SetBool("Reloading", true);
+        yield return new WaitForSeconds(1f -.25f);
+        animator.SetBool("Reloading", false);
+        yield return new WaitForSeconds(.25f);
+
+            ammo = maxAmmo;
+        reloading = false;
+    }
     void shoot()
     {
       
