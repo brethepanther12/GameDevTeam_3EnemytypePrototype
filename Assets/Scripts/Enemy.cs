@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering;
 
 public class Enemy : MonoBehaviour, IDamage
 {
@@ -9,6 +10,11 @@ public class Enemy : MonoBehaviour, IDamage
     [SerializeField] NavMeshAgent agent;
     [SerializeField] Transform shootPos;
     [SerializeField] Transform headPos;
+
+    [SerializeField] private int maxAmmo = 10;
+    [SerializeField] private float reloadTime = 1.5f;
+
+    [SerializeField] Animator animator;
 
     [SerializeField] int HP;
     [SerializeField] int fov;
@@ -21,7 +27,8 @@ public class Enemy : MonoBehaviour, IDamage
 
     Color colorOrig;
 
-
+    private int currentAmmo;
+    private bool isReloading;
     bool playerInTrigger;
     float shootTimer;
     float angleToPlayer;
@@ -34,7 +41,7 @@ public class Enemy : MonoBehaviour, IDamage
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        currentAmmo = maxAmmo;
         colorOrig = modelParts[0].material.color;
         gamemanager.instance.updateGameGoal(1);
         startingPos = transform.position;
@@ -45,6 +52,7 @@ public class Enemy : MonoBehaviour, IDamage
     // Update is called once per frame
     void Update()
     {
+        animator.SetFloat("Speed", agent.velocity.magnitude);
 
         if (agent.remainingDistance < 0.01f)
         {
@@ -60,6 +68,11 @@ public class Enemy : MonoBehaviour, IDamage
         {
             RoamCheck();
         }
+    }
+
+    void LateUpdate()
+    {
+        shootPos.LookAt(gamemanager.instance.player.transform.position);
     }
 
     void RoamCheck()
@@ -104,6 +117,11 @@ public class Enemy : MonoBehaviour, IDamage
                     Shoot();
                 }
 
+                if(currentAmmo <=0 && !isReloading)
+                {
+                    StartCoroutine(Reload());
+                }
+
                 agent.SetDestination(gamemanager.instance.player.transform.position);
 
                 if (agent.remainingDistance <= agent.stoppingDistance)
@@ -125,6 +143,9 @@ public class Enemy : MonoBehaviour, IDamage
     {
         Quaternion rot = Quaternion.LookRotation(new Vector3(playerDir.x, transform.position.y, playerDir.z));
         transform.rotation = Quaternion.Lerp(transform.rotation, rot, faceTargetSpeed * Time.deltaTime);
+
+        Quaternion gunRot = Quaternion.LookRotation(gamemanager.instance.player.transform.position - shootPos.position);
+        shootPos.rotation = Quaternion.Lerp(shootPos.rotation, gunRot, faceTargetSpeed * Time.deltaTime);
     }
 
 
@@ -184,8 +205,27 @@ public class Enemy : MonoBehaviour, IDamage
 
     void Shoot()
     {
+        if(isReloading || currentAmmo <=0)
+        {
+            return;
+        }
+
         shootTimer = 0;
 
+        currentAmmo--;
+
+        animator.SetTrigger("Shoot");
+
         Instantiate(bullet, shootPos.position, transform.rotation);
+    }
+
+    IEnumerator Reload()
+    {
+        isReloading = true;
+        animator.SetTrigger("Reload");
+        yield return new WaitForSeconds(reloadTime -.25f);
+        isReloading = false;
+        yield return new WaitForSeconds(.25f);
+        currentAmmo = maxAmmo;
     }
 }

@@ -56,6 +56,9 @@ MonoBehaviour:
   agent: {fileID: 7785100596418267582}
   shootPos: {fileID: 813655578722578825}
   headPos: {fileID: 813655578722634839}
+  maxAmmo: 10
+  reloadTime: 1.5
+  animator: {fileID: 813655578731613481}
   HP: 5
   fov: 90
   faceTargetSpeed: 5
@@ -189,6 +192,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9530324, guid: 7aa6f6434be94e44583bd055d3a42eee, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 5d748914d02d2ce4d89d3ba044ed20f0, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -222,5 +229,10 @@ SkinnedMeshRenderer:
 --- !u!137 &813655578727626537 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 13783508, guid: 7aa6f6434be94e44583bd055d3a42eee, type: 3}
+  m_PrefabInstance: {fileID: 813655578722264829}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &813655578731613481 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 9530324, guid: 7aa6f6434be94e44583bd055d3a42eee, type: 3}
   m_PrefabInstance: {fileID: 813655578722264829}
   m_PrefabAsset: {fileID: 0}
