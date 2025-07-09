@@ -26,6 +26,7 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] int shootDist;
 
+    [SerializeField] private GameObject impactPrefab;
     public ParticleSystem muzzleFlash;
 
     private enum powerUpType
@@ -140,6 +141,9 @@ public class playerController : MonoBehaviour, IDamage
 
             if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
             {
+               GameObject impactOb = Instantiate(impactPrefab, hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(impactOb, 1f);
+
                 //Debug.Log(hit.collider.name);
                 IDamage dmg = hit.collider.GetComponent<IDamage>();
 
