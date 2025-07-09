@@ -57,4 +57,23 @@ public class BossAI : EnemyAIBase
         Destroy(gameObject);
         // optionally trigger win screen or animation here
     }
+
+    protected override void enemyMoveToPlayer()
+    {
+        if (enemyPlayerInSight)
+        {
+            Debug.Log("Boss is moving toward player!");
+            enemyNavAgent.SetDestination(enemyPlayerObject.position);
+
+            if (enemyNavAgent.remainingDistance <= enemyNavAgent.stoppingDistance)
+            {
+                enemyFacePlayer();
+            }
+        }
+    }
+
+    public void SetPlayerInSight(bool isInSight)
+    {
+        enemyPlayerInSight = isInSight;
+    }
 }
