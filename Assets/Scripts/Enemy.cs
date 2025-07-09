@@ -5,7 +5,7 @@ using UnityEngine.AI;
 public class Enemy : MonoBehaviour, IDamage
 {
 
-    [SerializeField] Renderer model;
+    [SerializeField] SkinnedMeshRenderer[] modelParts;
     [SerializeField] NavMeshAgent agent;
     [SerializeField] Transform shootPos;
     [SerializeField] Transform headPos;
@@ -35,7 +35,7 @@ public class Enemy : MonoBehaviour, IDamage
     void Start()
     {
 
-        colorOrig = model.material.color;
+        colorOrig = modelParts[0].material.color;
         gamemanager.instance.updateGameGoal(1);
         startingPos = transform.position;
         stoppingDistanceOrig = agent.stoppingDistance;
@@ -169,9 +169,17 @@ public class Enemy : MonoBehaviour, IDamage
 
     IEnumerator FlashRed()
     {
-        model.material.color = Color.red;
+        foreach (var part in modelParts)
+        {
+            part.material.color = Color.red;
+        }
+
         yield return new WaitForSeconds(0.1f);
-        model.material.color = colorOrig;
+
+        foreach (var part in modelParts)
+        {
+            part.material.color = colorOrig;
+        }
     }
 
     void Shoot()
