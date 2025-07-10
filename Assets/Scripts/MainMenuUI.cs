@@ -11,7 +11,7 @@ public class MainMenuUI : MonoBehaviour
     public void startGame()
     {
         
-        SceneManager.LoadScene("MainLevel");
+        SceneManager.LoadScene("Tutorial");
     }
 
     public void quitGame()

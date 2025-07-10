@@ -18,6 +18,12 @@ public class damage : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        AudioSource audio = GetComponent<AudioSource>();
+        if (audio != null)
+        {
+            audio.Play();
+        }
+
         if (type == damagetype.moving || type == damagetype.homing)
         {
             Destroy(gameObject, destroyTime);

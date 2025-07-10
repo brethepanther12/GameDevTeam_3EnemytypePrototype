@@ -7,6 +7,8 @@ public class MusicPlayer : MonoBehaviour
 
     [SerializeField] AudioClip mainMenuMusic;
     [SerializeField] AudioClip gameMusic;
+    [SerializeField] AudioClip levelOne;
+    [SerializeField] AudioClip bossFight;
 
     AudioSource audioSource;
 
@@ -30,10 +32,19 @@ public class MusicPlayer : MonoBehaviour
         {
             PlayMusic(mainMenuMusic);
         }
-        else if (scene.name == "MainLevel")
+        else if (scene.name == "Tutorial")
         {
             PlayMusic(gameMusic);
         }
+        else if (scene.name == "level 1")
+        {
+            PlayMusic(levelOne);
+        }
+        else if( scene.name == "Boss Fight")
+        {
+            PlayMusic(bossFight);
+        }
+        
     }
 
     void PlayMusic(AudioClip clip)

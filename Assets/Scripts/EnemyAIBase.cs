@@ -8,12 +8,14 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     //Enemy health
     [SerializeField] protected int enemyCurrentHealthPoints;
     [SerializeField] public int enemyHealthPointsMax;
+    public int CurrentHealthPoints => enemyCurrentHealthPoints;
+    public int MaxHealthPoints => enemyHealthPointsMax;
     //Enemy model
-    [SerializeField] public Renderer enemyModel;
+    [SerializeField] public SkinnedMeshRenderer[] enemyModel;
     protected Color enemyColorOrigin;
 
     //Enemy movement
-    [SerializeField] public float enemySpeed;
+    [SerializeField] public float enemySpeed = 3;
 
     //player detection
     //Navigation Mesh is used instead -v-
@@ -26,8 +28,8 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     protected Vector3 enemyPlayerDirection;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Start()
-    {
-        
+
+    { 
         //To save the enemy's max health to currently.
         enemyCurrentHealthPoints = enemyHealthPointsMax;
 
@@ -47,9 +49,12 @@ public class EnemyAIBase : MonoBehaviour, IDamage
         enemyNavAgent = GetComponent<NavMeshAgent>();
 
         //This assigns the original color of the placed model in the Unity Inspector
+
         enemyColorOrigin = enemyModel.material.color;
 
         gamemanager.instance.updateGameGoal(1);
+
+        enemyColorOrigin = enemyModel[0].material.color;
     }
 
     // Update is called once per frame
@@ -133,8 +138,16 @@ public class EnemyAIBase : MonoBehaviour, IDamage
 
     protected virtual IEnumerator enemyFlashRead()
     {
-        enemyModel.material.color = Color.red;
-        yield return new WaitForSeconds(0.2f);
-        enemyModel.material.color = enemyColorOrigin;
+        foreach (var part in enemyModel)
+        {
+            part.material.color = Color.red;
+        }
+
+        yield return new WaitForSeconds(0.1f);
+
+        foreach (var part in enemyModel)
+        {
+            part.material.color = enemyColorOrigin;
+        }
     }
 }

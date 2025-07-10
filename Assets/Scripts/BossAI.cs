@@ -8,19 +8,35 @@ public class BossAI : EnemyAIBase
     [SerializeField] Transform projectileSpawnPoint;
     [SerializeField] float attackRange = 20f;
     [SerializeField] float attackCooldown = 2f;
+    [SerializeField] GameObject deathEffect;
+    [SerializeField] Animator bossAnimator;
 
+    [SerializeField] AudioSource bossRoarSource;
+    [SerializeField] AudioClip roarClip;
+
+    private bool isDead = false;
     float attackTimer;
 
     protected override void Start()
     {
+        bossRoarSource.PlayOneShot(roarClip);
+
         base.Start();
         attackTimer = 0;
+
+        gamemanager.instance.updateGameGoal(+1);
     }
 
     protected override void Update()
     {
+        if (isDead)
+        {
+            return;
+        }
+
         base.Update();
         attackTimer += Time.deltaTime;
+        bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
 
         if (enemyPlayerInSight)
         {
@@ -34,12 +50,107 @@ public class BossAI : EnemyAIBase
 
     protected void BossAttack()
     {
+        bossAnimator.SetTrigger("Attack");
         attackTimer = 0f;
+    }
 
-        // Instantiate projectile
-        GameObject proj = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(enemyPlayerObject.position - projectileSpawnPoint.position));
+    protected override void enemyDeath()
+    {
+        if (isDead)
+        {
+            return; 
+        }
 
-        // Get Rigidbody safely
+        isDead = true;
+
+        Debug.Log($"{gameObject.name} the Boss has been defeated!");
+     
+        bossAnimator.SetTrigger("IsDead");
+
+        enemyNavAgent.isStopped = true;
+
+        GetComponent<Collider>().enabled = false;
+
+        StartCoroutine(DestroyAfterDeathAnim());
+    }
+
+    IEnumerator DestroyAfterDeathAnim()
+    {
+        yield return new WaitForSeconds(3.5f);
+
+        gamemanager.instance.TriggerWinScreen();
+
+
+        Destroy(gameObject);
+ 
+
+    }
+
+
+    protected override void enemyMoveToPlayer()
+    {
+        if (enemyPlayerInSight)
+        {
+           // Debug.Log("Boss is moving toward player!");
+            enemyNavAgent.SetDestination(enemyPlayerObject.position);
+
+            if (enemyNavAgent.remainingDistance <= enemyNavAgent.stoppingDistance)
+            {
+                enemyFacePlayer();
+            }
+        }
+    }
+
+    public void SetPlayerInSight(bool isInSight)
+    {
+        enemyPlayerInSight = isInSight;
+    }
+
+    // Boss takes damage and flashes red
+    public override void takeDamage(int amount)
+    {
+        enemyCurrentHealthPoints -= amount;
+
+        if (enemyCurrentHealthPoints <= 0)
+        {
+            bossAnimator.SetBool("IsDead", true);
+
+            enemyDeath();
+        }
+        else
+        {
+            bossAnimator.SetTrigger("Hit");
+
+            StartCoroutine(enemyFlashRead());
+        }
+    }
+
+    // Flash boss red briefly on hit
+    protected override IEnumerator enemyFlashRead()
+    {
+        foreach (var part in enemyModel)
+        {
+            part.material.color = Color.red;
+        }
+
+        yield return new WaitForSeconds(0.1f);
+
+        foreach (var part in enemyModel)
+        {
+            part.material.color = enemyColorOrigin;
+        }
+    }
+
+    public void FireProjectile()
+    {
+        if (projectilePrefab == null || projectileSpawnPoint == null)
+        {
+            Debug.LogWarning("Projectile prefab or spawn point is not assigned!");
+            return;
+        }
+
+        GameObject proj = Instantiate(projectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
+
         Rigidbody rb = proj.GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -49,12 +160,5 @@ public class BossAI : EnemyAIBase
         {
             Debug.LogWarning("Boss projectile has no Rigidbody attached!");
         }
-    }
-
-    protected override void enemyDeath()
-    {
-        Debug.Log($"{gameObject.name} the Boss has been defeated!");
-        Destroy(gameObject);
-        // optionally trigger win screen or animation here
     }
 }
