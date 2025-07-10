@@ -8,6 +8,8 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     //Enemy health
     [SerializeField] protected int enemyCurrentHealthPoints;
     [SerializeField] public int enemyHealthPointsMax;
+    public int CurrentHealthPoints => enemyCurrentHealthPoints;
+    public int MaxHealthPoints => enemyHealthPointsMax;
     //Enemy model
     [SerializeField] public Renderer enemyModel;
     protected Color enemyColorOrigin;
@@ -127,7 +129,7 @@ public class EnemyAIBase : MonoBehaviour, IDamage
         }
     }
 
-    protected virtual IEnumerator enemyFlashRead()
+    protected virtual IEnumerator enemyFlashRead() 
     {
         enemyModel.material.color = Color.red;
         yield return new WaitForSeconds(0.2f);

@@ -8,6 +8,7 @@ public class BossAI : EnemyAIBase
     [SerializeField] Transform projectileSpawnPoint;
     [SerializeField] float attackRange = 20f;
     [SerializeField] float attackCooldown = 2f;
+    [SerializeField] GameObject deathEffect;
 
     float attackTimer;
 
@@ -36,10 +37,13 @@ public class BossAI : EnemyAIBase
     {
         attackTimer = 0f;
 
-        // Instantiate projectile
-        GameObject proj = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(enemyPlayerObject.position - projectileSpawnPoint.position));
+        // Rotate spawn point to aim at player
+        projectileSpawnPoint.LookAt(enemyPlayerObject.position);
 
-        // Get Rigidbody safely
+        // Instantiate projectile
+        GameObject proj = Instantiate(projectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
+
+        // Apply force to projectile
         Rigidbody rb = proj.GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -54,8 +58,12 @@ public class BossAI : EnemyAIBase
     protected override void enemyDeath()
     {
         Debug.Log($"{gameObject.name} the Boss has been defeated!");
+
+        // Spawn death effect
+        Instantiate(deathEffect, transform.position, Quaternion.identity);
+
+        gamemanager.instance.updateGameGoal(-1);
         Destroy(gameObject);
-        // optionally trigger win screen or animation here
     }
 
     protected override void enemyMoveToPlayer()
@@ -75,5 +83,28 @@ public class BossAI : EnemyAIBase
     public void SetPlayerInSight(bool isInSight)
     {
         enemyPlayerInSight = isInSight;
+    }
+
+    // Boss takes damage and flashes red
+    public override void takeDamage(int amount)
+    {
+        enemyCurrentHealthPoints -= amount;
+
+        if (enemyCurrentHealthPoints <= 0)
+        {
+            enemyDeath();
+        }
+        else
+        {
+            StartCoroutine(enemyFlashRead());
+        }
+    }
+
+    // Flash boss red briefly on hit
+    protected override IEnumerator enemyFlashRead()
+    {
+        enemyModel.material.color = Color.red;
+        yield return new WaitForSeconds(0.2f);
+        enemyModel.material.color = enemyColorOrigin;
     }
 }

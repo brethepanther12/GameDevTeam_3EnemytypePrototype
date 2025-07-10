@@ -25,6 +25,9 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] int meleeDamage;
     [SerializeField] float shootRate;
     [SerializeField] int shootDist;
+    [SerializeField] GameObject projectilePrefab;
+    [SerializeField] Transform projectileSpawnPoint;
+    [SerializeField] float projectileForce = 40f;
 
     [SerializeField] private AudioClip impactSound;
     [SerializeField] private float impactVolume = 1f;
@@ -80,18 +83,8 @@ public class playerController : MonoBehaviour, IDamage
         sprint();
 
         movement();
-
-        if (reloading)
-        {
-            return;
-        }
-
-        if (currentAmmo <= 0 && reserveAmmo > 0)
-        {
-            StartCoroutine(Reload());
-            return;
-        }
     }
+
 
 
 
