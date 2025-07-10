@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-
+using TMPro;
 public class gamemanager : MonoBehaviour
 {
     public static gamemanager instance;
@@ -8,6 +8,7 @@ public class gamemanager : MonoBehaviour
     [SerializeField] GameObject menuPause;
     [SerializeField] GameObject menuWin;
     [SerializeField] GameObject menuLose;
+    [SerializeField] TMP_Text EnemiesRemaining;
 
     public Image playerHPBar;
     public Image playerShieldBar;
@@ -78,7 +79,7 @@ public class gamemanager : MonoBehaviour
     public void updateGameGoal(int amount)
     {
         gameGoalCount += amount;
-
+        EnemiesRemaining.text = gameGoalCount.ToString("F0");
         if (gameGoalCount <= 0)
         {
             // you win!
