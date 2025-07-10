@@ -26,6 +26,12 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] int shootDist;
 
+    [SerializeField] private float footstepVol = 1f;
+    [SerializeField] private AudioSource footstepSource;
+    [SerializeField] private AudioClip[] footstepClips;
+    [SerializeField] private float walkStepDelay = 0.5f;
+    [SerializeField] private float sprintStepDelay = 0.3f;
+
     [SerializeField] private AudioClip impactSound;
     [SerializeField] private float impactVolume = 1f;
     [SerializeField] private AudioClip reloadSound;
@@ -35,6 +41,8 @@ public class playerController : MonoBehaviour, IDamage
     public Animator animator;
 
     [SerializeField] private GameObject impactPrefab;
+
+    float stepTimer = 0f;
     public ParticleSystem muzzleFlash;
     private bool reloading;
     private int currentAmmo;
@@ -85,9 +93,14 @@ public class playerController : MonoBehaviour, IDamage
         sprint();
 
         movement();
+
     }
 
-
+    bool IsGrounded()
+    {
+        Ray ray = new Ray(transform.position, Vector3.down);
+        return Physics.Raycast(ray, out _, 1.1f, ~ignoreLayer); 
+    }
 
 
     void movement()
@@ -103,6 +116,8 @@ public class playerController : MonoBehaviour, IDamage
         moveDir = (Input.GetAxis("Horizontal") * transform.right) + (Input.GetAxis("Vertical") * transform.forward);
         controller.Move(moveDir * speed * Time.deltaTime);
 
+        HandleFootsteps();
+
         jump();
 
         controller.Move(playerVel * Time.deltaTime);
@@ -111,6 +126,37 @@ public class playerController : MonoBehaviour, IDamage
         if (Input.GetButton("Fire1") && shootTimer > shootRate)
         {
             shoot();
+        }
+    }
+
+    void HandleFootsteps()
+    {
+        float velocity = controller.velocity.magnitude;
+
+        if (velocity > 0.2f && IsGrounded())
+        {
+            float currentStepDelay = Input.GetKey(KeyCode.LeftShift) ? sprintStepDelay : walkStepDelay;
+
+            stepTimer += Time.deltaTime;
+            if (stepTimer >= currentStepDelay)
+            {
+                PlayFootstep();
+                stepTimer = 0f;
+            }
+        }
+        else
+        {
+            stepTimer = 0f;
+        }
+    }
+
+    void PlayFootstep()
+    {
+        if (footstepClips.Length > 0)
+        {
+            AudioClip clip = footstepClips[Random.Range(0, footstepClips.Length)];
+            footstepSource.pitch = Random.Range(0.9f, 1.1f);
+            footstepSource.PlayOneShot(clip, footstepVol);
         }
     }
 
@@ -141,10 +187,15 @@ public class playerController : MonoBehaviour, IDamage
 
         //Debug.Log("Player Reloading");
         gunAudio.PlayOneShot(reloadSound);
+
         animator.SetBool("Reloading", true);
+
         yield return new WaitForSeconds(1f -.25f);
+
         animator.SetBool("Reloading", false);
+
         yield return new WaitForSeconds(.25f);
+
         int ammoNeeded = magazineSize - currentAmmo;
         int ammoToLoad = Mathf.Min(ammoNeeded, reserveAmmo);
 
