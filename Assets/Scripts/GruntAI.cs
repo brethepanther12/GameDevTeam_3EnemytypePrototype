@@ -1,60 +1,310 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Assertions.Must;
+using UnityEngine.Rendering;
 
-public class GruntAi : EnemyAIBase
+public class GruntAi : MonoBehaviour, IDamage
 {
-    [Header("Grunt Settings")]
-    [SerializeField] GameObject projectilePrefab;
-    [SerializeField] Transform projectileSpawnPoint;
-    [SerializeField] float attackRange = 20f;
-    [SerializeField] float attackCooldown = 2f;
 
-    float attackTimer;
+    [SerializeField] SkinnedMeshRenderer[] modelParts;
+    [SerializeField] NavMeshAgent agent;
+    [SerializeField] Transform shootPos;
+    [SerializeField] Transform headPos;
 
-    protected override void Start()
+    [SerializeField] float shootRange = 15;
+    [SerializeField] private int maxAmmo = 5;
+    [SerializeField] private float reloadTime = 1.5f;
+
+    [SerializeField] Animator animator;
+
+    [SerializeField] private AudioClip shootSound;
+    [SerializeField] private AudioClip deathSound;
+    [SerializeField] private float deathVolume;
+    [SerializeField] private AudioClip hitSound;
+    [SerializeField] private float hitVolume = 1f;
+
+    [SerializeField] int HP;
+    [SerializeField] int fov;
+    [SerializeField] int faceTargetSpeed;
+    [SerializeField] int roamDistance;
+    [SerializeField] int roamPauseTime;
+
+    [SerializeField] GameObject bullet;
+    [SerializeField] float shootRate;
+
+    Color colorOrig;
+
+    private Coroutine reloadingRT;
+    private bool isDead;
+    private int currentAmmo;
+    private bool isReloading;
+    bool playerInTrigger;
+    float shootTimer;
+    float angleToPlayer;
+    float roamTimer;
+    float stoppingDistanceOrig;
+
+    Vector3 playerDir;
+    Vector3 startingPos;
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
     {
-        base.Start();
-        attackTimer = 0;
+        currentAmmo = maxAmmo;
+        colorOrig = modelParts[0].material.color;
+        gamemanager.instance.updateGameGoal(1);
+        startingPos = transform.position;
+        stoppingDistanceOrig = agent.stoppingDistance;
+
     }
 
-    protected override void Update()
+    // Update is called once per frame
+    void Update()
     {
-        base.Update();
-        attackTimer += Time.deltaTime;
-
-        if (enemyPlayerInSight)
+        if (isDead)
         {
-            float distance = Vector3.Distance(transform.position, enemyPlayerObject.position);
-            if (distance <= attackRange && attackTimer >= attackCooldown)
-            {
-                GruntAttack();
-            }
+            return;
+        }
+        animator.SetFloat("Speed", agent.velocity.magnitude);
+
+        if (agent.remainingDistance < 0.01f)
+        {
+            roamTimer += Time.deltaTime;
+        }
+
+        if (playerInTrigger && !CanSeePlayer())
+        {
+            RoamCheck();
+
+        }
+        else if (!playerInTrigger)
+        {
+            RoamCheck();
         }
     }
 
-    protected void GruntAttack()
+    void LateUpdate()
     {
-        attackTimer = 0f;
+        shootPos.LookAt(gamemanager.instance.player.transform.position);
+    }
 
-        // Instantiate projectile
-        GameObject proj = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(enemyPlayerObject.position - projectileSpawnPoint.position));
-
-        // Get Rigidbody safely
-        Rigidbody rb = proj.GetComponent<Rigidbody>();
-        if (rb != null)
+    void RoamCheck()
+    {
+        if (roamTimer >= roamPauseTime && agent.remainingDistance < 0.01f)
         {
-            rb.AddForce(proj.transform.forward * 20f, ForceMode.VelocityChange);
+            Roam();
+        }
+    }
+
+    void Roam()
+    {
+        roamTimer = 0;
+        agent.stoppingDistance = 0;
+
+        Vector3 ranPos = Random.insideUnitSphere * roamDistance;
+        ranPos += startingPos;
+
+        NavMeshHit hit;
+        NavMesh.SamplePosition(ranPos, out hit, roamDistance, 1);
+        agent.SetDestination(hit.position);
+
+    }
+
+    bool CanSeePlayer()
+    {
+        if (isDead)
+        {
+            return false;
+        }
+
+
+        playerDir = gamemanager.instance.player.transform.position - headPos.position;
+        angleToPlayer = Vector3.Angle(playerDir, transform.forward);
+
+        Debug.DrawRay(headPos.position, playerDir);
+
+        RaycastHit hit;
+
+        if (Physics.Raycast(headPos.position, playerDir, out hit))
+        {
+            if (hit.collider.CompareTag("Player") && angleToPlayer <= fov)
+            {
+                float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
+
+                if (distanceToPlayer <= shootRange)
+                {
+                    shootTimer += Time.deltaTime;
+
+                    if (shootTimer >= shootRate)
+                    {
+                        Shoot();
+                    }
+
+                    if (currentAmmo <= 0 && !isReloading && !isDead)
+                    {
+                        reloadingRT = StartCoroutine(Reload());
+                    }
+                }
+
+                if (distanceToPlayer > shootRange)
+                {
+                    agent.SetDestination(gamemanager.instance.player.transform.position);
+                }
+                else
+                {
+                    agent.ResetPath();
+                }
+
+                if (agent.remainingDistance <= agent.stoppingDistance)
+                {
+                    FaceTarget();
+                }
+
+                agent.stoppingDistance = stoppingDistanceOrig;
+
+                return true;
+            }
+        }
+
+        agent.stoppingDistance = 0;
+        return false;
+    }
+
+    void FaceTarget()
+    {
+        Quaternion rot = Quaternion.LookRotation(new Vector3(playerDir.x, transform.position.y, playerDir.z));
+        transform.rotation = Quaternion.Lerp(transform.rotation, rot, faceTargetSpeed * Time.deltaTime);
+
+        Quaternion gunRot = Quaternion.LookRotation(gamemanager.instance.player.transform.position - shootPos.position);
+        shootPos.rotation = Quaternion.Lerp(shootPos.rotation, gunRot, faceTargetSpeed * Time.deltaTime);
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+
+        if (other.CompareTag("Player"))
+        {
+            playerInTrigger = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+
+        if (other.CompareTag("Player"))
+        {
+            playerInTrigger = false;
+            agent.stoppingDistance = 0;
+        }
+    }
+
+    public void takeDamage(int amount)
+    {
+        if (isDead)
+        {
+            return;
+        }
+        HP -= amount;
+
+        AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+
+        agent.SetDestination(gamemanager.instance.player.transform.position);
+
+
+        if (HP <= 0)
+        {
+            isDead = true;
+
+            if (reloadingRT != null)
+            {
+                StopCoroutine(reloadingRT);
+                reloadingRT = null;
+            }
+
+            animator.SetBool("isdead", true);
+            StartCoroutine(Die());
+
         }
         else
         {
-            Debug.LogWarning("Grunt projectile has no Rigidbody attached!");
+
+            StartCoroutine(FlashRed());
         }
     }
 
-    protected override void enemyDeath()
+    IEnumerator FlashRed()
     {
-        Debug.Log($"{gameObject.name} the Grunt has been defeated!");
+        foreach (var part in modelParts)
+        {
+            part.material.color = Color.red;
+        }
+
+        yield return new WaitForSeconds(0.1f);
+
+        foreach (var part in modelParts)
+        {
+            part.material.color = colorOrig;
+        }
+    }
+
+    void Shoot()
+    {
+        if (isReloading || currentAmmo <= 0)
+        {
+            return;
+        }
+
+        shootTimer = 0;
+
+        currentAmmo--;
+
+        animator.SetTrigger("Shoot");
+
+        Instantiate(bullet, shootPos.position, transform.rotation);
+
+        AudioSource.PlayClipAtPoint(shootSound, shootPos.position);
+    }
+
+    IEnumerator Reload()
+    {
+        if (isDead)
+        {
+            yield break;
+        }
+        isReloading = true;
+        animator.SetTrigger("Reload");
+
+
+        yield return new WaitForSeconds(reloadTime - .25f);
+
+        if (isDead)
+        {
+            yield break;
+        }
+
+        isReloading = false;
+        yield return new WaitForSeconds(.25f);
+        currentAmmo = maxAmmo;
+    }
+
+    IEnumerator Die()
+    {
+        isReloading = false;
+        animator.ResetTrigger("Reload");
+
+        isDead = true;
+        agent.isStopped = true;
+        agent.ResetPath();
+        agent.enabled = false;
+        animator.Play("Death", 0, 0);
+
+        AudioSource.PlayClipAtPoint(deathSound, transform.position);
+
+        yield return new WaitForSeconds(3.5f);
+
+        gamemanager.instance.updateGameGoal(-1);
         Destroy(gameObject);
-        // optionally trigger win screen or animation here
     }
 }
