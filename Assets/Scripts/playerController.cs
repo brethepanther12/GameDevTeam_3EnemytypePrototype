@@ -15,8 +15,8 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] int jumpVel;
     [SerializeField] int jumpMax;
     [SerializeField] int gravity;
-    [SerializeField] int ammo;
-    [SerializeField] int maxAmmo;
+    [SerializeField] int magazineSize = 15;
+    [SerializeField] int reserveAmmo = 90;
     [SerializeField] int shield;
     [SerializeField] int maxShield;
     [SerializeField] int armor;
@@ -29,7 +29,18 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] Transform projectileSpawnPoint;
     [SerializeField] float projectileForce = 40f;
 
+    [SerializeField] private AudioClip impactSound;
+    [SerializeField] private float impactVolume = 1f;
+    [SerializeField] private AudioClip realodSound;
+    [SerializeField] private AudioSource gunAudio;
+    [SerializeField] private AudioClip gunShotSound;
+
+    public Animator animator;
+
+    [SerializeField] private GameObject impactPrefab;
     public ParticleSystem muzzleFlash;
+    private bool reloading;
+    private int currentAmmo;
 
     private enum powerUpType
     {
@@ -55,6 +66,8 @@ public class playerController : MonoBehaviour, IDamage
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        currentAmmo = magazineSize;
+
         HPOrig = HP;
         armorOrig = armor;
         shieldOrig = shield;
@@ -70,11 +83,6 @@ public class playerController : MonoBehaviour, IDamage
         sprint();
 
         movement();
-
-        if (Input.GetButtonDown("Fire1"))
-        {
-            shootProjectile();
-        }
     }
 
 
@@ -125,56 +133,67 @@ public class playerController : MonoBehaviour, IDamage
         }
     }
 
+    IEnumerator Reload()
+    {
+        reloading = true;
+
+        //Debug.Log("Player Reloading");
+        gunAudio.PlayOneShot(realodSound);
+        animator.SetBool("Reloading", true);
+        yield return new WaitForSeconds(1f -.25f);
+        animator.SetBool("Reloading", false);
+        yield return new WaitForSeconds(.25f);
+        int ammoNeeded = magazineSize - currentAmmo;
+        int ammoToLoad = Mathf.Min(ammoNeeded, reserveAmmo);
+
+        currentAmmo += ammoToLoad;
+        reserveAmmo -= ammoToLoad;
+
+        reloading = false;
+        updatePlayerUI();
+    }
     void shoot()
     {
-      
-        if (ammo > 0)
+        if(reloading || currentAmmo <= 0 || shootTimer < shootRate)
         {
-            hasAmmo = true;
-        } else
-        {
-            hasAmmo = false;
+            return;
         }
 
-        if (hasAmmo)
+        shootTimer = 0;
+        currentAmmo--;
+
+        muzzleFlash.Play();
+        gunAudio.pitch = Random.Range(0.95f, 1.05f);
+        gunAudio.PlayOneShot(gunShotSound);
+
+        RaycastHit hit;
+        bool isEnemy = false;
+
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
         {
-            shootTimer = 0;
+            GameObject impactOb = Instantiate(impactPrefab, hit.point, Quaternion.LookRotation(hit.normal));
+            AudioSource.PlayClipAtPoint(impactSound, hit.point, impactVolume);
+            Destroy(impactOb, 1f);
 
-            --ammo;
-
-            muzzleFlash.Play();
-
-            RaycastHit hit;
-            bool isEnemy = false;
-
-            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
+            IDamage dmg = hit.collider.GetComponent<IDamage>();
+            if (dmg != null)
             {
-                //Debug.Log(hit.collider.name);
-                IDamage dmg = hit.collider.GetComponent<IDamage>();
-
-                if (dmg != null )
-                {
-                    if (hit.collider.CompareTag("Enemy"))
-                    {
-                        isEnemy = true;
-                    }
-                    dmg.takeDamage(shootDamage);
-                }
+                if (hit.collider.CompareTag("Enemy")) isEnemy = true;
+                dmg.takeDamage(shootDamage);
             }
-            GameObject reticle = GameObject.Find("Reticle");
-            if (reticle != null)
-            {
-                ReticleController rc = reticle.GetComponent<ReticleController>();
-                if (rc != null)
-                {
-                    rc.Pulse(isEnemy);
-                }
-            }
-
-            updatePlayerUI();
         }
-        
 
+        GameObject reticle = GameObject.Find("Reticle");
+        if (reticle != null)
+        {
+            ReticleController rc = reticle.GetComponent<ReticleController>();
+            if (rc != null)
+            {
+                rc.Pulse(isEnemy);
+            }
+        }
+
+        updatePlayerUI();
     }
 
     public void takeDamage(int amount)
@@ -286,19 +305,13 @@ public class playerController : MonoBehaviour, IDamage
 
     public void GainAmmo(int amount, bool doesIncreaseMax)
     {
-        ammo += amount;
+        reserveAmmo += amount;
 
         if (doesIncreaseMax)
         {
-            maxAmmo += amount;
+            reserveAmmo += amount;
 
         }
-        else if (ammo >= maxAmmo && !doesIncreaseMax)
-        {
-
-            ammo = maxAmmo;
-        }
-
         updatePlayerUI();
 
     }
@@ -381,7 +394,7 @@ public class playerController : MonoBehaviour, IDamage
         gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
         gamemanager.instance.playerShieldBar.fillAmount = (float)shield / maxShield;
         gamemanager.instance.playerArmorBar.fillAmount = (float)armor / maxArmor;
-        gamemanager.instance.ammoText.text = $"{ammo} / {maxAmmo}";
+        gamemanager.instance.ammoText.text = $"{currentAmmo} / {reserveAmmo}";
         gamemanager.instance.keyText.text = "x" + numKeys;
     }
 
@@ -430,16 +443,6 @@ public class playerController : MonoBehaviour, IDamage
             {
                 rc.SetEnemyAim(aimingAtEnemy);
             }
-        }
-    }
-
-    void shootProjectile()
-    {
-        GameObject proj = Instantiate(projectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
-        Rigidbody rb = proj.GetComponent<Rigidbody>();
-        if (rb != null)
-        {
-            rb.AddForce(Camera.main.transform.forward * projectileForce, ForceMode.VelocityChange);
         }
     }
 }

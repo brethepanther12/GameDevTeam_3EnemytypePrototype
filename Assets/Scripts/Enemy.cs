@@ -1,14 +1,27 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Assertions.Must;
+using UnityEngine.Rendering;
 
 public class Enemy : MonoBehaviour, IDamage
 {
 
-    [SerializeField] Renderer model;
+    [SerializeField] SkinnedMeshRenderer[] modelParts;
     [SerializeField] NavMeshAgent agent;
     [SerializeField] Transform shootPos;
     [SerializeField] Transform headPos;
+
+    [SerializeField] float shootRange =15;
+    [SerializeField] private int maxAmmo = 10;
+    [SerializeField] private float reloadTime = 1.5f;
+
+    [SerializeField] Animator animator;
+
+    [SerializeField] private AudioClip deathSound;
+    [SerializeField] private float deathVolume;
+    [SerializeField] private AudioClip hitSound;
+    [SerializeField] private float hitVolume = 1f;
 
     [SerializeField] int HP;
     [SerializeField] int fov;
@@ -21,7 +34,9 @@ public class Enemy : MonoBehaviour, IDamage
 
     Color colorOrig;
 
-
+    private bool isDead;
+    private int currentAmmo;
+    private bool isReloading;
     bool playerInTrigger;
     float shootTimer;
     float angleToPlayer;
@@ -34,8 +49,8 @@ public class Enemy : MonoBehaviour, IDamage
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
-        colorOrig = model.material.color;
+        currentAmmo = maxAmmo;
+        colorOrig = modelParts[0].material.color;
         gamemanager.instance.updateGameGoal(1);
         startingPos = transform.position;
         stoppingDistanceOrig = agent.stoppingDistance;
@@ -45,6 +60,11 @@ public class Enemy : MonoBehaviour, IDamage
     // Update is called once per frame
     void Update()
     {
+        if (isDead)
+        {
+            return;
+        }
+        animator.SetFloat("Speed", agent.velocity.magnitude);
 
         if (agent.remainingDistance < 0.01f)
         {
@@ -60,6 +80,11 @@ public class Enemy : MonoBehaviour, IDamage
         {
             RoamCheck();
         }
+    }
+
+    void LateUpdate()
+    {
+        shootPos.LookAt(gamemanager.instance.player.transform.position);
     }
 
     void RoamCheck()
@@ -86,6 +111,12 @@ public class Enemy : MonoBehaviour, IDamage
 
     bool CanSeePlayer()
     {
+        if (isDead)
+        {
+            return false;
+        }
+           
+
         playerDir = gamemanager.instance.player.transform.position - headPos.position;
         angleToPlayer = Vector3.Angle(playerDir, transform.forward);
 
@@ -97,14 +128,31 @@ public class Enemy : MonoBehaviour, IDamage
         {
             if (hit.collider.CompareTag("Player") && angleToPlayer <= fov)
             {
-                shootTimer += Time.deltaTime;
+                float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
 
-                if (shootTimer >= shootRate)
+                if (distanceToPlayer <= shootRange)
                 {
-                    Shoot();
+                    shootTimer += Time.deltaTime;
+
+                    if (shootTimer >= shootRate)
+                    {
+                        Shoot();
+                    }
+
+                    if (currentAmmo <= 0 && !isReloading)
+                    {
+                        StartCoroutine(Reload());
+                    }
                 }
 
-                agent.SetDestination(gamemanager.instance.player.transform.position);
+                if (distanceToPlayer > shootRange)
+                {
+                    agent.SetDestination(gamemanager.instance.player.transform.position);
+                }
+                else
+                {
+                    agent.ResetPath(); 
+                }
 
                 if (agent.remainingDistance <= agent.stoppingDistance)
                 {
@@ -120,11 +168,14 @@ public class Enemy : MonoBehaviour, IDamage
         agent.stoppingDistance = 0;
         return false;
     }
-
+   
     void FaceTarget()
     {
         Quaternion rot = Quaternion.LookRotation(new Vector3(playerDir.x, transform.position.y, playerDir.z));
         transform.rotation = Quaternion.Lerp(transform.rotation, rot, faceTargetSpeed * Time.deltaTime);
+
+        Quaternion gunRot = Quaternion.LookRotation(gamemanager.instance.player.transform.position - shootPos.position);
+        shootPos.rotation = Quaternion.Lerp(shootPos.rotation, gunRot, faceTargetSpeed * Time.deltaTime);
     }
 
 
@@ -149,15 +200,21 @@ public class Enemy : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
+        if(isDead)
+        {
+            return;
+        }
         HP -= amount;
+
+        AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+
         agent.SetDestination(gamemanager.instance.player.transform.position);
 
 
         if (HP <= 0)
         {
-
-            gamemanager.instance.updateGameGoal(-1);
-            Destroy(gameObject);
+            isDead = true;
+            StartCoroutine(Die());
 
         }
         else
@@ -169,15 +226,58 @@ public class Enemy : MonoBehaviour, IDamage
 
     IEnumerator FlashRed()
     {
-        model.material.color = Color.red;
+        foreach (var part in modelParts)
+        {
+            part.material.color = Color.red;
+        }
+
         yield return new WaitForSeconds(0.1f);
-        model.material.color = colorOrig;
+
+        foreach (var part in modelParts)
+        {
+            part.material.color = colorOrig;
+        }
     }
 
     void Shoot()
     {
+        if(isReloading || currentAmmo <=0)
+        {
+            return;
+        }
+
         shootTimer = 0;
 
+        currentAmmo--;
+
+        animator.SetTrigger("Shoot");
+
         Instantiate(bullet, shootPos.position, transform.rotation);
+    }
+
+    IEnumerator Reload()
+    {
+        isReloading = true;
+        animator.SetTrigger("Reload");
+        yield return new WaitForSeconds(reloadTime -.25f);
+        isReloading = false;
+        yield return new WaitForSeconds(.25f);
+        currentAmmo = maxAmmo;
+    }
+
+    IEnumerator Die()
+    {
+        isDead = true;
+        agent.isStopped = true;
+        agent.ResetPath();
+        agent.enabled = false;
+        animator.SetTrigger("Die");
+
+        AudioSource.PlayClipAtPoint(deathSound, transform.position);
+
+        yield return new WaitForSeconds(3.5f);
+
+        gamemanager.instance.updateGameGoal(-1);
+        Destroy(gameObject);
     }
 }
