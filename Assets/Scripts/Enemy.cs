@@ -11,6 +11,7 @@ public class Enemy : MonoBehaviour, IDamage
     [SerializeField] Transform shootPos;
     [SerializeField] Transform headPos;
 
+    [SerializeField] float shootRange =15;
     [SerializeField] private int maxAmmo = 10;
     [SerializeField] private float reloadTime = 1.5f;
 
@@ -110,19 +111,31 @@ public class Enemy : MonoBehaviour, IDamage
         {
             if (hit.collider.CompareTag("Player") && angleToPlayer <= fov)
             {
-                shootTimer += Time.deltaTime;
+                float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
 
-                if (shootTimer >= shootRate)
+                if (distanceToPlayer <= shootRange)
                 {
-                    Shoot();
+                    shootTimer += Time.deltaTime;
+
+                    if (shootTimer >= shootRate)
+                    {
+                        Shoot();
+                    }
+
+                    if (currentAmmo <= 0 && !isReloading)
+                    {
+                        StartCoroutine(Reload());
+                    }
                 }
 
-                if(currentAmmo <=0 && !isReloading)
+                if (distanceToPlayer > shootRange)
                 {
-                    StartCoroutine(Reload());
+                    agent.SetDestination(gamemanager.instance.player.transform.position);
                 }
-
-                agent.SetDestination(gamemanager.instance.player.transform.position);
+                else
+                {
+                    agent.ResetPath(); 
+                }
 
                 if (agent.remainingDistance <= agent.stoppingDistance)
                 {
@@ -138,7 +151,7 @@ public class Enemy : MonoBehaviour, IDamage
         agent.stoppingDistance = 0;
         return false;
     }
-
+   
     void FaceTarget()
     {
         Quaternion rot = Quaternion.LookRotation(new Vector3(playerDir.x, transform.position.y, playerDir.z));
