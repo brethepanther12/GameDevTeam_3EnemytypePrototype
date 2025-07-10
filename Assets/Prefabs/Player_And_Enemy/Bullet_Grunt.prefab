@@ -47,12 +47,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a08e3e2a22e8a3249b0a8a55c9a74c1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 0
+  type: 3
   rb: {fileID: 7985116829360601856}
-  damageAmount: 1
+  damageAmount: 2
   damageRate: 0
-  speed: 300
-  destroyTime: 20
+  speed: 400
+  destroyTime: 10
 --- !u!135 &6284207755290371816
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -168,8 +168,8 @@ TrailRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 0, b: 0, a: 1}
-      key1: {r: 1, g: 0, b: 0, a: 1}
+      key0: {r: 1, g: 0.8078432, b: 0, a: 1}
+      key1: {r: 1, g: 0.8078432, b: 0, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}

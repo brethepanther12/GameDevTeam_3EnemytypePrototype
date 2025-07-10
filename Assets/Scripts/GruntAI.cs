@@ -14,7 +14,7 @@ public class GruntAi : MonoBehaviour, IDamage
 
     [SerializeField] float shootRange = 15;
     [SerializeField] private int maxAmmo = 5;
-    [SerializeField] private float reloadTime = 1.5f;
+    [SerializeField] private float reloadTime = 3f;
 
     [SerializeField] Animator animator;
 
