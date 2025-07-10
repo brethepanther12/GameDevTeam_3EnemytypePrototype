@@ -25,13 +25,10 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] int meleeDamage;
     [SerializeField] float shootRate;
     [SerializeField] int shootDist;
-    [SerializeField] GameObject projectilePrefab;
-    [SerializeField] Transform projectileSpawnPoint;
-    [SerializeField] float projectileForce = 40f;
 
     [SerializeField] private AudioClip impactSound;
     [SerializeField] private float impactVolume = 1f;
-    [SerializeField] private AudioClip realodSound;
+    [SerializeField] private AudioClip reloadSound;
     [SerializeField] private AudioSource gunAudio;
     [SerializeField] private AudioClip gunShotSound;
 
@@ -78,6 +75,11 @@ public class playerController : MonoBehaviour, IDamage
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.R) && !reloading && currentAmmo < magazineSize && reserveAmmo > 0)
+        {
+            StartCoroutine(Reload());
+        }
+
         CheckReticleTarget(); // color update
 
         sprint();
@@ -138,7 +140,7 @@ public class playerController : MonoBehaviour, IDamage
         reloading = true;
 
         //Debug.Log("Player Reloading");
-        gunAudio.PlayOneShot(realodSound);
+        gunAudio.PlayOneShot(reloadSound);
         animator.SetBool("Reloading", true);
         yield return new WaitForSeconds(1f -.25f);
         animator.SetBool("Reloading", false);
@@ -154,13 +156,19 @@ public class playerController : MonoBehaviour, IDamage
     }
     void shoot()
     {
-        if(reloading || currentAmmo <= 0 || shootTimer < shootRate)
+
+        if (reloading || currentAmmo <= 0 || shootTimer < shootRate)
         {
             return;
         }
 
         shootTimer = 0;
         currentAmmo--;
+
+        if (currentAmmo <= 0 && reserveAmmo > 0)
+        {
+            StartCoroutine(Reload());
+        }
 
         muzzleFlash.Play();
         gunAudio.pitch = Random.Range(0.95f, 1.05f);

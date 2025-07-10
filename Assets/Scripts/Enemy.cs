@@ -18,6 +18,8 @@ public class Enemy : MonoBehaviour, IDamage
 
     [SerializeField] Animator animator;
 
+    [SerializeField] private AudioClip reloadSound;
+    [SerializeField] private float reloadVolume = 1f;
     [SerializeField] private AudioClip shootSound;
     [SerializeField] private AudioClip deathSound;
     [SerializeField] private float deathVolume;
@@ -51,6 +53,7 @@ public class Enemy : MonoBehaviour, IDamage
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        shootTimer = 0f;
         currentAmmo = maxAmmo;
         colorOrig = modelParts[0].material.color;
         gamemanager.instance.updateGameGoal(1);
@@ -224,6 +227,8 @@ public class Enemy : MonoBehaviour, IDamage
             }
 
             animator.SetBool("isdead", true);
+            animator.ResetTrigger("Reload");
+            animator.CrossFade("Death", 0f);
             StartCoroutine(Die());
 
         }
@@ -274,6 +279,7 @@ public class Enemy : MonoBehaviour, IDamage
             yield break;
         }
         isReloading = true;
+        AudioSource.PlayClipAtPoint(reloadSound, transform.position, reloadVolume);
         animator.SetTrigger("Reload");
 
 
