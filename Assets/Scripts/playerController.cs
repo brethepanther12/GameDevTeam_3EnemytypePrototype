@@ -25,9 +25,6 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] int meleeDamage;
     [SerializeField] float shootRate;
     [SerializeField] int shootDist;
-    [SerializeField] GameObject projectilePrefab;
-    [SerializeField] Transform projectileSpawnPoint;
-    [SerializeField] float projectileForce = 40f;
 
     [SerializeField] private AudioClip impactSound;
     [SerializeField] private float impactVolume = 1f;
