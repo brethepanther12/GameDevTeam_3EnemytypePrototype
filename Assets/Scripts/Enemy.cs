@@ -18,6 +18,10 @@ public class Enemy : MonoBehaviour, IDamage
 
     [SerializeField] Animator animator;
 
+    [SerializeField] private AudioSource footstepSource;
+    [SerializeField] private AudioClip footstepClip;
+    [SerializeField] private float footstepDelay = 0.5f;
+
     [SerializeField] private AudioClip reloadSound;
     [SerializeField] private float reloadVolume = 1f;
     [SerializeField] private AudioClip shootSound;
@@ -37,6 +41,7 @@ public class Enemy : MonoBehaviour, IDamage
 
     Color colorOrig;
 
+    private float footstepTimer;
     private Coroutine reloadingRT;
     private bool isDead;
     private int currentAmmo;
@@ -66,24 +71,45 @@ public class Enemy : MonoBehaviour, IDamage
     void Update()
     {
         if (isDead)
-        {
             return;
-        }
+
         animator.SetFloat("Speed", agent.velocity.magnitude);
 
+        HandleFootsteps();
+
         if (agent.remainingDistance < 0.01f)
-        {
             roamTimer += Time.deltaTime;
-        }
 
-        if (playerInTrigger && !CanSeePlayer())
-        {
+        if (!playerInTrigger || (playerInTrigger && !CanSeePlayer()))
             RoamCheck();
+    }
 
-        }
-        else if (!playerInTrigger)
+    void HandleFootsteps()
+    {
+        bool isMoving = agent.velocity.magnitude > 0.2f && agent.remainingDistance > agent.stoppingDistance;
+
+        if (isMoving)
         {
-            RoamCheck();
+            footstepTimer += Time.deltaTime;
+
+            if (footstepTimer >= footstepDelay)
+            {
+                PlayFootstep();
+                footstepTimer = 0f;
+            }
+        }
+        else
+        {
+            footstepTimer = 0f;
+        }
+    }
+
+    void PlayFootstep()
+    {
+        if (footstepClip != null && footstepSource != null)
+        {
+            footstepSource.pitch = Random.Range(0.95f, 1.05f);
+            footstepSource.PlayOneShot(footstepClip);
         }
     }
 
@@ -205,7 +231,7 @@ public class Enemy : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
-        if(isDead)
+        if (isDead)
         {
             return;
         }

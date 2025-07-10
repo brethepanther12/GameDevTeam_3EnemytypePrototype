@@ -26,6 +26,9 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] int shootDist;
 
+    [SerializeField] private AudioClip hurtSound;
+    [SerializeField] private float hurtVol;
+
     [SerializeField] private float footstepVol = 1f;
     [SerializeField] private AudioSource footstepSource;
     [SerializeField] private AudioClip[] footstepClips;
@@ -289,6 +292,8 @@ public class playerController : MonoBehaviour, IDamage
         {
 
             HP -= amount;
+
+            AudioSource.PlayClipAtPoint(hurtSound, transform.position, hurtVol);
 
             updatePlayerUI();
 
