@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class BossAI : EnemyAIBase, IDamage
+public class BossAI : EnemyAIBase
 {
     [Header("Boss Settings")]
     [SerializeField] GameObject projectilePrefab;
