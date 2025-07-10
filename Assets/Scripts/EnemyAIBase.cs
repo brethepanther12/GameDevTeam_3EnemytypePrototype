@@ -15,7 +15,7 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     protected Color enemyColorOrigin;
 
     //Enemy movement
-    [SerializeField] public float enemySpeed;
+    [SerializeField] public float enemySpeed = 3;
 
     //player detection
     //Navigation Mesh is used instead -v-
