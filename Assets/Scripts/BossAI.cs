@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEditor.ProBuilder;
 using UnityEngine;
 
 public class BossAI : EnemyAIBase
@@ -78,9 +79,14 @@ public class BossAI : EnemyAIBase
     {
         yield return new WaitForSeconds(3.5f);
 
-        gamemanager.instance.updateGameGoal(-1);
+        gamemanager.instance.TriggerWinScreen();
+
+
         Destroy(gameObject);
+ 
+
     }
+
 
     protected override void enemyMoveToPlayer()
     {

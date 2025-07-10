@@ -26,6 +26,10 @@ public class GruntAi : MonoBehaviour, IDamage
     [SerializeField] private AudioClip hitSound;
     [SerializeField] private float hitVolume = 1f;
 
+    [SerializeField] GameObject healthPickupPrefab;
+    [SerializeField] GameObject ammoPickupPrefab;
+    [SerializeField] float dropChance = 0.5f;
+
     [SerializeField] int HP;
     [SerializeField] int fov;
     [SerializeField] int faceTargetSpeed;
@@ -308,6 +312,28 @@ public class GruntAi : MonoBehaviour, IDamage
         yield return new WaitForSeconds(3.5f);
 
         gamemanager.instance.updateGameGoal(-1);
+
+        TryDropPickup();
+
         Destroy(gameObject);
+    }
+
+    void TryDropPickup()
+    {
+        float roll = Random.value; // 0 to 1
+        if (roll <= dropChance)
+        {
+            int itemType = Random.Range(0, 2); // 0 = health, 1 = ammo
+
+            GameObject drop = null;
+            if (itemType == 0 && healthPickupPrefab != null)
+            {
+                drop = Instantiate(healthPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
+            }
+            else if (itemType == 1 && ammoPickupPrefab != null)
+            {
+                drop = Instantiate(ammoPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
+            }
+        }
     }
 }

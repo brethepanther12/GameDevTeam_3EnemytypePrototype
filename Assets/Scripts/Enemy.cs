@@ -36,6 +36,10 @@ public class Enemy : MonoBehaviour, IDamage
     [SerializeField] int roamDistance;
     [SerializeField] int roamPauseTime;
 
+    [SerializeField] GameObject healthPickupPrefab;
+    [SerializeField] GameObject ammoPickupPrefab;
+    [SerializeField] float dropChance = 0.5f;
+
     [SerializeField] GameObject bullet;
     [SerializeField] float shootRate;
 
@@ -337,6 +341,28 @@ public class Enemy : MonoBehaviour, IDamage
         yield return new WaitForSeconds(3.5f);
 
         gamemanager.instance.updateGameGoal(-1);
+
+        TryDropPickup();
+
         Destroy(gameObject);
+    }
+
+    void TryDropPickup()
+    {
+        float roll = Random.value; // 0 to 1
+        if (roll <= dropChance)
+        {
+            int itemType = Random.Range(0, 2); // 0 = health, 1 = ammo
+
+            GameObject drop = null;
+            if (itemType == 0 && healthPickupPrefab != null)
+            {
+                drop = Instantiate(healthPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
+            }
+            else if (itemType == 1 && ammoPickupPrefab != null)
+            {
+                drop = Instantiate(ammoPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
+            }
+        }
     }
 }

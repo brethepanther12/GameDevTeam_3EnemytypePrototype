@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 public class gamemanager : MonoBehaviour
 {
     public static gamemanager instance;
@@ -82,10 +83,7 @@ public class gamemanager : MonoBehaviour
         EnemiesRemaining.text = gameGoalCount.ToString("F0");
         if (gameGoalCount <= 0)
         {
-            // you win!
-            statePause();
-            menuActive = menuWin;
-            menuActive.SetActive(true);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
     }
 
@@ -93,6 +91,13 @@ public class gamemanager : MonoBehaviour
     {
         statePause();
         menuActive = menuLose;
+        menuActive.SetActive(true);
+    }
+
+    public void TriggerWinScreen()
+    {
+        statePause();
+        menuActive = menuWin;
         menuActive.SetActive(true);
     }
 }
