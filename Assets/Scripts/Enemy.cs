@@ -17,6 +17,11 @@ public class Enemy : MonoBehaviour, IDamage
 
     [SerializeField] Animator animator;
 
+    [SerializeField] private AudioClip deathSound;
+    [SerializeField] private float deathVolume;
+    [SerializeField] private AudioClip hitSound;
+    [SerializeField] private float hitVolume = 1f;
+
     [SerializeField] int HP;
     [SerializeField] int fov;
     [SerializeField] int faceTargetSpeed;
@@ -184,12 +189,15 @@ public class Enemy : MonoBehaviour, IDamage
     public void takeDamage(int amount)
     {
         HP -= amount;
+
+        AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+
         agent.SetDestination(gamemanager.instance.player.transform.position);
 
 
         if (HP <= 0)
         {
-
+            AudioSource.PlayClipAtPoint(deathSound, transform.position, deathVolume);
             gamemanager.instance.updateGameGoal(-1);
             Destroy(gameObject);
 

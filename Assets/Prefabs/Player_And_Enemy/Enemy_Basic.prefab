@@ -56,9 +56,14 @@ MonoBehaviour:
   agent: {fileID: 7785100596418267582}
   shootPos: {fileID: 813655578722578825}
   headPos: {fileID: 813655578722634839}
+  shootRange: 15
   maxAmmo: 10
   reloadTime: 1.5
   animator: {fileID: 813655578731613481}
+  deathSound: {fileID: 8300000, guid: 63af93f61d0f42e40b3778e0bafb13ec, type: 3}
+  deathVolume: 100
+  hitSound: {fileID: 8300000, guid: cf871d1d7eced6740ada2b9843f8a596, type: 3}
+  hitVolume: 100
   HP: 5
   fov: 90
   faceTargetSpeed: 5
@@ -196,6 +201,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 5d748914d02d2ce4d89d3ba044ed20f0, type: 2}
+    - target: {fileID: 9530324, guid: 7aa6f6434be94e44583bd055d3a42eee, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
