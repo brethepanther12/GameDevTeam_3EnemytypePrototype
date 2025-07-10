@@ -11,16 +11,29 @@ public class BossAI : EnemyAIBase
     [SerializeField] GameObject deathEffect;
     [SerializeField] Animator bossAnimator;
 
+    [SerializeField] AudioSource bossRoarSource;
+    [SerializeField] AudioClip roarClip;
+
+    private bool isDead = false;
     float attackTimer;
 
     protected override void Start()
     {
+        bossRoarSource.PlayOneShot(roarClip);
+
         base.Start();
         attackTimer = 0;
+
+        gamemanager.instance.updateGameGoal(+1);
     }
 
     protected override void Update()
     {
+        if (isDead)
+        {
+            return;
+        }
+
         base.Update();
         attackTimer += Time.deltaTime;
         bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
@@ -43,10 +56,27 @@ public class BossAI : EnemyAIBase
 
     protected override void enemyDeath()
     {
-        Debug.Log($"{gameObject.name} the Boss has been defeated!");
+        if (isDead)
+        {
+            return; 
+        }
 
-        // Spawn death effect
-        Instantiate(deathEffect, transform.position, Quaternion.identity);
+        isDead = true;
+
+        Debug.Log($"{gameObject.name} the Boss has been defeated!");
+     
+        bossAnimator.SetTrigger("IsDead");
+
+        enemyNavAgent.isStopped = true;
+
+        GetComponent<Collider>().enabled = false;
+
+        StartCoroutine(DestroyAfterDeathAnim());
+    }
+
+    IEnumerator DestroyAfterDeathAnim()
+    {
+        yield return new WaitForSeconds(3.5f);
 
         gamemanager.instance.updateGameGoal(-1);
         Destroy(gameObject);
