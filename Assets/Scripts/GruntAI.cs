@@ -18,6 +18,8 @@ public class GruntAi : MonoBehaviour, IDamage
 
     [SerializeField] Animator animator;
 
+    [SerializeField] private AudioClip reloadSound;
+    [SerializeField] private float reloadVolume = 1f;
     [SerializeField] private AudioClip shootSound;
     [SerializeField] private AudioClip deathSound;
     [SerializeField] private float deathVolume;
@@ -274,6 +276,7 @@ public class GruntAi : MonoBehaviour, IDamage
             yield break;
         }
         isReloading = true;
+        AudioSource.PlayClipAtPoint(reloadSound, transform.position, reloadVolume);
         animator.SetTrigger("Reload");
 
 
