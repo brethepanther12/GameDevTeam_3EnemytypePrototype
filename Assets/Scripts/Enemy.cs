@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Assertions.Must;
 using UnityEngine.Rendering;
 
 public class Enemy : MonoBehaviour, IDamage
@@ -33,6 +34,7 @@ public class Enemy : MonoBehaviour, IDamage
 
     Color colorOrig;
 
+    private bool isDead;
     private int currentAmmo;
     private bool isReloading;
     bool playerInTrigger;
@@ -58,6 +60,10 @@ public class Enemy : MonoBehaviour, IDamage
     // Update is called once per frame
     void Update()
     {
+        if (isDead)
+        {
+            return;
+        }
         animator.SetFloat("Speed", agent.velocity.magnitude);
 
         if (agent.remainingDistance < 0.01f)
@@ -105,6 +111,12 @@ public class Enemy : MonoBehaviour, IDamage
 
     bool CanSeePlayer()
     {
+        if (isDead)
+        {
+            return false;
+        }
+           
+
         playerDir = gamemanager.instance.player.transform.position - headPos.position;
         angleToPlayer = Vector3.Angle(playerDir, transform.forward);
 
@@ -188,6 +200,10 @@ public class Enemy : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
+        if(isDead)
+        {
+            return;
+        }
         HP -= amount;
 
         AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
@@ -197,9 +213,8 @@ public class Enemy : MonoBehaviour, IDamage
 
         if (HP <= 0)
         {
-            AudioSource.PlayClipAtPoint(deathSound, transform.position, deathVolume);
-            gamemanager.instance.updateGameGoal(-1);
-            Destroy(gameObject);
+            isDead = true;
+            StartCoroutine(Die());
 
         }
         else
@@ -248,5 +263,21 @@ public class Enemy : MonoBehaviour, IDamage
         isReloading = false;
         yield return new WaitForSeconds(.25f);
         currentAmmo = maxAmmo;
+    }
+
+    IEnumerator Die()
+    {
+        isDead = true;
+        agent.isStopped = true;
+        agent.ResetPath();
+        agent.enabled = false;
+        animator.SetTrigger("Die");
+
+        AudioSource.PlayClipAtPoint(deathSound, transform.position);
+
+        yield return new WaitForSeconds(3.5f);
+
+        gamemanager.instance.updateGameGoal(-1);
+        Destroy(gameObject);
     }
 }

@@ -278,12 +278,24 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 813655578731613481, guid: a72cbf9860763f048a27e991dceaf985, type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: 5d748914d02d2ce4d89d3ba044ed20f0, type: 2}
-    - target: {fileID: 813655578731613481, guid: a72cbf9860763f048a27e991dceaf985, type: 3}
       propertyPath: m_ApplyRootMotion
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2200018932441696591, guid: a72cbf9860763f048a27e991dceaf985, type: 3}
+      propertyPath: hitSound
+      value: 
+      objectReference: {fileID: 8300000, guid: cf871d1d7eced6740ada2b9843f8a596, type: 3}
+    - target: {fileID: 2200018932441696591, guid: a72cbf9860763f048a27e991dceaf985, type: 3}
+      propertyPath: hitVolume
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2200018932441696591, guid: a72cbf9860763f048a27e991dceaf985, type: 3}
+      propertyPath: deathSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 63af93f61d0f42e40b3778e0bafb13ec, type: 3}
+    - target: {fileID: 2200018932441696591, guid: a72cbf9860763f048a27e991dceaf985, type: 3}
+      propertyPath: deathVolume
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 3727031369774306927, guid: a72cbf9860763f048a27e991dceaf985, type: 3}
       propertyPath: m_LocalPosition.x
