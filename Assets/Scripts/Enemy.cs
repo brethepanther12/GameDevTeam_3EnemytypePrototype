@@ -51,6 +51,7 @@ public class Enemy : MonoBehaviour, IDamage
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        shootTimer = 0f;
         currentAmmo = maxAmmo;
         colorOrig = modelParts[0].material.color;
         gamemanager.instance.updateGameGoal(1);
@@ -224,6 +225,8 @@ public class Enemy : MonoBehaviour, IDamage
             }
 
             animator.SetBool("isdead", true);
+            animator.ResetTrigger("Reload");
+            animator.CrossFade("Death", 0f);
             StartCoroutine(Die());
 
         }
