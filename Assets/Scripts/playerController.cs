@@ -25,6 +25,9 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] int meleeDamage;
     [SerializeField] float shootRate;
     [SerializeField] int shootDist;
+    [SerializeField] GameObject projectilePrefab;
+    [SerializeField] Transform projectileSpawnPoint;
+    [SerializeField] float projectileForce = 40f;
 
     public ParticleSystem muzzleFlash;
 
@@ -67,7 +70,13 @@ public class playerController : MonoBehaviour, IDamage
         sprint();
 
         movement();
+
+        if (Input.GetButtonDown("Fire1"))
+        {
+            shootProjectile();
+        }
     }
+
 
 
 
@@ -421,6 +430,16 @@ public class playerController : MonoBehaviour, IDamage
             {
                 rc.SetEnemyAim(aimingAtEnemy);
             }
+        }
+    }
+
+    void shootProjectile()
+    {
+        GameObject proj = Instantiate(projectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
+        Rigidbody rb = proj.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.AddForce(Camera.main.transform.forward * projectileForce, ForceMode.VelocityChange);
         }
     }
 }
