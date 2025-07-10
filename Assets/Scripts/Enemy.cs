@@ -18,6 +18,7 @@ public class Enemy : MonoBehaviour, IDamage
 
     [SerializeField] Animator animator;
 
+    [SerializeField] private AudioClip shootSound;
     [SerializeField] private AudioClip deathSound;
     [SerializeField] private float deathVolume;
     [SerializeField] private AudioClip hitSound;
@@ -34,6 +35,7 @@ public class Enemy : MonoBehaviour, IDamage
 
     Color colorOrig;
 
+    private Coroutine reloadingRT;
     private bool isDead;
     private int currentAmmo;
     private bool isReloading;
@@ -139,9 +141,9 @@ public class Enemy : MonoBehaviour, IDamage
                         Shoot();
                     }
 
-                    if (currentAmmo <= 0 && !isReloading)
+                    if (currentAmmo <= 0 && !isReloading && !isDead)
                     {
-                        StartCoroutine(Reload());
+                       reloadingRT = StartCoroutine(Reload());
                     }
                 }
 
@@ -214,6 +216,14 @@ public class Enemy : MonoBehaviour, IDamage
         if (HP <= 0)
         {
             isDead = true;
+
+            if(reloadingRT != null)
+            {
+                StopCoroutine(reloadingRT);
+                reloadingRT = null;
+            }
+
+            animator.SetBool("isdead", true);
             StartCoroutine(Die());
 
         }
@@ -253,13 +263,27 @@ public class Enemy : MonoBehaviour, IDamage
         animator.SetTrigger("Shoot");
 
         Instantiate(bullet, shootPos.position, transform.rotation);
+
+        AudioSource.PlayClipAtPoint(shootSound, shootPos.position);
     }
 
     IEnumerator Reload()
     {
+        if (isDead)
+        {
+            yield break;
+        }
         isReloading = true;
         animator.SetTrigger("Reload");
+
+
         yield return new WaitForSeconds(reloadTime -.25f);
+       
+        if (isDead)
+        {
+            yield break;
+        }
+
         isReloading = false;
         yield return new WaitForSeconds(.25f);
         currentAmmo = maxAmmo;
@@ -267,11 +291,14 @@ public class Enemy : MonoBehaviour, IDamage
 
     IEnumerator Die()
     {
+        isReloading = false;
+        animator.ResetTrigger("Reload");
+
         isDead = true;
         agent.isStopped = true;
         agent.ResetPath();
         agent.enabled = false;
-        animator.SetTrigger("Die");
+        animator.Play("Death", 0, 0);
 
         AudioSource.PlayClipAtPoint(deathSound, transform.position);
 
