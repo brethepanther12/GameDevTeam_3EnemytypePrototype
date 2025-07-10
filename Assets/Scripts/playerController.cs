@@ -75,6 +75,11 @@ public class playerController : MonoBehaviour, IDamage
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.R) && !reloading && currentAmmo < magazineSize && reserveAmmo > 0)
+        {
+            StartCoroutine(Reload());
+        }
+
         CheckReticleTarget(); // color update
 
         sprint();
@@ -151,13 +156,19 @@ public class playerController : MonoBehaviour, IDamage
     }
     void shoot()
     {
-        if(reloading || currentAmmo <= 0 || shootTimer < shootRate)
+
+        if (reloading || currentAmmo <= 0 || shootTimer < shootRate)
         {
             return;
         }
 
         shootTimer = 0;
         currentAmmo--;
+
+        if (currentAmmo <= 0 && reserveAmmo > 0)
+        {
+            StartCoroutine(Reload());
+        }
 
         muzzleFlash.Play();
         gunAudio.pitch = Random.Range(0.95f, 1.05f);
