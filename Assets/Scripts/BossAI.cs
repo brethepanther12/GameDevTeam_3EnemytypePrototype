@@ -9,6 +9,7 @@ public class BossAI : EnemyAIBase
     [SerializeField] float attackRange = 20f;
     [SerializeField] float attackCooldown = 2f;
     [SerializeField] GameObject deathEffect;
+    [SerializeField] Animator bossAnimator;
 
     float attackTimer;
 
@@ -22,6 +23,7 @@ public class BossAI : EnemyAIBase
     {
         base.Update();
         attackTimer += Time.deltaTime;
+        bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
 
         if (enemyPlayerInSight)
         {
@@ -35,24 +37,8 @@ public class BossAI : EnemyAIBase
 
     protected void BossAttack()
     {
+        bossAnimator.SetTrigger("Attack");
         attackTimer = 0f;
-
-        // Rotate spawn point to aim at player
-        projectileSpawnPoint.LookAt(enemyPlayerObject.position);
-
-        // Instantiate projectile
-        GameObject proj = Instantiate(projectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
-
-        // Apply force to projectile
-        Rigidbody rb = proj.GetComponent<Rigidbody>();
-        if (rb != null)
-        {
-            rb.AddForce(proj.transform.forward * 20f, ForceMode.VelocityChange);
-        }
-        else
-        {
-            Debug.LogWarning("Boss projectile has no Rigidbody attached!");
-        }
     }
 
     protected override void enemyDeath()
@@ -70,7 +56,7 @@ public class BossAI : EnemyAIBase
     {
         if (enemyPlayerInSight)
         {
-            Debug.Log("Boss is moving toward player!");
+           // Debug.Log("Boss is moving toward player!");
             enemyNavAgent.SetDestination(enemyPlayerObject.position);
 
             if (enemyNavAgent.remainingDistance <= enemyNavAgent.stoppingDistance)
@@ -92,10 +78,14 @@ public class BossAI : EnemyAIBase
 
         if (enemyCurrentHealthPoints <= 0)
         {
+            bossAnimator.SetBool("IsDead", true);
+
             enemyDeath();
         }
         else
         {
+            bossAnimator.SetTrigger("Hit");
+
             StartCoroutine(enemyFlashRead());
         }
     }
@@ -103,8 +93,37 @@ public class BossAI : EnemyAIBase
     // Flash boss red briefly on hit
     protected override IEnumerator enemyFlashRead()
     {
-        enemyModel.material.color = Color.red;
-        yield return new WaitForSeconds(0.2f);
-        enemyModel.material.color = enemyColorOrigin;
+        foreach (var part in enemyModel)
+        {
+            part.material.color = Color.red;
+        }
+
+        yield return new WaitForSeconds(0.1f);
+
+        foreach (var part in enemyModel)
+        {
+            part.material.color = enemyColorOrigin;
+        }
+    }
+
+    public void FireProjectile()
+    {
+        if (projectilePrefab == null || projectileSpawnPoint == null)
+        {
+            Debug.LogWarning("Projectile prefab or spawn point is not assigned!");
+            return;
+        }
+
+        GameObject proj = Instantiate(projectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
+
+        Rigidbody rb = proj.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.AddForce(proj.transform.forward * 20f, ForceMode.VelocityChange);
+        }
+        else
+        {
+            Debug.LogWarning("Boss projectile has no Rigidbody attached!");
+        }
     }
 }
