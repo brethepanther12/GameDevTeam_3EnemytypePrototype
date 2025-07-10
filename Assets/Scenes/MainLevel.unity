@@ -1357,7 +1357,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4360063518997144458, guid: e3f14e9d91a68b14eaee01477127c0d2, type: 3}
       propertyPath: m_text
-      value: "Did you know that \nsome walls can be\ndestoyed by\nshooting with RMB?"
+      value: "Did you know that \nsome walls can be\ndestoyed by\nshooting with LMB?"
       objectReference: {fileID: 0}
     - target: {fileID: 4360063518997144458, guid: e3f14e9d91a68b14eaee01477127c0d2, type: 3}
       propertyPath: m_fontSize
@@ -2839,6 +2839,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 671bd7c77f7ef0b41be0c80e67f11eee, type: 3}
+--- !u!1 &1010691215 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7375710686014872131, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
+  m_PrefabInstance: {fileID: 1884608107}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1013042431 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8396046200272325807, guid: 065a670239bd5e64594faf3ea6074ebf, type: 3}
@@ -4084,6 +4089,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 322828897830550937, guid: 8fce0be07c2c8ae4b9fd8b0eb1d49680, type: 3}
+      propertyPath: reloadSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a40641150cd218c49a68a971c7304757, type: 3}
     - target: {fileID: 1303462454423834030, guid: 8fce0be07c2c8ae4b9fd8b0eb1d49680, type: 3}
       propertyPath: near clip plane
       value: 0.15
@@ -4687,6 +4696,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 8396046200272325807, guid: 065a670239bd5e64594faf3ea6074ebf, type: 3}
   m_PrefabInstance: {fileID: 798883733}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1693478629 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6119846018528006843, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
+  m_PrefabInstance: {fileID: 1884608107}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1707569814
 GameObject:
@@ -5469,6 +5483,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7494435991927021770, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
+      propertyPath: playerArmorDamagePanel
+      value: 
+      objectReference: {fileID: 1693478629}
+    - target: {fileID: 7494435991927021770, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
+      propertyPath: playerShieldDamagePanel
+      value: 
+      objectReference: {fileID: 1010691215}
     - target: {fileID: 7860792966661682301, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
       propertyPath: m_Name
       value: UI (v2)

@@ -28,7 +28,7 @@ public class playerController : MonoBehaviour, IDamage
 
     [SerializeField] private AudioClip impactSound;
     [SerializeField] private float impactVolume = 1f;
-    [SerializeField] private AudioClip realodSound;
+    [SerializeField] private AudioClip reloadSound;
     [SerializeField] private AudioSource gunAudio;
     [SerializeField] private AudioClip gunShotSound;
 
@@ -140,7 +140,7 @@ public class playerController : MonoBehaviour, IDamage
         reloading = true;
 
         //Debug.Log("Player Reloading");
-        gunAudio.PlayOneShot(realodSound);
+        gunAudio.PlayOneShot(reloadSound);
         animator.SetBool("Reloading", true);
         yield return new WaitForSeconds(1f -.25f);
         animator.SetBool("Reloading", false);
