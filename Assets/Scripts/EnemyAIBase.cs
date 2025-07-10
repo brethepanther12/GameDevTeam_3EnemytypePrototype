@@ -108,6 +108,23 @@ public class EnemyAIBase : MonoBehaviour, IDamage
         //Lerp takes the estimated value of the rotation of the enemy and the player
         transform.rotation = Quaternion.Lerp(transform.rotation, rotate, Time.deltaTime * enemySpeed);
     }
+
+    protected virtual bool HasLineOfSightOfPlayer() 
+    {
+    if (enemyPlayerObject == null)return false;
+
+        Vector3 target = (enemyPlayerObject.position + Vector3.up * 1f);
+        Vector3 direction = (transform.position - target).normalized;
+
+        float distance = Vector3.Distance(transform.position, target);
+
+        if(Physics.Raycast(transform.position, direction, out RaycastHit hit, distance))
+        {
+            return hit.collider.CompareTag("Player");
+        }
+        return false;
+    }
+
     public virtual void takeDamage(int amount)
     {
         enemyCurrentHealthPoints -= amount;
