@@ -15,6 +15,8 @@ public class BossTrigger : MonoBehaviour
         {
             Debug.Log("Player entered boss trigger!");
             boss.SetPlayerInSight(true);
+
+            gamemanager.instance.StartBossFight(boss);
         }
     }
 }

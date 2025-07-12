@@ -25,6 +25,12 @@ public class gamemanager : MonoBehaviour
     public TMPro.TextMeshProUGUI keyText; 
     public TMPro.TextMeshProUGUI ammoText;
 
+    public GameObject bossHealthBarUI;
+    public Image bossHealthBarFill;
+    public TMPro.TextMeshProUGUI bossNameText;
+
+    public BossAI currentBoss;
+
     float timescaleOrig;
 
     int gameGoalCount;
@@ -99,5 +105,25 @@ public class gamemanager : MonoBehaviour
         statePause();
         menuActive = menuWin;
         menuActive.SetActive(true);
+    }
+
+    public void StartBossFight(BossAI boss)
+    {
+        currentBoss = boss;
+        bossHealthBarUI.SetActive(true);
+        bossNameText.text = boss.bossName;
+    }
+    public void UpdateBossHealthBar(int currentHP, int maxHP)
+    {
+        if (bossHealthBarFill != null)
+        {
+            bossHealthBarFill.fillAmount = (float)currentHP / maxHP;
+        }
+    }
+
+    public void EndBossFight()
+    {
+        bossHealthBarUI.SetActive(false);
+        currentBoss = null;
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 public class BossAI : EnemyAIBase
 {
     [Header("Boss Settings")]
+    [Header("Boss Info")]
     [SerializeField] GameObject projectilePrefab;
     [SerializeField] Transform projectileSpawnPoint;
     [SerializeField] float attackRange = 20f;
@@ -13,6 +14,8 @@ public class BossAI : EnemyAIBase
 
     [SerializeField] AudioSource bossRoarSource;
     [SerializeField] AudioClip roarClip;
+
+    public string bossName = "Boss 1";
 
     private bool isDead = false;
     float attackTimer;
@@ -72,6 +75,11 @@ public class BossAI : EnemyAIBase
         GetComponent<Collider>().enabled = false;
 
         StartCoroutine(DestroyAfterDeathAnim());
+
+        if (gamemanager.instance.currentBoss == this)
+        {
+            gamemanager.instance.EndBossFight();
+        }
     }
 
     IEnumerator DestroyAfterDeathAnim()
@@ -111,16 +119,20 @@ public class BossAI : EnemyAIBase
     {
         enemyCurrentHealthPoints -= amount;
 
+        //vUpdate the centralized boss health bar via GameManager
+        if (gamemanager.instance.currentBoss == this)
+        {
+            gamemanager.instance.UpdateBossHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+        }
+
         if (enemyCurrentHealthPoints <= 0)
         {
             bossAnimator.SetBool("IsDead", true);
-
             enemyDeath();
         }
         else
         {
             bossAnimator.SetTrigger("Hit");
-
             StartCoroutine(enemyFlashRead());
         }
     }
