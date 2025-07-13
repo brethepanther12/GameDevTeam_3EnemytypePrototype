@@ -4934,6 +4934,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1998080289113046724}
   - component: {fileID: 322828897830550937}
+  - component: {fileID: 4593325166028970640}
   - component: {fileID: 6756874265244943610}
   - component: {fileID: 1195675058075276511}
   - component: {fileID: 3135857266737908879}
@@ -5014,6 +5015,19 @@ MonoBehaviour:
   animator: {fileID: 2514918096134852461}
   impactPrefab: {fileID: 2408714428905375140, guid: ec2cd9d24f8932148ab9480fc3b65b15, type: 3}
   muzzleFlash: {fileID: 2938817048644630114}
+--- !u!114 &4593325166028970640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5400081695028812283}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdf38471c6fb4b54f90a2ee80936c0cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collectedItems: []
 --- !u!33 &6756874265244943610
 MeshFilter:
   m_ObjectHideFlags: 0
