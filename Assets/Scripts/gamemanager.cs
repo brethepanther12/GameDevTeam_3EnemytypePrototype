@@ -22,7 +22,6 @@ public class gamemanager : MonoBehaviour
     public GameObject player;
     public playerController playerScript;
 
-    public TMPro.TextMeshProUGUI keyText; 
     public TMPro.TextMeshProUGUI ammoText;
 
     public GameObject bossHealthBarUI;
