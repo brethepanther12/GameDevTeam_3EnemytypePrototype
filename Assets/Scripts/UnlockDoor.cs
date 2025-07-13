@@ -1,24 +1,38 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class UnlockDoor : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public List<ItemSO> requiredItems;
+    public GameObject doorObject;
+    private bool isUnlocked = false;
 
     private void OnTriggerEnter(Collider other)
     {
-        playerController pc = gamemanager.instance.playerScript;
+        if (isUnlocked)
+            return;
 
-        if (other.CompareTag("Player") && pc.HasKey())
+        PlayerInventory inventory = other.GetComponent<PlayerInventory>();
+        if(inventory != null && inventory.HasAllItems(requiredItems))
         {
-            pc.AddKey(-1);
-
-            Destroy(gameObject);
+            Unlock();
         }
-            
+        else
+        {
+            Debug.Log("You do not have the required items!");
+        }
     }
 
+    private void Unlock()
+    {
+        isUnlocked = true;
+        PlayerInventory inventory = GameObject.FindWithTag("Player").GetComponent<PlayerInventory>();
+        foreach (ItemSO item in requiredItems)
+        {
+            if (inventory.collectedItems.Contains(item))
+                inventory.collectedItems.Remove(item);
+        }
+
+        Destroy(doorObject);
+    }
 }
