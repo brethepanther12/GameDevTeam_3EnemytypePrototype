@@ -35,19 +35,24 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] private float walkStepDelay = 0.5f;
     [SerializeField] private float sprintStepDelay = 0.3f;
 
-    [SerializeField] private AudioClip impactSound;
-    [SerializeField] private float impactVolume = 1f;
-    [SerializeField] private AudioClip reloadSound;
-    [SerializeField] private AudioSource gunAudio;
-    [SerializeField] private AudioClip gunShotSound;
+    [SerializeField] Weapon weapon1;
 
-    public Animator animator;
+    public Weapon equippedWeapon;
+    public PlayerInventory inventory;
 
-    [SerializeField] private GameObject impactPrefab;
+    //[SerializeField] private AudioClip impactSound;
+    //[SerializeField] private float impactVolume = 1f;
+    //[SerializeField] private AudioClip reloadSound;
+    //[SerializeField] private AudioSource gunAudio;
+    //[SerializeField] private AudioClip gunShotSound;
+
+    //public Animator animator;
+
+    //[SerializeField] private GameObject impactPrefab;
 
     float stepTimer = 0f;
-    public ParticleSystem muzzleFlash;
-    private bool reloading;
+    //public ParticleSystem muzzleFlash;
+    public bool isReloading;
     private int currentAmmo;
 
     private enum powerUpType
@@ -74,7 +79,10 @@ public class playerController : MonoBehaviour, IDamage
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        currentAmmo = magazineSize;
+
+        equippedWeapon = weapon1;
+
+        //currentAmmo = magazineSize;
 
         HPOrig = HP;
         armorOrig = armor;
@@ -86,12 +94,12 @@ public class playerController : MonoBehaviour, IDamage
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R) && !reloading && currentAmmo < magazineSize && reserveAmmo > 0)
-        {
-            StartCoroutine(Reload());
-        }
+        //if (Input.GetKeyDown(KeyCode.R) && !reloading && currentAmmo < magazineSize && reserveAmmo > 0)
+        //{
+        //    StartCoroutine(Reload());
+        //}
 
-        CheckReticleTarget(); // color update
+        //CheckReticleTarget(); // color update
 
         sprint();
 
@@ -126,10 +134,10 @@ public class playerController : MonoBehaviour, IDamage
         controller.Move(playerVel * Time.deltaTime);
         playerVel.y -= gravity * Time.deltaTime;
 
-        if (Input.GetButton("Fire1") && shootTimer > shootRate)
-        {
-            shoot();
-        }
+        //if (Input.GetButton("Fire1") && shootTimer > shootRate)
+        //{
+        //    shoot();
+        //}
     }
 
     void HandleFootsteps()
@@ -184,79 +192,79 @@ public class playerController : MonoBehaviour, IDamage
         }
     }
 
-    IEnumerator Reload()
-    {
-        reloading = true;
+    //IEnumerator Reload()
+    //{
+    //    reloading = true;
 
-        //Debug.Log("Player Reloading");
-        gunAudio.PlayOneShot(reloadSound);
+    //    //Debug.Log("Player Reloading");
+    //    gunAudio.PlayOneShot(reloadSound);
 
-        animator.SetBool("Reloading", true);
+    //    animator.SetBool("Reloading", true);
 
-        yield return new WaitForSeconds(1f -.25f);
+    //    yield return new WaitForSeconds(1f - .25f);
 
-        animator.SetBool("Reloading", false);
+    //    animator.SetBool("Reloading", false);
 
-        yield return new WaitForSeconds(.25f);
+    //    yield return new WaitForSeconds(.25f);
 
-        int ammoNeeded = magazineSize - currentAmmo;
-        int ammoToLoad = Mathf.Min(ammoNeeded, reserveAmmo);
+    //    int ammoNeeded = magazineSize - currentAmmo;
+    //    int ammoToLoad = Mathf.Min(ammoNeeded, reserveAmmo);
 
-        currentAmmo += ammoToLoad;
-        reserveAmmo -= ammoToLoad;
+    //    currentAmmo += ammoToLoad;
+    //    reserveAmmo -= ammoToLoad;
 
-        reloading = false;
-        updatePlayerUI();
-    }
-    void shoot()
-    {
+    //    reloading = false;
+    //    updatePlayerUI();
+    //}
+    //void shoot()
+    //{
 
-        if (reloading || currentAmmo <= 0 || shootTimer < shootRate)
-        {
-            return;
-        }
+    //    if (reloading || currentAmmo <= 0 || shootTimer < shootRate)
+    //    {
+    //        return;
+    //    }
 
-        shootTimer = 0;
-        currentAmmo--;
+    //    shootTimer = 0;
+    //    currentAmmo--;
 
-        if (currentAmmo <= 0 && reserveAmmo > 0)
-        {
-            StartCoroutine(Reload());
-        }
+    //    if (currentAmmo <= 0 && reserveAmmo > 0)
+    //    {
+    //        StartCoroutine(Reload());
+    //    }
 
-        muzzleFlash.Play();
-        gunAudio.pitch = Random.Range(0.95f, 1.05f);
-        gunAudio.PlayOneShot(gunShotSound);
+    //    muzzleFlash.Play();
+    //    gunAudio.pitch = Random.Range(0.95f, 1.05f);
+    //    gunAudio.PlayOneShot(gunShotSound);
 
-        RaycastHit hit;
-        bool isEnemy = false;
+    //    RaycastHit hit;
+    //    bool isEnemy = false;
 
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
-        {
-            GameObject impactOb = Instantiate(impactPrefab, hit.point, Quaternion.LookRotation(hit.normal));
-            AudioSource.PlayClipAtPoint(impactSound, hit.point, impactVolume);
-            Destroy(impactOb, 1f);
+    //    if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
+    //    {
+    //        GameObject impactOb = Instantiate(impactPrefab, hit.point, Quaternion.LookRotation(hit.normal));
+    //        AudioSource.PlayClipAtPoint(impactSound, hit.point, impactVolume);
+    //        Destroy(impactOb, 1f);
 
-            IDamage dmg = hit.collider.GetComponent<IDamage>();
-            if (dmg != null)
-            {
-                if (hit.collider.CompareTag("Enemy")) isEnemy = true;
-                dmg.takeDamage(shootDamage);
-            }
-        }
+    //        IDamage dmg = hit.collider.GetComponent<IDamage>();
+    //        if (dmg != null)
+    //        {
+    //            if (hit.collider.CompareTag("Enemy")) isEnemy = true;
+    //            dmg.takeDamage(shootDamage);
+    //        }
+    //    }
 
-        GameObject reticle = GameObject.Find("Reticle");
-        if (reticle != null)
-        {
-            ReticleController rc = reticle.GetComponent<ReticleController>();
-            if (rc != null)
-            {
-                rc.Pulse(isEnemy);
-            }
-        }
+    //    GameObject reticle = GameObject.Find("Reticle");
+    //    if (reticle != null)
+    //    {
+    //        ReticleController rc = reticle.GetComponent<ReticleController>();
+    //        if (rc != null)
+    //        {
+    //            rc.Pulse(isEnemy);
+    //        }
+    //    }
 
-        updatePlayerUI();
-    }
+    //    updatePlayerUI();
+    //}
 
     public void takeDamage(int amount)
     {
@@ -371,6 +379,8 @@ public class playerController : MonoBehaviour, IDamage
     {
         reserveAmmo += amount;
 
+
+
         if (doesIncreaseMax)
         {
             reserveAmmo += amount;
@@ -458,7 +468,7 @@ public class playerController : MonoBehaviour, IDamage
         gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
         gamemanager.instance.playerShieldBar.fillAmount = (float)shield / maxShield;
         gamemanager.instance.playerArmorBar.fillAmount = (float)armor / maxArmor;
-        gamemanager.instance.ammoText.text = $"{currentAmmo} / {reserveAmmo}";
+        gamemanager.instance.ammoText.text = $"{equippedWeapon.GetAmmoInMag()} / {equippedWeapon.GetAmmoInReserve()}";
     }
 
     IEnumerator damageFlashScreen()
@@ -483,29 +493,29 @@ public class playerController : MonoBehaviour, IDamage
     }
 
 
-    void CheckReticleTarget()
-    {
-        Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
+    //void CheckReticleTarget()
+    //{
+    //    Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
 
-        RaycastHit hit;
-        bool aimingAtEnemy = false;
+    //    RaycastHit hit;
+    //    bool aimingAtEnemy = false;
 
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
-        {
-            if (hit.collider.CompareTag("Enemy"))
-            {
-                aimingAtEnemy = true;
-            }
-        }
+    //    if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
+    //    {
+    //        if (hit.collider.CompareTag("Enemy"))
+    //        {
+    //            aimingAtEnemy = true;
+    //        }
+    //    }
 
-        GameObject reticle = GameObject.Find("Reticle");
-        if (reticle != null)
-        {
-            ReticleController rc = reticle.GetComponent<ReticleController>();
-            if (rc != null)
-            {
-                rc.SetEnemyAim(aimingAtEnemy);
-            }
-        }
-    }
+    //    GameObject reticle = GameObject.Find("Reticle");
+    //    if (reticle != null)
+    //    {
+    //        ReticleController rc = reticle.GetComponent<ReticleController>();
+    //        if (rc != null)
+    //        {
+    //            rc.SetEnemyAim(aimingAtEnemy);
+    //        }
+    //    }
+    //}
 }

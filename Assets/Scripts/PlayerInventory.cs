@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class PlayerInventory : MonoBehaviour
 {
     public List<ItemSO> collectedItems = new List<ItemSO>();
+    
 
     public void AddItem(ItemSO item)
     {
@@ -11,7 +12,13 @@ public class PlayerInventory : MonoBehaviour
         {
             collectedItems.Add(item);
             Debug.Log("Picked up: " + item.itemName);
+
         }
+        else if (collectedItems.Contains(item) && item.quantityToPickup + item.quantityHeld < item.stackSize)
+        {
+            item.quantityHeld += item.quantityToPickup;
+        }
+
     }
 
     public bool HasAllItems(List<ItemSO> requiredItems)

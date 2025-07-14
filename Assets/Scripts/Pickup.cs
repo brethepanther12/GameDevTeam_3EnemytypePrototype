@@ -108,8 +108,13 @@ public class Pickup : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        HandlePickup(pickup);
+
+        if (other.CompareTag("Player"))
+        {
+            HandlePickup(pickup);
+
+            Destroy(gameObject);
+        }
         
-        Destroy(gameObject);
     }
 }
