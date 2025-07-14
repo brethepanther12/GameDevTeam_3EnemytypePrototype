@@ -325,6 +325,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 928398104141144954, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 928398104141144954, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -321
+      objectReference: {fileID: 0}
+    - target: {fileID: 4080107783355429107, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0
+      objectReference: {fileID: 0}
     - target: {fileID: 6593677814340451975, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -408,24 +420,47 @@ PrefabInstance:
     - target: {fileID: 7494435991927021770, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
       propertyPath: bossNameText
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 545900095}
     - target: {fileID: 7494435991927021770, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
       propertyPath: bossHealthBarUI
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2091623772}
     - target: {fileID: 7494435991927021770, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
       propertyPath: bossHealthBarFill
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1483635825}
     - target: {fileID: 7860792966661682301, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
       propertyPath: m_Name
       value: UI (v2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8004152582229592785, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -322
+      objectReference: {fileID: 0}
+    - target: {fileID: 9061047085346604015, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
+      propertyPath: m_text
+      value: Boss 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9061047085346604015, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
+      propertyPath: m_fontSize
+      value: 22.35
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
+--- !u!114 &545900095 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9061047085346604015, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
+  m_PrefabInstance: {fileID: 356917066}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &795642278
 GameObject:
   m_ObjectHideFlags: 0
@@ -555,6 +590,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1129265381363316238, guid: 472f5ebec74bd5b4a9204ad5ed1946f1, type: 3}
+      propertyPath: bossHealthBarFill
+      value: 
+      objectReference: {fileID: 1483635825}
     - target: {fileID: 2180915279210807909, guid: 472f5ebec74bd5b4a9204ad5ed1946f1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -45.35
@@ -608,7 +647,8 @@ PrefabInstance:
       value: -112
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 8762456052849842928, guid: 472f5ebec74bd5b4a9204ad5ed1946f1, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 472f5ebec74bd5b4a9204ad5ed1946f1, type: 3}
@@ -669,6 +709,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b6b7748bb754913448ccc2f208f8eb2e, type: 3}
+--- !u!114 &1483635825 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6265714521826954092, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
+  m_PrefabInstance: {fileID: 356917066}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1572206868 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2877169571789981239, guid: 20154e460b5399a488be6aedfeb6464b, type: 3}
@@ -803,6 +854,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &2091623772 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7205888711667680735, guid: a2ef7929c17bb6c4184ddce22d53fd4f, type: 3}
+  m_PrefabInstance: {fileID: 356917066}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
