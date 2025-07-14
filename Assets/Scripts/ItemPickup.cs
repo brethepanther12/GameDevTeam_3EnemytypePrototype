@@ -10,8 +10,12 @@ public class ItemPickup : MonoBehaviour
 
         if (inventory != null && itemToGive != null)
         {
+            playerController pc = gamemanager.instance.playerScript;
+
             inventory.AddItem(itemToGive);
             Destroy(gameObject);
+
+            pc.updatePlayerUI();
         }
     }
 }

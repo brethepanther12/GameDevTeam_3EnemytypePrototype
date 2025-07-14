@@ -1,177 +1,147 @@
 using UnityEngine;
 using System.Collections;
+public class Weapon : MonoBehaviour { 
 
-public class Weapon : MonoBehaviour
-{
+    [SerializeField] int wepDmg; 
+    [SerializeField] float attackRate; 
+    [SerializeField] int range; 
+    [SerializeField] int magSize; 
+    [SerializeField] int ammoReserve; 
+    [SerializeField] int ammoMax; 
+    [SerializeField] LayerMask ignoreLayer; 
+    [SerializeField] GameObject bullet; 
+    [SerializeField] Transform shootPos; 
+    [SerializeField] private AudioClip impactSound; 
+    [SerializeField] private float impactVolume = 1f; 
+    [SerializeField] private AudioClip reloadSound; 
+    [SerializeField] private AudioSource gunAudio; 
+    [SerializeField] private AudioClip gunShotSound; 
 
-    [SerializeField] int wepDmg;
-    [SerializeField] float attackRate;
-    [SerializeField] int range;
-    [SerializeField] int magSize;
-    [SerializeField] int ammoReserve;
-    [SerializeField] int ammoMax;
+    playerController equippedPlayer; 
+    PlayerInventory inventory; 
 
-    [SerializeField] LayerMask ignoreLayer;
+    float shootTimer; 
+    int ammoInMag; 
+    int ammoInReserve; 
+    public Animator gunAnim; 
+    public ParticleSystem muzzleFlash; 
 
-    [SerializeField] GameObject bullet;
-    [SerializeField] Transform shootPos;
+    public enum wepInfo 
+    { model, image, gunshot_sound, muzzle_flash, impact_sound, impact_volume, reload_sound, gun_audio, animator, impact_prefab } 
+    public enum wepStats 
+    { bullet_dmg, fireRate, range, magSize, reserveSize } 
 
-    [SerializeField] private AudioClip impactSound;
-    [SerializeField] private float impactVolume = 1f;
-    [SerializeField] private AudioClip reloadSound;
-    [SerializeField] private AudioSource gunAudio;
-    [SerializeField] private AudioClip gunShotSound;
+    private void Start() 
+    { 
+        equippedPlayer = gamemanager.instance.playerScript; 
+        inventory = GetComponent<PlayerInventory>(); 
+        ammoInMag = magSize; 
+        ammoInReserve = ammoReserve; 
+        equippedPlayer.updatePlayerUI(); 
 
-    playerController equippedPlayer;
-    float shootTimer;
-    int ammoInMag;
-    int ammoInReserve;
+    } 
+    private void Update() 
+    { 
+        shootTimer += Time.deltaTime; 
+        CheckReticleTarget(); 
 
-    public Animator gunAnim;
-    public ParticleSystem muzzleFlash;
+        if (Input.GetButton("Fire1") && shootTimer > attackRate) 
+        { 
+            Shoot(); 
+        } 
 
-    
+        if (Input.GetKeyDown(KeyCode.R) || ammoInMag == 0 && ammoInReserve > 0 && !equippedPlayer.isReloading) 
 
-    public enum wepInfo
-    {
-        model, image, gunshot_sound, muzzle_flash, impact_sound, impact_volume, reload_sound, gun_audio, animator, impact_prefab
-    }
-
-    public enum wepStats
-    {
-        bullet_dmg, fireRate, range, magSize, reserveSize
-    }
-
-    private void Start()
-    {
-        equippedPlayer = gamemanager.instance.playerScript;
-        ammoInMag = magSize;
-        ammoInReserve = ammoReserve;
-
-        equippedPlayer.updatePlayerUI();
-    }
-
-    private void Update()
-    {
-        shootTimer += Time.deltaTime;
-
-        CheckReticleTarget();
-
-        if (Input.GetButton("Fire1") && shootTimer > attackRate)
-        {
-            Shoot();
-        }
-
-        if (Input.GetKeyDown(KeyCode.R) || ammoInMag == 0 && ammoInReserve > 0 && !equippedPlayer.isReloading)
-        {
+        { 
             StartCoroutine(Reload());
-        }
-    }
-
-    public void Shoot()
-    {
-
-        shootTimer = 0;
-
-        if (ammoInMag > 0 && !equippedPlayer.isReloading)
-        {
             
-            ammoInMag--;
+        } 
+    } 
+    public void Shoot() 
+    { 
+        shootTimer = 0; 
 
-            muzzleFlash.Play();
+        if (ammoInMag > 0 && !equippedPlayer.isReloading) 
+        { 
+            ammoInMag--; 
+            muzzleFlash.Play(); 
+            gunAudio.pitch = Random.Range(0.95f, 1.05f); 
+            gunAudio.PlayOneShot(gunShotSound); 
+            bool isEnemy = false; 
+            GameObject reticle = GameObject.Find("Reticle"); 
 
-            gunAudio.pitch = Random.Range(0.95f, 1.05f);
-            gunAudio.PlayOneShot(gunShotSound);
-
-            bool isEnemy = false;
-
-            GameObject reticle = GameObject.Find("Reticle");
-            if (reticle != null)
-            {
-                ReticleController rc = reticle.GetComponent<ReticleController>();
+            if (reticle != null) 
+            { 
+                ReticleController rc = reticle.GetComponent<ReticleController>(); 
                 if (rc != null)
-                {
-                    rc.Pulse(isEnemy);
-                }
-            }
+                    
+                { 
+                    rc.Pulse(isEnemy); 
+                } 
+            } 
 
-            Instantiate(bullet, shootPos.position, transform.rotation);
+            Instantiate(bullet, shootPos.position, transform.rotation); 
 
             damage dmgScript = bullet.GetComponent<damage>();
+            
+            if (dmgScript != null) 
+            { 
+                dmgScript.SetWeaponDamage(wepDmg); 
+            } 
 
-            if (dmgScript != null)
-            {
-                dmgScript.SetWeaponDamage(wepDmg);
-            }
-
-            equippedPlayer.updatePlayerUI();
-
-        }
-        
-    }
-
-    IEnumerator Reload()
-    {
-        equippedPlayer.isReloading = true;
-
-        gunAudio.PlayOneShot(reloadSound);
-
+            equippedPlayer.updatePlayerUI(); 
+        } 
+    } 
+    IEnumerator Reload() 
+    { 
+        equippedPlayer.isReloading = true; 
+        gunAudio.PlayOneShot(reloadSound); 
         gunAnim.SetBool("Reloading", true);
+        
+        yield return new WaitForSeconds(1f - .25f); 
 
-        yield return new WaitForSeconds(1f - .25f);
+        gunAnim.SetBool("Reloading", false); 
 
-        gunAnim.SetBool("Reloading", false);
+        yield return new WaitForSeconds(.25f); 
 
-        yield return new WaitForSeconds(.25f);
+        int ammoNeeded = magSize - ammoInMag; 
+        int ammoToLoad = Mathf.Min(ammoNeeded, ammoInReserve); 
 
-        int ammoNeeded = magSize - ammoInMag;
-        int ammoToLoad = Mathf.Min(ammoNeeded, ammoInReserve);
+        ammoInMag += ammoToLoad; ammoInReserve -= ammoToLoad; 
+        equippedPlayer.isReloading = false; 
+        equippedPlayer.updatePlayerUI(); 
 
-        ammoInMag += ammoToLoad;
-        ammoInReserve -= ammoToLoad;
+    } 
+    public int GetAmmoInMag() 
+    { 
+        return ammoInMag; 
+    } 
+    public int GetAmmoInReserve() 
+    { 
+        return ammoInReserve; 
+    } 
+    void CheckReticleTarget() 
+    { 
+        Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * range, Color.red); 
+        RaycastHit hit; 
+        bool aimingAtEnemy = false; 
 
-        equippedPlayer.isReloading = false;
-        equippedPlayer.updatePlayerUI();
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, range, ~ignoreLayer)) 
+        { 
+            if (hit.collider.CompareTag("Enemy")) 
+            { 
+                aimingAtEnemy = true; 
+            } 
+        } GameObject reticle = GameObject.Find("Reticle"); 
 
-    }
+        if (reticle != null) 
+        { 
+            ReticleController rc = reticle.GetComponent<ReticleController>(); 
 
-    public int GetAmmoInMag()
-    {
-        return ammoInMag;
-    }
-
-    public int GetAmmoInReserve()
-    {
-        return ammoInReserve;
-    }
-
-    void CheckReticleTarget()
-    {
-        Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * range, Color.red);
-
-        RaycastHit hit;
-        bool aimingAtEnemy = false;
-
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, range, ~ignoreLayer))
-        {
-            if (hit.collider.CompareTag("Enemy"))
-            {
-                aimingAtEnemy = true;
-            }
-        }
-
-        GameObject reticle = GameObject.Find("Reticle");
-        if (reticle != null)
-        {
-            ReticleController rc = reticle.GetComponent<ReticleController>();
-            if (rc != null)
-            {
-                rc.SetEnemyAim(aimingAtEnemy);
-            }
-        }
-    }
-
-
-
-
+            if (rc != null) 
+            { 
+                rc.SetEnemyAim(aimingAtEnemy); 
+            } 
+        } 
+    } 
 }
