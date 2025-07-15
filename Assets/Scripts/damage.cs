@@ -13,7 +13,10 @@ public class damage : MonoBehaviour
     [SerializeField] int speed;
     [SerializeField] int destroyTime;
 
+    [SerializeField] GameObject impactPrefab;
+
     bool isDamaging;
+    public int weaponDMG;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -53,7 +56,15 @@ public class damage : MonoBehaviour
 
         if (dmg != null && type != damagetype.DOT)
         {
-            dmg.takeDamage(damageAmount);
+            
+
+            if (weaponDMG > 0)
+            {
+                dmg.takeDamage(damageAmount + weaponDMG);
+            } else
+            {
+                dmg.takeDamage(damageAmount);
+            }
         }
 
         if (type == damagetype.moving || type == damagetype.homing)
@@ -75,10 +86,17 @@ public class damage : MonoBehaviour
         }
     }
 
+    public void SetWeaponDamage(int wepDmg)
+    {
+        weaponDMG = wepDmg;
+    }
+
     IEnumerator damageOther(IDamage d)
     {
         isDamaging = true;
+
         d.takeDamage(damageAmount);
+
         yield return new WaitForSeconds(damageRate);
         isDamaging = false;
     }
