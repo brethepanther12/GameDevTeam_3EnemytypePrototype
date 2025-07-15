@@ -50,8 +50,6 @@ public class EnemyAIBase : MonoBehaviour, IDamage
 
         //This assigns the original color of the placed model in the Unity Inspector
 
-        enemyColorOrigin = enemyModel.material.color;
-
         gamemanager.instance.updateGameGoal(1);
 
         enemyColorOrigin = enemyModel[0].material.color;
