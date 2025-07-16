@@ -14,6 +14,7 @@ public class FlyingAI : MonoBehaviour
     [SerializeField] private int damageAmount;
     private bool isDamaging;
     damage Damage;
+    IDamage iDamage;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -45,6 +46,22 @@ public class FlyingAI : MonoBehaviour
 
         // Move forward
         rigidBody.linearVelocity = transform.forward * flyingSpeed;
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other == null) return;
+
+        if (other.CompareTag("Player") && !isDamaging)
+        {
+            iDamage = other.GetComponent<IDamage>();
+
+            if (iDamage != null)
+            {
+                StartCoroutine(DOT(iDamage));
+            }
+
+        }
     }
 
     IEnumerator DOT (IDamage target)
