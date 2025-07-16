@@ -16,6 +16,15 @@ public class FlyingAI : MonoBehaviour
     damage Damage;
     IDamage iDamage;
 
+    //Hover off floor
+    [SerializeField] private float hoverHeight;
+    [SerializeField] private float hoverClamp;
+
+    [SerializeField] private float fovDistance;
+    [SerializeField] private float fovAngle;
+    [SerializeField] private LayerMask enviormentMask;
+    private bool playerVisible;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -46,6 +55,11 @@ public class FlyingAI : MonoBehaviour
 
         // Move forward
         rigidBody.linearVelocity = transform.forward * flyingSpeed;
+    }
+
+    private bool PlayerInFieldOfView()
+    {
+
     }
 
     private void OnCollisionStay(Collision other)
