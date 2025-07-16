@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class FlyingAI : MonoBehaviour
@@ -44,5 +45,16 @@ public class FlyingAI : MonoBehaviour
 
         // Move forward
         rigidBody.linearVelocity = transform.forward * flyingSpeed;
+    }
+
+    IEnumerator DOT (IDamage target)
+    {
+        isDamaging = true;
+
+        target.takeDamage(damageAmount);
+
+        yield return new WaitForSeconds(damageRate);
+
+        isDamaging = false;
     }
 }
