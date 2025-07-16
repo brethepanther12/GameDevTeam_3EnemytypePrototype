@@ -59,7 +59,20 @@ public class FlyingAI : MonoBehaviour
 
     private bool PlayerInFieldOfView()
     {
+        if (target == null) return false;
 
+        //Locate player
+        Vector3 direction = target.position - transform.position;
+        float angle = Vector3.Angle(transform.forward, direction);
+
+        //check if the player is far from the object
+        if (direction.magnitude > fovDistance || angle > fovAngle / 2f)return false;
+
+        if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, fovDistance, ~enviormentMask))
+        {
+            if (hit.collider.CompareTag("Player")) return true;
+        }
+        return false;
     }
 
     private void OnCollisionStay(Collision other)
