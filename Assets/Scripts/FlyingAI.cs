@@ -48,19 +48,15 @@ public class FlyingAI : MonoBehaviour
         rigidBody.linearVelocity = transform.forward * flyingSpeed;
     }
 
-    private void OnTriggerStay(Collider other)
+    private void OnCollisionStay(Collision other)
     {
-        if (other == null) return;
-
-        if (other.CompareTag("Player") && !isDamaging)
+        if (!isDamaging && other.gameObject.CompareTag("Player"))
         {
-            iDamage = other.GetComponent<IDamage>();
-
+            iDamage = other.gameObject.GetComponent<IDamage>();
             if (iDamage != null)
             {
                 StartCoroutine(DOT(iDamage));
             }
-
         }
     }
 
