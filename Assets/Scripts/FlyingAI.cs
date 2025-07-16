@@ -15,9 +15,23 @@ public class FlyingAI : MonoBehaviour
     {
         if (rigidBody == null) rigidBody = GetComponent<Rigidbody>();
 
-        playerTarget = gamemanager.instance.player;
+        GameObject player = gamemanager.instance.player;
+        if (player != null)
+            target = player.transform;
 
-        if (playerTarget != null) target = playerTarget.transform;
+        // Get this object's collider
+        Collider myCollider = GetComponent<Collider>();
+
+        // Only check for colliders in a certain radius (10 units here)
+        Collider[] nearby = Physics.OverlapSphere(transform.position, 20f, LayerMask.GetMask("Environment"));
+
+        foreach (Collider col in nearby)
+        {
+            if (col != myCollider) // Avoid self-collision
+            {
+                Physics.IgnoreCollision(myCollider, col);
+            }
+        }
     }
 
     // Update is called once per frame
