@@ -9,30 +9,26 @@ public class FlyingAI : MonoBehaviour
 
     [SerializeField] private Rigidbody rigidBody;
 
+    [SerializeField] private float damageRate;
+    [SerializeField] private int damageAmount;
+    private bool isDamaging;
+    damage Damage;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         if (rigidBody == null) rigidBody = GetComponent<Rigidbody>();
 
-        GameObject player = gamemanager.instance.player;
-        if (player != null)
-            target = player.transform;
+        playerTarget = gamemanager.instance.player;
+        if (playerTarget != null)
+            target = playerTarget.transform;
 
-        // Get this object's collider
-        Collider myCollider = GetComponent<Collider>();
+        Damage = GetComponent<damage>();
+        if (Damage != null)
+            Damage.enabled = false;
 
-        // Only check for colliders in a certain radius (10 units here)
-        Collider[] nearby = Physics.OverlapSphere(transform.position, 20f, LayerMask.GetMask("Environment"));
-
-        foreach (Collider col in nearby)
-        {
-            if (col != myCollider) // Avoid self-collision
-            {
-                Physics.IgnoreCollision(myCollider, col);
-            }
-        }
     }
+
 
     // Update is called once per frame
     void FixedUpdate()
