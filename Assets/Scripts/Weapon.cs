@@ -37,8 +37,7 @@ public class Weapon : MonoBehaviour {
         inventory = GetComponent<PlayerInventory>(); 
         ammoInMag = magSize; 
         ammoInReserve = ammoReserve; 
-        equippedPlayer.updatePlayerUI(); 
-
+        equippedPlayer.updatePlayerUI();
     } 
     private void Update() 
     { 
