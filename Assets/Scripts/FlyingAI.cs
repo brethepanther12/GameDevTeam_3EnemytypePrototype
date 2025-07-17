@@ -24,6 +24,7 @@ public class FlyingAI : MonoBehaviour
     [SerializeField] private float fovAngle;
     [SerializeField] private LayerMask enviormentMask;
     private bool playerVisible;
+    private bool InRange;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -44,7 +45,11 @@ public class FlyingAI : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (target == null) return;
+        if (target == null || !InRange)
+        {
+            rigidBody.linearVelocity = Vector3.zero;
+            return;
+        }
 
         playerVisible = PlayerInFieldOfView();
 
@@ -97,6 +102,18 @@ public class FlyingAI : MonoBehaviour
 
         
         return false;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+            InRange = true;
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+            InRange = false;
     }
 
     private void OnCollisionStay(Collision other)
