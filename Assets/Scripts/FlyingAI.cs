@@ -20,10 +20,10 @@ public class FlyingAI : MonoBehaviour
     [SerializeField] private float hoverHeight;
     [SerializeField] private float hoverClamp;
 
-    [SerializeField] private float fovDistance;
-    [SerializeField] private float fovAngle;
-    [SerializeField] private LayerMask enviormentMask;
-    private bool playerVisible;
+    //[SerializeField] private float fovDistance;
+   // [SerializeField] private float fovAngle;
+   // [SerializeField] private LayerMask enviormentMask;
+   // private bool playerVisible;
     private bool InRange;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -51,14 +51,6 @@ public class FlyingAI : MonoBehaviour
             return;
         }
 
-        playerVisible = PlayerInFieldOfView();
-
-        if (!playerVisible)
-        {
-            rigidBody.linearVelocity = Vector3.zero;
-            return;
-        }
-
         // Direction toward the target
         Vector3 direction = (target.position - transform.position).normalized;
 
@@ -78,6 +70,7 @@ public class FlyingAI : MonoBehaviour
         rigidBody.linearVelocity = transform.forward * flyingSpeed;
     }
 
+    /*
     //Logic if the player is in view or not
     private bool PlayerInFieldOfView()
     {
@@ -103,6 +96,7 @@ public class FlyingAI : MonoBehaviour
         
         return false;
     }
+    */
 
     private void OnTriggerEnter(Collider other)
     {
