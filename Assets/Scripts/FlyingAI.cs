@@ -20,10 +20,10 @@ public class FlyingAI : MonoBehaviour
     [SerializeField] private float hoverHeight;
     [SerializeField] private float hoverClamp;
 
-    //[SerializeField] private float fovDistance;
-   // [SerializeField] private float fovAngle;
+   [SerializeField] private float fovDistance;
+   [SerializeField] private float fovAngle;
    [SerializeField] private LayerMask enviormentMask;
-   // private bool playerVisible;
+    private bool playerVisible;
     private bool InRange;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -45,7 +45,9 @@ public class FlyingAI : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (target == null || !InRange)
+        playerVisible = PlayerInFieldOfView();
+
+        if (target == null || !InRange || !playerVisible)
         {
             rigidBody.linearVelocity = Vector3.zero;
             return;
@@ -55,6 +57,7 @@ public class FlyingAI : MonoBehaviour
         Vector3 direction = (target.position - transform.position).normalized;
 
         Debug.DrawRay(transform.position, direction * 1f, Color.red);
+           
 
         // Maintain hover height
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight))
@@ -93,7 +96,7 @@ public class FlyingAI : MonoBehaviour
         rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime));
     }
 
-    /*
+    
     //Logic if the player is in view or not
     private bool PlayerInFieldOfView()
     {
@@ -106,12 +109,13 @@ public class FlyingAI : MonoBehaviour
         Debug.DrawRay(transform.position, direction.normalized * fovDistance, Color.red);
 
         //check if the player is far from the object
-        if (direction.magnitude > fovDistance || angle > fovAngle / 2f)return false;
+        if (direction.magnitude > fovDistance || angle > fovAngle)return false;
 
         if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, fovDistance))
         {
             if (hit.collider.CompareTag("Player"))
                 return true;
+
             else if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
                 return false;
         }
@@ -119,7 +123,7 @@ public class FlyingAI : MonoBehaviour
         
         return false;
     }
-    */
+    
 
     private void OnTriggerEnter(Collider other)
     {
