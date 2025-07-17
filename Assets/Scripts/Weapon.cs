@@ -6,7 +6,7 @@ public class Weapon : MonoBehaviour {
     [SerializeField] float attackRate; 
     [SerializeField] int range; 
     [SerializeField] int magSize; 
-    [SerializeField] int ammoReserve; 
+    //[SerializeField] int ammoReserve; 
     [SerializeField] int ammoMax; 
     [SerializeField] LayerMask ignoreLayer; 
     [SerializeField] GameObject bullet; 
@@ -34,9 +34,9 @@ public class Weapon : MonoBehaviour {
     private void Start() 
     { 
         equippedPlayer = gamemanager.instance.playerScript; 
-        inventory = GetComponent<PlayerInventory>(); 
-        ammoInMag = magSize; 
-        ammoInReserve = ammoReserve; 
+        inventory = equippedPlayer.GetComponent<PlayerInventory>(); 
+        ammoInMag = magSize;
+        ammoInReserve = inventory.GetAmmoAmount("Ammo");
         equippedPlayer.updatePlayerUI();
     } 
     private void Update() 
@@ -109,7 +109,9 @@ public class Weapon : MonoBehaviour {
         int ammoToLoad = Mathf.Min(ammoNeeded, ammoInReserve); 
 
         ammoInMag += ammoToLoad; 
-        ammoInReserve -= ammoToLoad; 
+        ammoInReserve -= ammoToLoad;
+        inventory.ConsumeAmmo(ammoToLoad);
+        ammoInReserve = inventory.GetAmmoAmount("Ammo");
         equippedPlayer.isReloading = false; 
         equippedPlayer.updatePlayerUI(); 
 
