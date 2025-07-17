@@ -83,11 +83,11 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 3387b8e4b2ac870438bca51986d5c7bd, type: 3}
   walkStepDelay: 0.5
   sprintStepDelay: 0.3
-  weapon1: {fileID: 0}
-  equippedWeapon: {fileID: 3522044433227860681, guid: 7aa3bb9e2f359bc4cb22004cc0ddaf3f, type: 3}
-  animator: {fileID: 0}
-  impactPrefab: {fileID: 2408714428905375140, guid: ec2cd9d24f8932148ab9480fc3b65b15, type: 3}
-  muzzleFlash: {fileID: 0}
+  weapon1: {fileID: 4762567348444214200}
+  equippedWeapon: {fileID: 0}
+  inventory: {fileID: 0}
+  isReloading: 0
+  currentAmmo: 0
 --- !u!114 &1608039298533726311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,7 +100,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdf38471c6fb4b54f90a2ee80936c0cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collectedItems: []
+  collectedItems:
+  - {fileID: 11400000, guid: 96a6ce5e56fb1e349acc8985088cc2aa, type: 2}
 --- !u!33 &3341689909172383908
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -420,6 +421,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: Gun
       objectReference: {fileID: 0}
+    - target: {fileID: 3522044433227860681, guid: 7aa3bb9e2f359bc4cb22004cc0ddaf3f, type: 3}
+      propertyPath: ammoMax
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 3522044433227860681, guid: 7aa3bb9e2f359bc4cb22004cc0ddaf3f, type: 3}
+      propertyPath: gunAnim
+      value: 
+      objectReference: {fileID: 8745583816857365862}
+    - target: {fileID: 3522044433227860681, guid: 7aa3bb9e2f359bc4cb22004cc0ddaf3f, type: 3}
+      propertyPath: gunAudio
+      value: 
+      objectReference: {fileID: 5399780266970152819}
+    - target: {fileID: 3522044433227860681, guid: 7aa3bb9e2f359bc4cb22004cc0ddaf3f, type: 3}
+      propertyPath: reloadSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a40641150cd218c49a68a971c7304757, type: 3}
+    - target: {fileID: 3522044433227860681, guid: 7aa3bb9e2f359bc4cb22004cc0ddaf3f, type: 3}
+      propertyPath: gunShotSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 0e62edad5075cf547ad4869c8bfdf834, type: 3}
     - target: {fileID: 7656816343512773518, guid: 7aa3bb9e2f359bc4cb22004cc0ddaf3f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.29999995
@@ -468,5 +489,26 @@ PrefabInstance:
 --- !u!4 &1781913490440555263 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7656816343512773518, guid: 7aa3bb9e2f359bc4cb22004cc0ddaf3f, type: 3}
+  m_PrefabInstance: {fileID: 8284610131981007217}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4762567348444214200 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3522044433227860681, guid: 7aa3bb9e2f359bc4cb22004cc0ddaf3f, type: 3}
+  m_PrefabInstance: {fileID: 8284610131981007217}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31cc15047268cc943b7da122d8519996, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!82 &5399780266970152819 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 4041706398998791682, guid: 7aa3bb9e2f359bc4cb22004cc0ddaf3f, type: 3}
+  m_PrefabInstance: {fileID: 8284610131981007217}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &8745583816857365862 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 839454176682726423, guid: 7aa3bb9e2f359bc4cb22004cc0ddaf3f, type: 3}
   m_PrefabInstance: {fileID: 8284610131981007217}
   m_PrefabAsset: {fileID: 0}
