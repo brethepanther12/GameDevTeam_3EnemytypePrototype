@@ -106,7 +106,7 @@ public class Weapon : MonoBehaviour {
         yield return new WaitForSeconds(.25f); 
 
         int ammoNeeded = magSize - ammoInMag; 
-        int ammoToLoad = Mathf.Min(ammoNeeded, ammoInReserve); 
+        int ammoToLoad = Mathf.Min(ammoNeeded, inventory.GetAmmoAmount("Ammo")); 
 
         ammoInMag += ammoToLoad; 
         ammoInReserve -= ammoToLoad;
