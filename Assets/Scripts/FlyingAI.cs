@@ -54,6 +54,8 @@ public class FlyingAI : MonoBehaviour
         // Direction toward the target
         Vector3 direction = (target.position - transform.position).normalized;
 
+        Debug.DrawRay(transform.position, direction * 1f, Color.red);
+
         // Maintain hover height
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight))
         {
