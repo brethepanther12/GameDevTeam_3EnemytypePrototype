@@ -66,13 +66,23 @@ public class FlyingAI : MonoBehaviour
 
             rigidBody.AddForce(Vector3.up * upwardForce, ForceMode.Acceleration);
         }
-
-        // Smooth rotation
+        /*
+         
+         // Smooth rotation
         Quaternion targetRot = Quaternion.LookRotation(direction);
         rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime));
 
         // Move forward
         rigidBody.linearVelocity = transform.forward * flyingSpeed;
+         
+         */
+
+        // Move directly toward the player
+        rigidBody.linearVelocity = direction * flyingSpeed;
+
+        // Smooth rotation
+        Quaternion targetRot = Quaternion.LookRotation(direction);
+        rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime));
     }
 
     /*
