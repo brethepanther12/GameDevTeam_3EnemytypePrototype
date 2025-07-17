@@ -58,13 +58,11 @@ public class FlyingAI : MonoBehaviour
         Vector3 direction = (target.position - transform.position).normalized;
 
         // Maintain hover height
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight, ~0))
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight))
         {
             float hoverError = hoverHeight - hit.distance;
             if (hoverError > 0.01f)
-            {
                 rigidBody.AddForce(Vector3.up * hoverClamp * hoverError, ForceMode.Acceleration);
-            }
         }
 
         // Smooth rotation
@@ -84,13 +82,20 @@ public class FlyingAI : MonoBehaviour
         Vector3 direction = target.position - transform.position;
         float angle = Vector3.Angle(transform.forward, direction);
 
+        Debug.DrawRay(transform.position, direction.normalized * fovDistance, Color.red);
+
         //check if the player is far from the object
         if (direction.magnitude > fovDistance || angle > fovAngle / 2f)return false;
 
-        if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, fovDistance, ~enviormentMask))
+        if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, fovDistance))
         {
-            if (hit.collider.CompareTag("Player")) return true;
+            if (hit.collider.CompareTag("Player"))
+                return true;
+            else if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
+                return false;
         }
+
+        
         return false;
     }
 
