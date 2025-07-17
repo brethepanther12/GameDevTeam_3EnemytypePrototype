@@ -173,46 +173,24 @@ public class playerController : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
-
-        if (shield <= 0)
-        {
-            shield = 0;
-
-        }
-
         if (shield > 0)
         {
-
             shield -= amount;
-
             updatePlayerUI();
-
             StartCoroutine(ShieldDamageFlashScreen());
-
         }
-
-        if (shield == 0 && armor > 0)
+        else if (armor > 0)
         {
-
             armor -= amount;
-
             updatePlayerUI();
-
             StartCoroutine(ArmorDamageFlashScreen());
-
         }
-        if (shield == 0 && armor == 0)
+        else
         {
-
             HP -= amount;
-
             AudioSource.PlayClipAtPoint(hurtSound, transform.position, hurtVol);
-
             updatePlayerUI();
-
             StartCoroutine(damageFlashScreen());
-
-
         }
 
         if (HP <= 0)
@@ -243,41 +221,36 @@ public class playerController : MonoBehaviour, IDamage
 
     public void GainArmor(int amount, bool doesIncreaseMax)
     {
-        armor += amount;
-
         if (doesIncreaseMax)
         {
             maxArmor += amount;
-
         }
-        else if (armor >= maxArmor && !doesIncreaseMax)
-        {
 
+        armor += amount;
+
+        if (armor > maxArmor)
+        {
             armor = maxArmor;
         }
 
         updatePlayerUI();
-
     }
 
     public void GainShield(int amount, bool doesIncreaseMax)
     {
-
-        shield += amount;
-
         if (doesIncreaseMax)
         {
             maxShield += amount;
-
         }
-        else if (shield >= maxShield && !doesIncreaseMax)
-        {
 
+        shield += amount;
+
+        if (shield > maxShield)
+        {
             shield = maxShield;
         }
 
         updatePlayerUI();
-
     }
 
     public void GainAmmo(int amount, bool doesIncreaseMax)
