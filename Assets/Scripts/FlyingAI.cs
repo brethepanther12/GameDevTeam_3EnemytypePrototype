@@ -58,8 +58,13 @@ public class FlyingAI : MonoBehaviour
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight))
         {
             float hoverError = hoverHeight - hit.distance;
-            if (hoverError > 0.01f)
-                rigidBody.AddForce(Vector3.up * hoverClamp * hoverError, ForceMode.Acceleration);
+            float upwardForce = hoverClamp * hoverError;
+
+            // Boost if very close to the ground
+            if (hit.distance < 0.2f)
+                upwardForce *= 3f;
+
+            rigidBody.AddForce(Vector3.up * upwardForce, ForceMode.Acceleration);
         }
 
         // Smooth rotation
