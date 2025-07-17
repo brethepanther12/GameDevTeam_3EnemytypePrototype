@@ -79,16 +79,16 @@ public class Weapon : MonoBehaviour {
                 { 
                     rc.Pulse(isEnemy); 
                 } 
-            } 
+            }
 
-            Instantiate(bullet, shootPos.position, transform.rotation); 
+            GameObject bulletObj = Instantiate(bullet, shootPos.position, transform.rotation);
 
-            damage dmgScript = bullet.GetComponent<damage>();
+            damage dmgScript = bulletObj.GetComponent<damage>();
             
             if (dmgScript != null) 
             { 
                 dmgScript.SetWeaponDamage(wepDmg); 
-            } 
+            }
 
             equippedPlayer.updatePlayerUI(); 
         } 
