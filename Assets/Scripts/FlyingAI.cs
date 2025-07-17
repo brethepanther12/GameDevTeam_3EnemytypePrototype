@@ -20,9 +20,17 @@ public class FlyingAI : MonoBehaviour
     [SerializeField] private float hoverHeight;
     [SerializeField] private float hoverClamp;
 
-   [SerializeField] private float fovDistance;
-   [SerializeField] private float fovAngle;
-   [SerializeField] private LayerMask enviormentMask;
+    //Ceiling varibles
+    [SerializeField] private float ceilingInRadius;
+    [SerializeField] private float ceilingAttachmentRange;
+    [SerializeField] private LayerMask ceilingMask;
+    private bool returnToCeiling;
+    private Vector3 ceilingTarget;
+
+    //Fov
+    [SerializeField] private float fovDistance;
+    [SerializeField] private float fovAngle;
+    [SerializeField] private LayerMask enviormentMask;
     private bool playerVisible;
     private bool InRange;
 
@@ -38,7 +46,7 @@ public class FlyingAI : MonoBehaviour
         Damage = GetComponent<damage>();
         if (Damage != null)
             Damage.enabled = false;
-
+        gamemanager.instance.updateGameGoal(1);
     }
 
 
