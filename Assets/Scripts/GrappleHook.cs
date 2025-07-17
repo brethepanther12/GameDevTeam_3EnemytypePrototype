@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class GrappleHook : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class GrappleHook : MonoBehaviour
     public float pullSpeed = 15f;
     public LayerMask enemyLayer;
     [SerializeField] private float grappleCD = 5f;
+    [SerializeField] private Image grappleCooldownUI;
 
     private GameObject grappledEnemy;
     private bool isPulling = false;
@@ -52,6 +54,22 @@ public class GrappleHook : MonoBehaviour
         else
         {
             grappleLine.enabled = false;
+        }
+
+        if (grappleCooldownUI != null)
+        {
+            float timeSinceLast = Time.time - lastGrapple;
+            float cooldownRatio = 1 - Mathf.Clamp01(timeSinceLast / grappleCD);
+
+            if (cooldownRatio > 0f)
+            {
+                grappleCooldownUI.enabled = true;
+                grappleCooldownUI.fillAmount = cooldownRatio;
+            }
+            else
+            {
+                grappleCooldownUI.enabled = false;
+            }
         }
     }
 
