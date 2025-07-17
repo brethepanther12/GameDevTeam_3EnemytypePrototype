@@ -22,7 +22,7 @@ public class FlyingAI : MonoBehaviour
 
     //[SerializeField] private float fovDistance;
    // [SerializeField] private float fovAngle;
-   // [SerializeField] private LayerMask enviormentMask;
+   [SerializeField] private LayerMask enviormentMask;
    // private bool playerVisible;
     private bool InRange;
 
@@ -77,8 +77,14 @@ public class FlyingAI : MonoBehaviour
          
          */
 
-        // Move directly toward the player
-        rigidBody.linearVelocity = direction * flyingSpeed;
+        //Checking if there is a wall in flying enemy direction
+        if (!Physics.Raycast(transform.position, direction, out RaycastHit wallHit, 1f, enviormentMask))
+    
+            // Move directly toward the player
+            rigidBody.linearVelocity = direction * flyingSpeed;
+
+        else 
+            rigidBody.linearVelocity = Vector3.zero;
 
         // Smooth rotation
         Quaternion targetRot = Quaternion.LookRotation(direction);
