@@ -8,4 +8,11 @@ public class ItemSO : ScriptableObject
     public int quantityToPickup;
     public int quantityHeld;
     public int stackSize;
+    public bool isUnique;
+
+    public enum itemType
+    {
+        Weapon, Consumable, Key, Upgrade, Collectable
+    }
+
 }

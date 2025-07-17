@@ -66,7 +66,9 @@ public class Weapon : MonoBehaviour {
             muzzleFlash.Play(); 
             gunAudio.pitch = Random.Range(0.95f, 1.05f); 
             gunAudio.PlayOneShot(gunShotSound); 
+
             bool isEnemy = false; 
+
             GameObject reticle = GameObject.Find("Reticle"); 
 
             if (reticle != null) 
@@ -106,7 +108,8 @@ public class Weapon : MonoBehaviour {
         int ammoNeeded = magSize - ammoInMag; 
         int ammoToLoad = Mathf.Min(ammoNeeded, ammoInReserve); 
 
-        ammoInMag += ammoToLoad; ammoInReserve -= ammoToLoad; 
+        ammoInMag += ammoToLoad; 
+        ammoInReserve -= ammoToLoad; 
         equippedPlayer.isReloading = false; 
         equippedPlayer.updatePlayerUI(); 
 
