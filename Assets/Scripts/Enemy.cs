@@ -4,7 +4,7 @@ using UnityEngine.AI;
 using UnityEngine.Assertions.Must;
 using UnityEngine.Rendering;
 
-public class Enemy : MonoBehaviour, IDamage
+public class Enemy : MonoBehaviour, IDamage, IGrapplable
 {
 
     [SerializeField] SkinnedMeshRenderer[] modelParts;
@@ -45,6 +45,8 @@ public class Enemy : MonoBehaviour, IDamage
 
     Color colorOrig;
 
+    public bool isBeingGrappled { get; set; }
+    public bool canBeGrappled => true;
     private float footstepTimer;
     private Coroutine reloadingRT;
     private bool isDead;
@@ -55,6 +57,7 @@ public class Enemy : MonoBehaviour, IDamage
     float angleToPlayer;
     float roamTimer;
     float stoppingDistanceOrig;
+
 
     Vector3 playerDir;
     Vector3 startingPos;
@@ -74,7 +77,7 @@ public class Enemy : MonoBehaviour, IDamage
     // Update is called once per frame
     void Update()
     {
-        if (isDead)
+        if (isDead || isBeingGrappled)
             return;
 
         animator.SetFloat("Speed", agent.velocity.magnitude);
@@ -176,27 +179,29 @@ public class Enemy : MonoBehaviour, IDamage
 
                     if (currentAmmo <= 0 && !isReloading && !isDead)
                     {
-                       reloadingRT = StartCoroutine(Reload());
+                        reloadingRT = StartCoroutine(Reload());
                     }
                 }
-
-                if (distanceToPlayer > shootRange)
+                if (!isBeingGrappled && agent != null && agent.enabled && agent.isOnNavMesh)
                 {
-                    agent.SetDestination(gamemanager.instance.player.transform.position);
-                }
-                else
-                {
-                    agent.ResetPath(); 
-                }
+                    if (distanceToPlayer > shootRange)
+                    {
+                        agent.SetDestination(gamemanager.instance.player.transform.position);
+                    }
+                    else
+                    {
+                        agent.ResetPath();
+                    }
 
-                if (agent.remainingDistance <= agent.stoppingDistance)
-                {
-                    FaceTarget();
+                    if (agent.remainingDistance <= agent.stoppingDistance)
+                    {
+                        FaceTarget();
+                    }
+
+                    agent.stoppingDistance = stoppingDistanceOrig;
+
+                    return true;
                 }
-
-                agent.stoppingDistance = stoppingDistanceOrig;
-
-                return true;
             }
         }
 

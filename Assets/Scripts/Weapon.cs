@@ -32,12 +32,8 @@ public class Weapon : MonoBehaviour {
     { bullet_dmg, fireRate, range, magSize, reserveSize } 
 
     private void Start() 
-    { 
-        equippedPlayer = gamemanager.instance.playerScript; 
-        inventory = equippedPlayer.GetComponent<PlayerInventory>(); 
-        ammoInMag = magSize;
-        ammoInReserve = inventory.GetAmmoAmount("Ammo");
-        equippedPlayer.updatePlayerUI();
+    {
+        StartCoroutine(DelayedInit());
     } 
     private void Update() 
     { 
@@ -147,5 +143,20 @@ public class Weapon : MonoBehaviour {
                 rc.SetEnemyAim(aimingAtEnemy); 
             } 
         } 
-    } 
+    }
+
+    private IEnumerator DelayedInit()
+    {
+       // wait until gamemanager and playerScript are assigned
+        while (gamemanager.instance == null || gamemanager.instance.playerScript == null)
+            yield return null;
+
+        equippedPlayer = gamemanager.instance.playerScript;
+        inventory = equippedPlayer.GetComponent<PlayerInventory>();
+
+        ammoInMag = magSize;
+        ammoInReserve = inventory.GetAmmoAmount("Ammo");
+
+        equippedPlayer.updatePlayerUI();
+    }
 }
