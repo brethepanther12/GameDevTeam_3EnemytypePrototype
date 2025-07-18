@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8105246118471358898}
   - component: {fileID: 4389261893341757577}
   - component: {fileID: 3582038614179718291}
+  - component: {fileID: 549948153452486125}
   - component: {fileID: 5448062265333316339}
   m_Layer: 7
   m_Name: Bat
@@ -102,11 +103,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  flyingSpeed: 5
+  flyingSpeed: 7
   rotationSpeed: 2
   rigidBody: {fileID: 5448062265333316339}
   damageRate: 1.5
   damageAmount: 1
+  hoverHeight: 20
+  hoverClamp: 5
+  ceilingInRadius: 20
+  ceilingAttachmentRange: 0.5
+  ceilingMask:
+    serializedVersion: 2
+    m_Bits: 1024
+  fovDistance: 10
+  fovAngle: 180
+  enviormentMask:
+    serializedVersion: 2
+    m_Bits: 1089
+  HP: 10
+  hitSound: {fileID: 8300000, guid: f337cdad539e41446ba36e1efac9b852, type: 3}
+  deathSound: {fileID: 8300000, guid: c7dff7457517f03499ebc0d9ff32b81d, type: 3}
+  hitVolume: 1
+  deathVolume: 1
+  modelParts: []
 --- !u!135 &3582038614179718291
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -128,6 +147,27 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!135 &549948153452486125
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2445293334335662302}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 7
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &5448062265333316339
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -138,7 +178,7 @@ Rigidbody:
   serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 5
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}

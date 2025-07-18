@@ -8,10 +8,10 @@ public class damage : MonoBehaviour
     [SerializeField] damagetype type;
     [SerializeField] Rigidbody rb;
 
-    [SerializeField] int damageAmount;
-    [SerializeField] float damageRate;
-    [SerializeField] int speed;
-    [SerializeField] int destroyTime;
+    [SerializeField] public int damageAmount;
+    [SerializeField] public float damageRate;
+    [SerializeField] public int speed;
+    [SerializeField] public int destroyTime;
 
     [SerializeField] GameObject impactPrefab;
 
