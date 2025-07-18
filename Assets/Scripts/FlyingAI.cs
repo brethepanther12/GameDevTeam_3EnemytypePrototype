@@ -26,6 +26,7 @@ public class FlyingAI : MonoBehaviour
     [SerializeField] private LayerMask ceilingMask;
     private bool returnToCeiling;
     private Vector3 ceilingTarget;
+    private Vector3 ceilingPoint;
 
     //Fov
     [SerializeField] private float fovDistance;
@@ -132,6 +133,35 @@ public class FlyingAI : MonoBehaviour
         return false;
     }
     
+
+    void NearestCeiling()
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, ceilingInRadius, ceilingMask);
+        
+        float closest = Mathf.Infinity;
+        ceilingPoint = Vector3.zero;
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Collider hit = hits[i];
+
+            Vector3 ceilingBottom = hit.bounds.center - new Vector3(0, hit.bounds.extents.y,0);
+            float distance = Vector3.Distance(transform.position, ceilingBottom);
+
+            if (distance < closest)
+            {
+                closest = distance;
+                ceilingPoint = ceilingBottom; 
+            }
+        }
+
+        if (closest < Mathf.Infinity)
+        {
+            rigidBody.linearVelocity = (ceilingPoint - transform.position).normalized * flyingSpeed;
+        }
+    }
+
+
 
     private void OnTriggerEnter(Collider other)
     {
