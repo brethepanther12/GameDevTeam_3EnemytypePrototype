@@ -65,11 +65,6 @@ public class FlyingAI : MonoBehaviour
                 ceilingTarget = ceilingPoint;
                 returnToCeiling = true;
             }
-            else
-            {
-                rigidBody.linearVelocity = Vector3.zero;
-                return;
-            }
 
             MoveToCeiling();
             return;
