@@ -7,7 +7,7 @@ public class Pickup : MonoBehaviour
 
     private enum pickupType
     {
-        ammo, health, armor, shield, damage, speed, jump, key
+        ammo, health, armor, shield, damage, speed, jump, key, weapon
     };
 
 
@@ -40,6 +40,7 @@ public class Pickup : MonoBehaviour
     {
 
         playerController pc = gamemanager.instance.playerScript;
+        PlayerInventory inv = pc.inventory;
 
         if (pc == null)
         {
@@ -97,6 +98,10 @@ public class Pickup : MonoBehaviour
                     pc.AddKey(quantity);
 
                     break;
+
+                case pickupType.weapon:
+
+
 
                 default:
 

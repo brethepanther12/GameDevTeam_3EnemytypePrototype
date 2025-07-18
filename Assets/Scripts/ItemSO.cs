@@ -1,5 +1,11 @@
 using UnityEngine;
 
+
+public enum itemType
+{
+    Weapon, Consumable, Key, Upgrade, Collectable
+}
+
 [CreateAssetMenu(menuName = "Inventory/Item")]
 public class ItemSO : ScriptableObject
 {
@@ -10,9 +16,6 @@ public class ItemSO : ScriptableObject
     public int stackSize;
     public bool isUnique;
 
-    public enum itemType
-    {
-        Weapon, Consumable, Key, Upgrade, Collectable
-    }
+    
 
 }

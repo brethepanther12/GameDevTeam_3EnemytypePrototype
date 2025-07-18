@@ -1,21 +1,27 @@
 using UnityEngine;
 using System.Collections;
-public class Weapon : MonoBehaviour { 
+public class Weapon : MonoBehaviour {
 
-    [SerializeField] int wepDmg; 
-    [SerializeField] float attackRate; 
-    [SerializeField] int range; 
-    [SerializeField] int magSize; 
-    //[SerializeField] int ammoReserve; 
-    [SerializeField] int ammoMax; 
-    [SerializeField] LayerMask ignoreLayer; 
-    [SerializeField] GameObject bullet; 
-    [SerializeField] Transform shootPos; 
-    [SerializeField] private AudioClip impactSound; 
-    [SerializeField] private float impactVolume = 1f; 
-    [SerializeField] private AudioClip reloadSound; 
-    [SerializeField] private AudioSource gunAudio; 
-    [SerializeField] private AudioClip gunShotSound; 
+    public WeaponSO weaponData;
+    public LayerMask ignoreLayer;
+
+    //Weapon Stats
+    public int wepDmg;
+    public float attackRate;
+    public int range;
+    public int magSize;
+    public int ammoMax;
+
+    //Info for shooting
+    public GameObject bullet;
+    public Transform shootPos;
+
+    //Gun Audio
+    public AudioClip impactSound;
+    public float impactVolume = 1f;
+    public AudioClip reloadSound;
+    public AudioSource gunAudio;
+    public AudioClip gunShotSound;
 
     playerController equippedPlayer; 
     PlayerInventory inventory; 
@@ -24,102 +30,104 @@ public class Weapon : MonoBehaviour {
     int ammoInMag; 
     int ammoInReserve; 
     public Animator gunAnim; 
-    public ParticleSystem muzzleFlash; 
+    public ParticleSystem muzzleFlash;
 
-    public enum wepInfo 
-    { model, image, gunshot_sound, muzzle_flash, impact_sound, impact_volume, reload_sound, gun_audio, animator, impact_prefab } 
-    public enum wepStats 
-    { bullet_dmg, fireRate, range, magSize, reserveSize } 
 
+    private void Awake()
+    {
+        equippedPlayer = gamemanager.instance?.playerScript;
+        inventory = equippedPlayer?.GetComponent<PlayerInventory>();
+    }
     private void Start() 
     {
-        StartCoroutine(DelayedInit());
-    } 
-    private void Update() 
-    { 
-        shootTimer += Time.deltaTime; 
-        CheckReticleTarget(); 
 
-        if (Input.GetButton("Fire1") && shootTimer > attackRate) 
-        { 
-            Shoot(); 
-        } 
+        InitializeWeapon(weaponData);
+    }
 
-        if (Input.GetKeyDown(KeyCode.R) || ammoInMag == 0 && ammoInReserve > 0 && !equippedPlayer.isReloading) 
+    public void InitializeWeapon(WeaponSO data)
+    {
+        weaponData = data;
 
-        { 
+        wepDmg = weaponData.wepDmg;
+        attackRate = weaponData.attackRate;
+        range = weaponData.range;
+        magSize = weaponData.magSize;
+        ammoMax = weaponData.ammoMax;
+
+        bullet = weaponData.bullet;
+        impactSound = weaponData.impactSound;
+        impactVolume = weaponData.impactVolume;
+        reloadSound = weaponData.reloadSound;
+        gunShotSound = weaponData.gunShotSound;
+
+        ammoInMag = magSize;
+        shootTimer = 0f;
+    }
+    private void Update()
+    {
+        shootTimer += Time.deltaTime;
+
+        if (Input.GetButton("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
+        {
+            Shoot();
+        }
+
+        if (Input.GetKeyDown(KeyCode.R) && ammoInMag < magSize && !equippedPlayer.isReloading)
+        {
             StartCoroutine(Reload());
-            
-        } 
-    } 
-    public void Shoot() 
-    { 
-        shootTimer = 0; 
+        }
+    }
+    void Shoot()
+    {
+        shootTimer = 0f;
+        ammoInMag--;
 
-        if (ammoInMag > 0 && !equippedPlayer.isReloading) 
-        { 
-            ammoInMag--; 
-            muzzleFlash.Play(); 
-            gunAudio.pitch = Random.Range(0.95f, 1.05f); 
-            gunAudio.PlayOneShot(gunShotSound); 
+        if (muzzleFlash != null)
+            muzzleFlash.Play();
 
-            bool isEnemy = false; 
+        if (gunAudio != null && gunShotSound != null)
+            gunAudio.PlayOneShot(gunShotSound);
 
-            GameObject reticle = GameObject.Find("Reticle"); 
+        GameObject bulletObj = Instantiate(bullet, shootPos.position, shootPos.rotation);
+        damage dmgScript = bulletObj.GetComponent<damage>();
+        if (dmgScript != null)
+            dmgScript.SetWeaponDamage(wepDmg);
 
-            if (reticle != null) 
-            { 
-                ReticleController rc = reticle.GetComponent<ReticleController>(); 
-                if (rc != null)
-                    
-                { 
-                    rc.Pulse(isEnemy); 
-                } 
-            }
+        equippedPlayer.updatePlayerUI();
+    }
+    IEnumerator Reload()
+    {
+        equippedPlayer.isReloading = true;
 
-            GameObject bulletObj = Instantiate(bullet, shootPos.position, transform.rotation);
+        if (reloadSound != null)
+            gunAudio.PlayOneShot(reloadSound);
 
-            damage dmgScript = bulletObj.GetComponent<damage>();
-            
-            if (dmgScript != null) 
-            { 
-                dmgScript.SetWeaponDamage(wepDmg); 
-            }
+        if (gunAnim != null)
+            gunAnim.SetBool("Reloading", true);
 
-            equippedPlayer.updatePlayerUI(); 
-        } 
-    } 
-    IEnumerator Reload() 
-    { 
-        equippedPlayer.isReloading = true; 
-        gunAudio.PlayOneShot(reloadSound); 
-        gunAnim.SetBool("Reloading", true);
-        
-        yield return new WaitForSeconds(1f - .25f); 
+        yield return new WaitForSeconds(weaponData.reloadSound.length);
 
-        gunAnim.SetBool("Reloading", false); 
+        if (gunAnim != null)
+            gunAnim.SetBool("Reloading", false);
 
-        yield return new WaitForSeconds(.25f); 
+        int ammoNeeded = magSize - ammoInMag;
+        int ammoToLoad = Mathf.Min(ammoNeeded, inventory.GetAmmoAmount("Ammo"));
 
-        int ammoNeeded = magSize - ammoInMag; 
-        int ammoToLoad = Mathf.Min(ammoNeeded, inventory.GetAmmoAmount("Ammo")); 
-
-        ammoInMag += ammoToLoad; 
-        ammoInReserve -= ammoToLoad;
+        ammoInMag += ammoToLoad;
         inventory.ConsumeAmmo(ammoToLoad);
         ammoInReserve = inventory.GetAmmoAmount("Ammo");
-        equippedPlayer.isReloading = false; 
-        equippedPlayer.updatePlayerUI(); 
 
-    } 
-    public int GetAmmoInMag() 
-    { 
-        return ammoInMag; 
-    } 
-    public int GetAmmoInReserve() 
-    { 
-        return ammoInReserve; 
-    } 
+        equippedPlayer.isReloading = false;
+        equippedPlayer.updatePlayerUI();
+    }
+    public int GetAmmoInMag()
+    {
+        return ammoInMag;
+    }
+    public int GetAmmoInReserve()
+    {
+        return ammoInReserve;
+    }
     void CheckReticleTarget() 
     { 
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * range, Color.red); 
@@ -143,20 +151,5 @@ public class Weapon : MonoBehaviour {
                 rc.SetEnemyAim(aimingAtEnemy); 
             } 
         } 
-    }
-
-    private IEnumerator DelayedInit()
-    {
-       // wait until gamemanager and playerScript are assigned
-        while (gamemanager.instance == null || gamemanager.instance.playerScript == null)
-            yield return null;
-
-        equippedPlayer = gamemanager.instance.playerScript;
-        inventory = equippedPlayer.GetComponent<PlayerInventory>();
-
-        ammoInMag = magSize;
-        ammoInReserve = inventory.GetAmmoAmount("Ammo");
-
-        equippedPlayer.updatePlayerUI();
     }
 }

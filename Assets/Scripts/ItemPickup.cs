@@ -3,19 +3,30 @@ using UnityEngine;
 public class ItemPickup : MonoBehaviour
 {
     public ItemSO itemToGive;
+    public WeaponSO weaponToGive;
 
     private void OnTriggerEnter(Collider other)
     {
         PlayerInventory inventory = other.GetComponent<PlayerInventory>();
+        if (inventory == null)
+            return;
 
-        if (inventory != null && itemToGive != null)
+        playerController pc = gamemanager.instance.playerScript;
+
+        if (weaponToGive != null)
         {
-            playerController pc = gamemanager.instance.playerScript;
-
-            inventory.AddItem(itemToGive);
-            Destroy(gameObject);
-
-            pc.updatePlayerUI();
+            inventory.AddWeapon(weaponToGive);
+            Debug.Log($"Picked up weapon: {weaponToGive.weaponName}");
         }
+        else if (itemToGive != null)
+        {
+            inventory.AddItem(itemToGive);
+            Debug.Log($"Picked up item: {itemToGive.itemName}");
+        }
+
+        Destroy(gameObject);
+
+        if (pc != null)
+            pc.updatePlayerUI();
     }
 }

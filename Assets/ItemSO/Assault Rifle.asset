@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b01ecd4177fe8f04bb6e8c84c5f1fa90, type: 3}
+  m_Name: Assault Rifle
+  m_EditorClassIdentifier: 
+  ignoreLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  weaponName: Starter Rifle
+  wepDmg: 1
+  attackRate: 0.3
+  range: 200
+  magSize: 20
+  ammoMax: 100
+  bullet: {fileID: 7539981003205437294, guid: 97a4c4b329aa6bc4c8a68940aaff17f4, type: 3}
+  impactPrefab: {fileID: 2408714428905375140, guid: ec2cd9d24f8932148ab9480fc3b65b15, type: 3}
+  weaponModel: {fileID: 2441261489494950324, guid: 7aa3bb9e2f359bc4cb22004cc0ddaf3f, type: 3}
+  impactSound: {fileID: 8300000, guid: 11d2c33e5fadfb242a05c51e9fb058b1, type: 3}
+  impactVolume: 100
+  reloadSound: {fileID: 8300000, guid: a40641150cd218c49a68a971c7304757, type: 3}
+  gunShotSound: {fileID: 8300000, guid: 0e62edad5075cf547ad4869c8bfdf834, type: 3}
