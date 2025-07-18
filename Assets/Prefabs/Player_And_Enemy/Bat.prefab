@@ -108,13 +108,18 @@ MonoBehaviour:
   rigidBody: {fileID: 5448062265333316339}
   damageRate: 1.5
   damageAmount: 1
-  hoverHeight: 2
+  hoverHeight: 14
   hoverClamp: 5
-  fovDistance: 100
-  fovAngle: 90
+  ceilingInRadius: 20
+  ceilingAttachmentRange: 0.5
+  ceilingMask:
+    serializedVersion: 2
+    m_Bits: 1024
+  fovDistance: 10
+  fovAngle: 180
   enviormentMask:
     serializedVersion: 2
-    m_Bits: 1216
+    m_Bits: 1089
 --- !u!135 &3582038614179718291
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -167,7 +172,7 @@ Rigidbody:
   serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 5
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}

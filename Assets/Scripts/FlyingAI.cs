@@ -155,11 +155,24 @@ public class FlyingAI : MonoBehaviour
 
         for (int i = 0; i < hits.Length; i++)
         {
-            Collider hit = hits[i];
+            /*
+             Collider hit = hits[i];
 
             Vector3 ceilingBottom = hit.bounds.center - new Vector3(0, hit.bounds.extents.y,0);
             float distance = Vector3.Distance(transform.position, ceilingBottom);
+             */
 
+            Bounds bounds = hits[i].bounds;
+
+            //Y of the ceiling
+            float ceilingY = bounds.center.y - bounds.extents.y;
+
+            //Random z and x points
+            float ceilingX = Random.Range(bounds.min.x, bounds.max.x);
+            float ceilngZ = Random.Range(bounds.min.z, bounds.max.z);
+
+            Vector3 ceilingBottom = new Vector3(ceilingX, ceilingY, ceilngZ);
+            float distance = Vector3.Distance(transform.position, ceilingBottom);
             if (distance < closest)
             {
                 closest = distance;
