@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class FlyingAI : MonoBehaviour
+public class FlyingAI : MonoBehaviour, IDamage
 {
     [SerializeField] private Transform target;
     private GameObject playerTarget;
@@ -10,6 +10,7 @@ public class FlyingAI : MonoBehaviour
 
     [SerializeField] private Rigidbody rigidBody;
 
+    //Damage
     [SerializeField] private float damageRate;
     [SerializeField] private int damageAmount;
     private bool isDamaging;
@@ -20,7 +21,7 @@ public class FlyingAI : MonoBehaviour
     [SerializeField] private float hoverHeight;
     [SerializeField] private float hoverClamp;
 
-    //Ceiling varibles
+    //Ceiling variables
     [SerializeField] private float ceilingInRadius;
     [SerializeField] private float ceilingAttachmentRange;
     [SerializeField] private LayerMask ceilingMask;
@@ -35,9 +36,24 @@ public class FlyingAI : MonoBehaviour
     private bool playerVisible;
     private bool InRange;
 
+    //Health
+    [SerializeField] private int HP;
+    private int currentHP;
+    private bool Dead;
+
+    //Render
+    [SerializeField] private SkinnedMeshRenderer[] modelParts;
+    private Color originColor;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        currentHP = HP;
+
+        // Store original material color
+        if (modelParts != null && modelParts.Length > 0)
+            originColor = modelParts[0].material.color;
+
         if (rigidBody == null) rigidBody = GetComponent<Rigidbody>();
 
         playerTarget = gamemanager.instance.player;
@@ -207,6 +223,18 @@ public class FlyingAI : MonoBehaviour
         }
     }
 
+    public void takeDamage(int amount)
+    {
+        if (Dead) return;
+
+        currentHP -= amount;
+        StartCoroutine(FlashRed());
+        if (currentHP < 0) 
+        {
+        //Die method
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -231,6 +259,18 @@ public class FlyingAI : MonoBehaviour
         }
     }
 
+
+    void Die()
+    {
+        Dead = true;
+
+        rigidBody.linearVelocity = Vector3.zero;
+
+        gamemanager.instance.updateGameGoal(-1);
+
+        Destroy(gameObject);
+    }
+
     IEnumerator DOT (IDamage target)
     {
         isDamaging = true;
@@ -241,4 +281,15 @@ public class FlyingAI : MonoBehaviour
 
         isDamaging = false;
     }
+    IEnumerator FlashRed()
+    {
+        foreach (var part in modelParts)
+            part.material.color = Color.red;
+
+        yield return new WaitForSeconds(0.1f);
+
+        foreach (var part in modelParts)
+            part.material.color = originColor;
+    }
+
 }
