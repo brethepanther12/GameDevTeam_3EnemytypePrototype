@@ -63,12 +63,19 @@ public class PlayerInventory : MonoBehaviour
 
     public void EquipWeapon()
     {
-        if (weaponInventory.Count == 0) return;
+        if (weaponInventory.Count == 0)
+        {
+            return;
+        }
+
+        if (currentWeaponScript != null)
+        {
+            equippedWeapon.currentAmmoInMag = currentWeaponScript.GetAmmoInMag();
+            equippedWeapon.currentAmmoInReserve = currentWeaponScript.GetAmmoInReserve();
+            Destroy(currentWeaponInstance);
+        }
 
         equippedWeapon = weaponInventory[weaponListPos];
-
-        if (currentWeaponInstance != null)
-            Destroy(currentWeaponInstance);
 
         currentWeaponInstance = Instantiate(equippedWeapon.weaponModel, weaponSocket.transform);
         currentWeaponInstance.transform.localPosition = Vector3.zero;
@@ -77,17 +84,23 @@ public class PlayerInventory : MonoBehaviour
         currentWeaponScript = currentWeaponInstance.GetComponent<Weapon>();
         if (currentWeaponScript != null)
         {
-            currentWeaponScript.InitializeWeapon(equippedWeapon);
+            currentWeaponScript.InitializeWeapon(equippedWeapon, refillMag: false);
+            currentWeaponScript.SetAmmoState(equippedWeapon.currentAmmoInMag, equippedWeapon.currentAmmoInReserve);
         }
     }
 
     public void SwitchWeapon(int direction)
     {
-        if (weaponInventory.Count == 0) return;
+        if (weaponInventory.Count == 0)
+        {
+            return;
+        }
 
         weaponListPos += direction;
         weaponListPos = Mathf.Clamp(weaponListPos, 0, weaponInventory.Count - 1);
         EquipWeapon();
+
+        
     }
 
     public int GetAmmoAmount(string ammoName)
@@ -95,7 +108,10 @@ public class PlayerInventory : MonoBehaviour
         foreach (ItemSO item in collectedItems)
         {
             if (item.itemName == ammoName)
+            {
                 return item.quantityHeld;
+            }
+                
         }
         return 0;
     }
@@ -110,6 +126,8 @@ public class PlayerInventory : MonoBehaviour
                 item.quantityHeld = Mathf.Max(0, item.quantityHeld);
                 break;
             }
+
+            
         }
     }
 }

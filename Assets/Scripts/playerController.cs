@@ -251,20 +251,20 @@ public class playerController : MonoBehaviour, IDamage
         updatePlayerUI();
     }
 
-    public void GainAmmo(int amount, bool doesIncreaseMax)
-    {
-        reserveAmmo += amount;
+    //public void GainAmmo(int amount, bool doesIncreaseMax)
+    //{
+    //    reserveAmmo += amount;
 
 
 
-        if (doesIncreaseMax)
-        {
-            reserveAmmo += amount;
+    //    if (doesIncreaseMax)
+    //    {
+    //        reserveAmmo += amount;
 
-        }
-        updatePlayerUI();
+    //    }
+    //    updatePlayerUI();
 
-    }
+    //}
 
     public void IncreaseDamage(int amount, int magnitude)
     {
@@ -344,6 +344,8 @@ public class playerController : MonoBehaviour, IDamage
             inventory.SwitchWeapon(1);
         else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
             inventory.SwitchWeapon(-1);
+
+        updatePlayerUI();
     }
 
     public void updatePlayerUI()

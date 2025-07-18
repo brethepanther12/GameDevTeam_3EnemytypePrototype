@@ -200,7 +200,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6970494051277340247}
   - component: {fileID: -8142256520381952207}
-  - component: {fileID: 4401219101472877084}
   - component: {fileID: 4653043193018784034}
   - component: {fileID: 851128922732625617}
   - component: {fileID: 4484993860492549835}
@@ -240,23 +239,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemToGive: {fileID: 11400000, guid: 96a6ce5e56fb1e349acc8985088cc2aa, type: 2}
---- !u!114 &4401219101472877084
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4224810875791295614}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d3997a904cd3a444bd0317d27a7f83e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  magnitude: 1
-  quantity: 10
-  duration: 0
-  increaseMax: 0
-  pickup: 0
+  weaponToGive: {fileID: 0}
 --- !u!33 &4653043193018784034
 MeshFilter:
   m_ObjectHideFlags: 0
