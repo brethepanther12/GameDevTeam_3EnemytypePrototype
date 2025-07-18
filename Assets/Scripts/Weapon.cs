@@ -44,10 +44,9 @@ public class Weapon : MonoBehaviour {
         InitializeWeapon(weaponData);
     }
 
-    public void InitializeWeapon(WeaponSO data)
+    public void InitializeWeapon(WeaponSO data, bool refillMag = false)
     {
         weaponData = data;
-
         wepDmg = weaponData.wepDmg;
         attackRate = weaponData.attackRate;
         range = weaponData.range;
@@ -60,8 +59,16 @@ public class Weapon : MonoBehaviour {
         reloadSound = weaponData.reloadSound;
         gunShotSound = weaponData.gunShotSound;
 
-        ammoInMag = magSize;
+        if (refillMag)
+            ammoInMag = magSize;
+
         shootTimer = 0f;
+    }
+
+    public void SetAmmoState(int mag, int reserve)
+    {
+        ammoInMag = mag;
+        ammoInReserve = reserve;
     }
     private void Update()
     {

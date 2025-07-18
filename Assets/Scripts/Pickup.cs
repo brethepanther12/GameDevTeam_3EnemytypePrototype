@@ -57,12 +57,6 @@ public class Pickup : MonoBehaviour
 
                     break;
 
-                //case pickupType.ammo:
-
-                //    pc.GainAmmo(quantity, increaseMax);
-
-                //    break;
-
                 case pickupType.shield:
 
                     pc.GainShield(quantity, increaseMax);

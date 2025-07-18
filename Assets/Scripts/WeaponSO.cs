@@ -14,6 +14,8 @@ public class WeaponSO : ScriptableObject
     public int range;
     public int magSize;
     public int ammoMax;
+    [HideInInspector] public int currentAmmoInMag;
+    [HideInInspector] public int currentAmmoInReserve;
     
     public GameObject bullet;
     public GameObject impactPrefab;
