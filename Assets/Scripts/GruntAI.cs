@@ -4,7 +4,7 @@ using UnityEngine.AI;
 using UnityEngine.Assertions.Must;
 using UnityEngine.Rendering;
 
-public class GruntAi : MonoBehaviour, IDamage
+public class GruntAi : MonoBehaviour, IDamage, IGrapplable
 {
 
     [SerializeField] SkinnedMeshRenderer[] modelParts;
@@ -41,6 +41,8 @@ public class GruntAi : MonoBehaviour, IDamage
 
     Color colorOrig;
 
+    public bool isBeingGrappled { get; set; }
+    public bool canBeGrappled => true;
     private Coroutine reloadingRT;
     private bool isDead;
     private int currentAmmo;
@@ -68,11 +70,12 @@ public class GruntAi : MonoBehaviour, IDamage
     // Update is called once per frame
     void Update()
     {
-        if (isDead)
+        if (isDead || isBeingGrappled)
         {
             return;
         }
-        animator.SetFloat("Speed", agent.velocity.magnitude);
+           
+            animator.SetFloat("Speed", agent.velocity.magnitude);
 
         if (agent.remainingDistance < 0.01f)
         {
@@ -153,21 +156,24 @@ public class GruntAi : MonoBehaviour, IDamage
                     }
                 }
 
-                if (distanceToPlayer > shootRange)
+                if (!isBeingGrappled && agent != null && agent.enabled && agent.isOnNavMesh)
                 {
-                    agent.SetDestination(gamemanager.instance.player.transform.position);
-                }
-                else
-                {
-                    agent.ResetPath();
-                }
+                    if (distanceToPlayer > shootRange)
+                    {
+                        agent.SetDestination(gamemanager.instance.player.transform.position);
+                    }
+                    else
+                    {
+                        agent.ResetPath();
+                    }
 
-                if (agent.remainingDistance <= agent.stoppingDistance)
-                {
-                    FaceTarget();
-                }
+                    if (agent.remainingDistance <= agent.stoppingDistance)
+                    {
+                        FaceTarget();
+                    }
 
-                agent.stoppingDistance = stoppingDistanceOrig;
+                    agent.stoppingDistance = stoppingDistanceOrig;
+                }
 
                 return true;
             }

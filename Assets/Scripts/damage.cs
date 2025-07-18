@@ -16,7 +16,7 @@ public class damage : MonoBehaviour
     [SerializeField] GameObject impactPrefab;
 
     bool isDamaging;
-    public int weaponDMG;
+    private int weaponDMG;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -56,27 +56,34 @@ public class damage : MonoBehaviour
 
         if (dmg != null && type != damagetype.DOT)
         {
+        
+            dmg.takeDamage(damageAmount + weaponDMG);
             
-
-            if (weaponDMG > 0)
-            {
-                dmg.takeDamage(damageAmount + weaponDMG);
-            } else
-            {
-                dmg.takeDamage(damageAmount);
-            }
         }
 
         if (type == damagetype.moving || type == damagetype.homing)
         {
+
+            if (impactPrefab != null)
+            {
+                Instantiate(impactPrefab, transform.position, Quaternion.LookRotation(transform.forward));
+            }
+
             Destroy(gameObject);
         }
+
+        
     }
 
     private void OnTriggerStay(Collider other)
     {
         if (other.isTrigger)
             return;
+
+        if (impactPrefab != null && !isDamaging)
+        {
+            Instantiate(impactPrefab, transform.position, Quaternion.LookRotation(transform.forward));
+        }
 
         IDamage dmg = other.GetComponent<IDamage>();
 
