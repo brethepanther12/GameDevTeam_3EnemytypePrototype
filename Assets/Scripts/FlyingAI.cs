@@ -253,7 +253,7 @@ public class FlyingAI : MonoBehaviour, IDamage
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Bullet"))
         {
-            int bulletDmg = 1;
+            int bulletDmg = 0;
 
             damage dmgScript = other.gameObject.GetComponent<damage>();
             if (dmgScript != null)
@@ -265,7 +265,7 @@ public class FlyingAI : MonoBehaviour, IDamage
             }
             takeDamage(bulletDmg);
 
-            Destroy(other.gameObject); // Optional: destroy bullet
+            Destroy(other.gameObject);
         }
     }
 
