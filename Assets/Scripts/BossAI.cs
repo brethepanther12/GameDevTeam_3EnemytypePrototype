@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class BossAI : EnemyAIBase
+public class BossAI : EnemyAIBase, IGrapplable
 {
     [Header("Boss Settings")]
     [Header("Boss Info")]
@@ -19,6 +19,10 @@ public class BossAI : EnemyAIBase
 
     private bool isDead = false;
     float attackTimer;
+
+    public bool isBeingGrappled { get; set; }
+
+    public bool canBeGrappled => false;
 
     protected override void Start()
     {

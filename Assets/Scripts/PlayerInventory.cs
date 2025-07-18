@@ -49,5 +49,16 @@ public class PlayerInventory : MonoBehaviour
         return 0;
     }
 
+    public void ConsumeAmmo(int amount)
+    {
+        foreach (ItemSO item in collectedItems)
+        {
+            if (item.itemName == "Ammo")
+            {
+                item.quantityHeld -= amount;
+            }
+        }
+        
+    }
 
 }

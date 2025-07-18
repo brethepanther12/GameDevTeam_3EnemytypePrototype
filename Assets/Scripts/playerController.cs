@@ -346,6 +346,7 @@ public class playerController : MonoBehaviour, IDamage
         gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
         gamemanager.instance.playerShieldBar.fillAmount = (float)shield / maxShield;
         gamemanager.instance.playerArmorBar.fillAmount = (float)armor / maxArmor;
+       // Debug.Log($"[DEBUG] EquippedWeapon is null: {equippedWeapon == null}, Inventory is null: {inventory == null}, AmmoText is null: {gamemanager.instance.ammoText == null}");
         gamemanager.instance.ammoText.text = $"{equippedWeapon.GetAmmoInMag()} / {inventory.GetAmmoAmount("Ammo")}";
     }
 

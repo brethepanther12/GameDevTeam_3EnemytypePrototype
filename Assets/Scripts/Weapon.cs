@@ -6,7 +6,7 @@ public class Weapon : MonoBehaviour {
     [SerializeField] float attackRate; 
     [SerializeField] int range; 
     [SerializeField] int magSize; 
-    [SerializeField] int ammoReserve; 
+    //[SerializeField] int ammoReserve; 
     [SerializeField] int ammoMax; 
     [SerializeField] LayerMask ignoreLayer; 
     [SerializeField] GameObject bullet; 
@@ -32,12 +32,8 @@ public class Weapon : MonoBehaviour {
     { bullet_dmg, fireRate, range, magSize, reserveSize } 
 
     private void Start() 
-    { 
-        equippedPlayer = gamemanager.instance.playerScript; 
-        inventory = GetComponent<PlayerInventory>(); 
-        ammoInMag = magSize; 
-        ammoInReserve = ammoReserve; 
-        equippedPlayer.updatePlayerUI();
+    {
+        StartCoroutine(DelayedInit());
     } 
     private void Update() 
     { 
@@ -79,16 +75,16 @@ public class Weapon : MonoBehaviour {
                 { 
                     rc.Pulse(isEnemy); 
                 } 
-            } 
+            }
 
-            Instantiate(bullet, shootPos.position, transform.rotation); 
+            GameObject bulletObj = Instantiate(bullet, shootPos.position, transform.rotation);
 
-            damage dmgScript = bullet.GetComponent<damage>();
+            damage dmgScript = bulletObj.GetComponent<damage>();
             
             if (dmgScript != null) 
             { 
                 dmgScript.SetWeaponDamage(wepDmg); 
-            } 
+            }
 
             equippedPlayer.updatePlayerUI(); 
         } 
@@ -106,10 +102,12 @@ public class Weapon : MonoBehaviour {
         yield return new WaitForSeconds(.25f); 
 
         int ammoNeeded = magSize - ammoInMag; 
-        int ammoToLoad = Mathf.Min(ammoNeeded, ammoInReserve); 
+        int ammoToLoad = Mathf.Min(ammoNeeded, inventory.GetAmmoAmount("Ammo")); 
 
         ammoInMag += ammoToLoad; 
-        ammoInReserve -= ammoToLoad; 
+        ammoInReserve -= ammoToLoad;
+        inventory.ConsumeAmmo(ammoToLoad);
+        ammoInReserve = inventory.GetAmmoAmount("Ammo");
         equippedPlayer.isReloading = false; 
         equippedPlayer.updatePlayerUI(); 
 
@@ -145,5 +143,20 @@ public class Weapon : MonoBehaviour {
                 rc.SetEnemyAim(aimingAtEnemy); 
             } 
         } 
-    } 
+    }
+
+    private IEnumerator DelayedInit()
+    {
+       // wait until gamemanager and playerScript are assigned
+        while (gamemanager.instance == null || gamemanager.instance.playerScript == null)
+            yield return null;
+
+        equippedPlayer = gamemanager.instance.playerScript;
+        inventory = equippedPlayer.GetComponent<PlayerInventory>();
+
+        ammoInMag = magSize;
+        ammoInReserve = inventory.GetAmmoAmount("Ammo");
+
+        equippedPlayer.updatePlayerUI();
+    }
 }

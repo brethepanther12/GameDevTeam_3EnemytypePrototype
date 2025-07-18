@@ -1269,6 +1269,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7828202015692826857, guid: 5157923ee99aea244a6a21ddb0741f53, type: 3}
   m_PrefabInstance: {fileID: 249627609}
   m_PrefabAsset: {fileID: 0}
+--- !u!198 &253716293 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 5427507813340125781, guid: 96177471f0283b443a53e0401390ec82, type: 3}
+  m_PrefabInstance: {fileID: 780607803}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &284531982
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2457,11 +2462,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6970494051277340247, guid: 61b0cc8e4110703459c4f783365629c4, type: 3}
   m_PrefabInstance: {fileID: 542644049}
   m_PrefabAsset: {fileID: 0}
---- !u!198 &554547278 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 4502608054296907203, guid: 96177471f0283b443a53e0401390ec82, type: 3}
-  m_PrefabInstance: {fileID: 780607803}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &578217651
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3132,27 +3132,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7828202015692826857, guid: 5157923ee99aea244a6a21ddb0741f53, type: 3}
   m_PrefabInstance: {fileID: 765247725}
   m_PrefabAsset: {fileID: 0}
---- !u!82 &769013781 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 5399780266970152819, guid: 96177471f0283b443a53e0401390ec82, type: 3}
-  m_PrefabInstance: {fileID: 780607803}
-  m_PrefabAsset: {fileID: 0}
---- !u!95 &769013782 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 8745583816857365862, guid: 96177471f0283b443a53e0401390ec82, type: 3}
-  m_PrefabInstance: {fileID: 780607803}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &769013785 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4762567348444214200, guid: 96177471f0283b443a53e0401390ec82, type: 3}
-  m_PrefabInstance: {fileID: 780607803}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31cc15047268cc943b7da122d8519996, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &773024548
 GameObject:
   m_ObjectHideFlags: 0
@@ -3419,33 +3398,13 @@ PrefabInstance:
       value: Player(v4)
       objectReference: {fileID: 0}
     - target: {fileID: 4762567348444214200, guid: 96177471f0283b443a53e0401390ec82, type: 3}
-      propertyPath: gunAnim
-      value: 
-      objectReference: {fileID: 769013782}
-    - target: {fileID: 4762567348444214200, guid: 96177471f0283b443a53e0401390ec82, type: 3}
-      propertyPath: gunAudio
-      value: 
-      objectReference: {fileID: 769013781}
-    - target: {fileID: 4762567348444214200, guid: 96177471f0283b443a53e0401390ec82, type: 3}
       propertyPath: impactSound
       value: 
       objectReference: {fileID: 8300000, guid: 11d2c33e5fadfb242a05c51e9fb058b1, type: 3}
     - target: {fileID: 4762567348444214200, guid: 96177471f0283b443a53e0401390ec82, type: 3}
       propertyPath: muzzleFlash
       value: 
-      objectReference: {fileID: 554547278}
-    - target: {fileID: 4762567348444214200, guid: 96177471f0283b443a53e0401390ec82, type: 3}
-      propertyPath: reloadSound
-      value: 
-      objectReference: {fileID: 8300000, guid: a40641150cd218c49a68a971c7304757, type: 3}
-    - target: {fileID: 4762567348444214200, guid: 96177471f0283b443a53e0401390ec82, type: 3}
-      propertyPath: gunShotSound
-      value: 
-      objectReference: {fileID: 8300000, guid: 0e62edad5075cf547ad4869c8bfdf834, type: 3}
-    - target: {fileID: 7450527024584448285, guid: 96177471f0283b443a53e0401390ec82, type: 3}
-      propertyPath: weapon1
-      value: 
-      objectReference: {fileID: 769013785}
+      objectReference: {fileID: 253716293}
     - target: {fileID: 8370610671950151347, guid: 96177471f0283b443a53e0401390ec82, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
