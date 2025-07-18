@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 4470100129083163455}
   - component: {fileID: 6857043535215814019}
   - component: {fileID: 2245642887430340806}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Bullet_Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -55,6 +55,7 @@ MonoBehaviour:
   speed: 50
   destroyTime: 3
   impactPrefab: {fileID: 2408714428905375140, guid: ec2cd9d24f8932148ab9480fc3b65b15, type: 3}
+  weaponDMG: 0
 --- !u!135 &8932903700712783739
 SphereCollider:
   m_ObjectHideFlags: 0
