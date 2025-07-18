@@ -74,6 +74,8 @@ public class Weapon : MonoBehaviour {
     {
         shootTimer += Time.deltaTime;
 
+        CheckReticleTarget();
+
         if (Input.GetButton("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
         {
             Shoot();

@@ -58,7 +58,16 @@ public class damage : MonoBehaviour
         {
         
             dmg.takeDamage(damageAmount + weaponDMG);
-            
+
+            if (other.CompareTag("Enemy"))
+            {
+                GameObject reticle = GameObject.Find("Reticle");
+                ReticleController rc = reticle.GetComponent<ReticleController>();
+                rc.Pulse(true);
+
+            }
+
+
         }
 
         if (type == damagetype.moving || type == damagetype.homing)
