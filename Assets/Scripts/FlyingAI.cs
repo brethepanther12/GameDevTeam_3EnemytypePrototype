@@ -246,7 +246,6 @@ public class FlyingAI : MonoBehaviour, IDamage
             AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
             StartCoroutine(FlashRed());
         }
-        Debug.Log($"FlyingAI took damage. Current HP: {currentHP}");
 
     }
 
@@ -264,9 +263,6 @@ public class FlyingAI : MonoBehaviour, IDamage
                 else
                     bulletDmg = dmgScript.damageAmount;
             }
-
-
-            Debug.Log($"FlyingAI hit by bullet (layer). Damage: {bulletDmg}");
             takeDamage(bulletDmg);
 
             Destroy(other.gameObject); // Optional: destroy bullet
