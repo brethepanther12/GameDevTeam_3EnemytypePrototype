@@ -246,25 +246,39 @@ public class FlyingAI : MonoBehaviour, IDamage
             AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
             StartCoroutine(FlashRed());
         }
+        Debug.Log($"FlyingAI took damage. Current HP: {currentHP}");
+
     }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Bullet"))
+        {
+            int bulletDmg = 1;
+
+            damage dmgScript = other.gameObject.GetComponent<damage>();
+            if (dmgScript != null)
+            {
+                if (dmgScript.weaponDMG > 0)
+                    bulletDmg = dmgScript.damageAmount + dmgScript.weaponDMG;
+                else
+                    bulletDmg = dmgScript.damageAmount;
+            }
+
+
+            Debug.Log($"FlyingAI hit by bullet (layer). Damage: {bulletDmg}");
+            takeDamage(bulletDmg);
+
+            Destroy(other.gameObject); // Optional: destroy bullet
+        }
+    }
+
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player")) 
+        if (other.CompareTag("Player"))
         {
             InRange = true;
-        }else if (other.CompareTag("Bullet"))
-        {
-            damage dmg = other.GetComponent<damage>();
-            int bulletDMG =0;
-
-            if (dmg != null) 
-            {
-                bulletDMG = dmg.weaponDMG;
-            }
-
-            takeDamage(bulletDMG);
-            Destroy(other.gameObject);
         }
     }
 

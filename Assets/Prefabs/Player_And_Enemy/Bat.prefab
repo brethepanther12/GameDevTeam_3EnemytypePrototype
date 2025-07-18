@@ -103,12 +103,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  flyingSpeed: 5
+  flyingSpeed: 7
   rotationSpeed: 2
   rigidBody: {fileID: 5448062265333316339}
   damageRate: 1.5
   damageAmount: 1
-  hoverHeight: 14
+  hoverHeight: 20
   hoverClamp: 5
   ceilingInRadius: 20
   ceilingAttachmentRange: 0.5
@@ -120,6 +120,12 @@ MonoBehaviour:
   enviormentMask:
     serializedVersion: 2
     m_Bits: 1089
+  HP: 10
+  hitSound: {fileID: 8300000, guid: f337cdad539e41446ba36e1efac9b852, type: 3}
+  deathSound: {fileID: 8300000, guid: c7dff7457517f03499ebc0d9ff32b81d, type: 3}
+  hitVolume: 1
+  deathVolume: 1
+  modelParts: []
 --- !u!135 &3582038614179718291
 SphereCollider:
   m_ObjectHideFlags: 0
