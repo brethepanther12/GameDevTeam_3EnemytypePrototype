@@ -16,7 +16,7 @@ public class damage : MonoBehaviour
     [SerializeField] GameObject impactPrefab;
 
     bool isDamaging;
-    private int weaponDMG;
+    public int weaponDMG;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
