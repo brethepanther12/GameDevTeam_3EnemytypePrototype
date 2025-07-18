@@ -28,17 +28,14 @@ public class playerController : MonoBehaviour, IDamage
 
     [SerializeField] private AudioClip hurtSound;
     [SerializeField] private float hurtVol;
-
     [SerializeField] private float footstepVol = 1f;
     [SerializeField] private AudioSource footstepSource;
     [SerializeField] private AudioClip[] footstepClips;
     [SerializeField] private float walkStepDelay = 0.5f;
     [SerializeField] private float sprintStepDelay = 0.3f;
 
-    [SerializeField] Weapon weapon1;
-
-    public Weapon equippedWeapon;
     public PlayerInventory inventory;
+    public GameObject weaponSocket;
 
     float stepTimer = 0f;
     public bool isReloading;
@@ -65,13 +62,13 @@ public class playerController : MonoBehaviour, IDamage
 
     float shootTimer;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
 
-        equippedWeapon = weapon1;
-
         inventory = GetComponent<PlayerInventory>();
+
+        if (inventory != null)
+            inventory.weaponSocket = weaponSocket;
 
         HPOrig = HP;
         armorOrig = armor;
@@ -80,13 +77,14 @@ public class playerController : MonoBehaviour, IDamage
         updatePlayerUI();
     }
 
-    // Update is called once per frame
     void Update()
     {
 
         sprint();
 
         movement();
+
+        HandleWeaponSwitching();
 
     }
 
@@ -340,14 +338,28 @@ public class playerController : MonoBehaviour, IDamage
         isPoweredUp = false;
     }
 
+    void HandleWeaponSwitching()
+    {
+        if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+            inventory.SwitchWeapon(1);
+        else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+            inventory.SwitchWeapon(-1);
+    }
+
     public void updatePlayerUI()
     {    
 
         gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
         gamemanager.instance.playerShieldBar.fillAmount = (float)shield / maxShield;
         gamemanager.instance.playerArmorBar.fillAmount = (float)armor / maxArmor;
-       // Debug.Log($"[DEBUG] EquippedWeapon is null: {equippedWeapon == null}, Inventory is null: {inventory == null}, AmmoText is null: {gamemanager.instance.ammoText == null}");
-        gamemanager.instance.ammoText.text = $"{equippedWeapon.GetAmmoInMag()} / {inventory.GetAmmoAmount("Ammo")}";
+
+        Weapon activeWep = weaponSocket.GetComponentInChildren<Weapon>();
+
+        if (activeWep != null)
+        {
+            gamemanager.instance.ammoText.text = $"{activeWep.GetAmmoInMag()} / {inventory.GetAmmoAmount("Ammo")}";
+        }
+        
     }
 
     IEnumerator damageFlashScreen()

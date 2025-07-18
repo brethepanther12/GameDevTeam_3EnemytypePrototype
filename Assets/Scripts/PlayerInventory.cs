@@ -1,40 +1,93 @@
-using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public class PlayerInventory : MonoBehaviour
 {
+    [Header("Weapon Inventory")]
     public List<ItemSO> collectedItems = new List<ItemSO>();
-    
+    public List<WeaponSO> weaponInventory = new List<WeaponSO>();
+    public WeaponSO equippedWeapon;
+    public int weaponListPos = 0;
+
+    [Header("Runtime References")]
+    public GameObject weaponSocket;
+    private GameObject currentWeaponInstance;
+    private Weapon currentWeaponScript;
+
 
     public void AddItem(ItemSO item)
     {
         if (!collectedItems.Contains(item))
         {
             collectedItems.Add(item);
+            item.quantityHeld = item.quantityToPickup;
             Debug.Log("Picked up: " + item.itemName);
-
         }
-        else if (collectedItems.Contains(item) && item.quantityToPickup + item.quantityHeld < item.stackSize)
+        else
         {
-            item.quantityHeld += item.quantityToPickup;
-        }
+            ItemSO existingItem = collectedItems.Find(x => x == item);
 
+            if (existingItem != null && existingItem.quantityHeld < existingItem.stackSize)
+            {
+                int availableSpace = existingItem.stackSize - existingItem.quantityHeld;
+                int amountToAdd = Mathf.Min(item.quantityToPickup, availableSpace);
+                existingItem.quantityHeld += amountToAdd;
+            }
+        }
     }
 
     public bool HasAllItems(List<ItemSO> requiredItems)
     {
-        foreach (ItemSO item in requiredItems)
+        foreach (ItemSO requiredItem in requiredItems)
         {
-            if (!collectedItems.Contains(item))
+            ItemSO ownedItem = collectedItems.Find(item => item == requiredItem);
 
-             return false;
+            if (ownedItem == null || ownedItem.quantityHeld < requiredItem.quantityToPickup)
+            {
+                return false;
+            }
         }
         return true;
     }
-    
-    public bool HasItem(ItemSO item)
+    public void AddWeapon(WeaponSO newWeapon)
     {
-        return collectedItems.Contains(item);
+        if (!weaponInventory.Contains(newWeapon))
+        {
+            weaponInventory.Add(newWeapon);
+            weaponListPos = weaponInventory.Count - 1;
+            EquipWeapon();
+            Debug.Log("Picked up: " + newWeapon.name);
+        }
+    }
+
+    public void EquipWeapon()
+    {
+        if (weaponInventory.Count == 0) return;
+
+        equippedWeapon = weaponInventory[weaponListPos];
+
+        if (currentWeaponInstance != null)
+            Destroy(currentWeaponInstance);
+
+        currentWeaponInstance = Instantiate(equippedWeapon.weaponModel, weaponSocket.transform);
+        currentWeaponInstance.transform.localPosition = Vector3.zero;
+        currentWeaponInstance.transform.localRotation = Quaternion.identity;
+
+        currentWeaponScript = currentWeaponInstance.GetComponent<Weapon>();
+        if (currentWeaponScript != null)
+        {
+            currentWeaponScript.InitializeWeapon(equippedWeapon);
+        }
+    }
+
+    public void SwitchWeapon(int direction)
+    {
+        if (weaponInventory.Count == 0) return;
+
+        weaponListPos += direction;
+        weaponListPos = Mathf.Clamp(weaponListPos, 0, weaponInventory.Count - 1);
+        EquipWeapon();
     }
 
     public int GetAmmoAmount(string ammoName)
@@ -42,9 +95,7 @@ public class PlayerInventory : MonoBehaviour
         foreach (ItemSO item in collectedItems)
         {
             if (item.itemName == ammoName)
-            {
                 return item.quantityHeld;
-            }
         }
         return 0;
     }
@@ -56,9 +107,9 @@ public class PlayerInventory : MonoBehaviour
             if (item.itemName == "Ammo")
             {
                 item.quantityHeld -= amount;
+                item.quantityHeld = Mathf.Max(0, item.quantityHeld);
+                break;
             }
         }
-        
     }
-
 }
