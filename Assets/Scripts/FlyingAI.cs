@@ -62,6 +62,8 @@ public class FlyingAI : MonoBehaviour
             if (!returnToCeiling)
             {
                 NearestCeiling();
+                ceilingTarget = ceilingPoint;
+                returnToCeiling = true;
             }
             else
             {
