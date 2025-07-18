@@ -231,13 +231,14 @@ public class FlyingAI : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
+
         if (Dead) return;
 
         currentHP -= amount;
-        
-        if (currentHP < 0) 
+
+        if (currentHP <= 0)
         {
-            //Die method
+           //Die method
             Die();
         }
         else
@@ -249,8 +250,22 @@ public class FlyingAI : MonoBehaviour, IDamage
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player")) 
+        {
             InRange = true;
+        }else if (other.CompareTag("Bullet"))
+        {
+            damage dmg = other.GetComponent<damage>();
+            int bulletDMG =0;
+
+            if (dmg != null) 
+            {
+                bulletDMG = dmg.weaponDMG;
+            }
+
+            takeDamage(bulletDMG);
+            Destroy(other.gameObject);
+        }
     }
 
     private void OnTriggerExit(Collider other)
