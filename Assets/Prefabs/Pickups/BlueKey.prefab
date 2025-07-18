@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6318355945539110153}
+  - component: {fileID: -1711512917005088410}
   - component: {fileID: 5648506856997624908}
   - component: {fileID: 2290933754176678049}
   - component: {fileID: 6858592893461937072}
@@ -35,6 +36,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+--- !u!114 &-1711512917005088410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4820495934701512353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32e35690333aaeb4d8b10f370dead619, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  meshToRotate: {fileID: 6318355945539110153}
+  bounceAmplitude: 0.2
+  bounceFrequency: 2
+  rotationSpeed: 45
 --- !u!114 &5648506856997624908
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48,6 +65,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemToGive: {fileID: 11400000, guid: 622fcac6a2f6aa243a9f7212c68be787, type: 2}
+  weaponToGive: {fileID: 0}
 --- !u!33 &2290933754176678049
 MeshFilter:
   m_ObjectHideFlags: 0

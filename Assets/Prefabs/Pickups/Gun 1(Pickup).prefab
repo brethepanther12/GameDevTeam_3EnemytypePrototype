@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3346452395647561292}
   - component: {fileID: 4418645940479066480}
   - component: {fileID: 5748471309097241096}
+  - component: {fileID: -767274163089725454}
   - component: {fileID: 4666435297821948612}
   - component: {fileID: 925770142913179859}
   - component: {fileID: 1479292928895027738}
@@ -83,6 +84,21 @@ MonoBehaviour:
   gunShotSound: {fileID: 0}
   gunAnim: {fileID: 1479292928895027738}
   muzzleFlash: {fileID: 4027980978097748675, guid: 264a2d95247444949aed566086d048e0, type: 3}
+--- !u!114 &-767274163089725454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 265807015021365906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32e35690333aaeb4d8b10f370dead619, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationSpeed: 45
+  bounceAmplitude: 0.2
+  bounceFrequency: 2
 --- !u!23 &4666435297821948612
 MeshRenderer:
   m_ObjectHideFlags: 0
