@@ -41,6 +41,12 @@ public class FlyingAI : MonoBehaviour, IDamage
     private int currentHP;
     private bool Dead;
 
+    //Upon getting hit
+    [SerializeField] private AudioClip hitSound;
+    [SerializeField] private AudioClip deathSound;
+    [SerializeField] private float hitVolume;
+    [SerializeField] private float deathVolume;
+
     //Render
     [SerializeField] private SkinnedMeshRenderer[] modelParts;
     private Color originColor;
@@ -228,10 +234,16 @@ public class FlyingAI : MonoBehaviour, IDamage
         if (Dead) return;
 
         currentHP -= amount;
-        StartCoroutine(FlashRed());
+        
         if (currentHP < 0) 
         {
-        //Die method
+            //Die method
+            Die();
+        }
+        else
+        {
+            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+            StartCoroutine(FlashRed());
         }
     }
 
@@ -264,9 +276,12 @@ public class FlyingAI : MonoBehaviour, IDamage
     {
         Dead = true;
 
+        
         rigidBody.linearVelocity = Vector3.zero;
 
         gamemanager.instance.updateGameGoal(-1);
+
+        AudioSource.PlayClipAtPoint(deathSound, transform.position, deathVolume);
 
         Destroy(gameObject);
     }
