@@ -58,9 +58,21 @@ public class FlyingAI : MonoBehaviour
 
         if (target == null || !InRange || !playerVisible)
         {
-            rigidBody.linearVelocity = Vector3.zero;
+            
+            if (!returnToCeiling)
+            {
+                NearestCeiling();
+            }
+            else
+            {
+                rigidBody.linearVelocity = Vector3.zero;
+                return;
+            }
+
+            MoveToCeiling();
             return;
         }
+        returnToCeiling = false;
 
         // Direction toward the target
         Vector3 direction = (target.position - transform.position).normalized;
@@ -161,7 +173,29 @@ public class FlyingAI : MonoBehaviour
         }
     }
 
+    void MoveToCeiling()
+    {
+        if (!returnToCeiling) return;
 
+        Vector3 direction = (ceilingTarget - transform.position).normalized;
+        float distance = Vector3.Distance(transform.position, ceilingTarget);
+
+        if (distance > ceilingAttachmentRange)
+        {
+            rigidBody.linearVelocity = direction * flyingSpeed;
+
+            Quaternion targetRot = Quaternion.LookRotation(direction);
+            rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime));
+        }
+        else
+        {
+            rigidBody.linearVelocity = Vector3.zero;
+
+            // snap to point
+            transform.position = ceilingTarget; 
+                                                     
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {
