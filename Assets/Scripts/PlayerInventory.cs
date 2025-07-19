@@ -134,8 +134,4 @@ public class PlayerInventory : MonoBehaviour
             
         }
     }
-    public void updateInventoryUI()
-    {
-        
-    }
 }
