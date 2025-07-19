@@ -79,7 +79,7 @@ MonoBehaviour:
   shootPos: {fileID: 6221241008080759763}
   impactSound: {fileID: 0}
   impactVolume: 1
-  reloadSound: {fileID: 0}
+  reloadSound: {fileID: 8300000, guid: a40641150cd218c49a68a971c7304757, type: 3}
   gunAudio: {fileID: 2894847081622229663}
   gunShotSound: {fileID: 0}
   gunAnim: {fileID: 7458353490122156008}
@@ -96,9 +96,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32e35690333aaeb4d8b10f370dead619, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationSpeed: 100
-  bounceAmplitude: 0.2
-  bounceFrequency: 2
+  minRotationSpeed: 30
+  maxRotationSpeed: 90
+  minBounceAmplitude: 0.15
+  maxBounceAmplitude: 0.25
+  minBounceFrequency: 1.5
+  maxBounceFrequency: 3
 --- !u!23 &6968547366447045496
 MeshRenderer:
   m_ObjectHideFlags: 0

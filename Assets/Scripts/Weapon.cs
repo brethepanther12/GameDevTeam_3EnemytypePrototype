@@ -116,7 +116,7 @@ public class Weapon : MonoBehaviour {
         if (gunAnim != null)
             gunAnim.SetBool("Reloading", true);
 
-        yield return new WaitForSeconds(weaponData.reloadSound.length);
+        yield return new WaitForSeconds(1f);
 
         if (gunAnim != null)
             gunAnim.SetBool("Reloading", false);
