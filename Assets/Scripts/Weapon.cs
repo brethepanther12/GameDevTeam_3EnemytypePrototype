@@ -40,7 +40,7 @@ public class Weapon : MonoBehaviour {
     }
     private void Start() 
     {
-
+        if(weaponData !=null)
         InitializeWeapon(weaponData);
     }
 
