@@ -36,6 +36,7 @@ public class playerController : MonoBehaviour, IDamage
 
     public PlayerInventory inventory;
     public GameObject weaponSocket;
+    public int jumpCur;
 
     float stepTimer = 0f;
     public bool isReloading;
@@ -103,6 +104,7 @@ public class playerController : MonoBehaviour, IDamage
         {
             playerVel = Vector3.zero;
             jumpCount = 0;
+            jumpCur = 0;
         }
 
         moveDir = (Input.GetAxis("Horizontal") * transform.right) + (Input.GetAxis("Vertical") * transform.forward);
@@ -154,6 +156,8 @@ public class playerController : MonoBehaviour, IDamage
         {
             playerVel.y = jumpVel;
             jumpCount++;
+            jumpCur = jumpCount;
+            updatePlayerUI();
         }
     }
 
@@ -354,7 +358,10 @@ public class playerController : MonoBehaviour, IDamage
         gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
         gamemanager.instance.playerShieldBar.fillAmount = (float)shield / maxShield;
         gamemanager.instance.playerArmorBar.fillAmount = (float)armor / maxArmor;
-
+        gamemanager.instance.jumpCounter.text = $"{jumpCur.ToString()} / {jumpMax.ToString()}";
+        gamemanager.instance.playerHp.text = $"{HP} / {maxHP}";
+        gamemanager.instance.playerArmor.text = $"{armor} / {maxArmor}";
+        gamemanager.instance.playerShield.text = $"{shield} / {maxShield}";
         Weapon activeWep = weaponSocket.GetComponentInChildren<Weapon>();
 
         if (activeWep != null)

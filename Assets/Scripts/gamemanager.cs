@@ -22,6 +22,10 @@ public class gamemanager : MonoBehaviour
     public GameObject player;
     public playerController playerScript;
 
+    public TMP_Text jumpCounter;
+    public TMP_Text playerHp;
+    public TMP_Text playerShield;
+    public TMP_Text playerArmor;
     public TMPro.TextMeshProUGUI ammoText;
 
     public GameObject bossHealthBarUI;
