@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8451903717511864291}
   - component: {fileID: 4445898644865459433}
   - component: {fileID: 3959332703714318119}
+  - component: {fileID: -2223681699940315461}
   m_Layer: 0
   m_Name: Speed Pickup
   m_TagString: Untagged
@@ -126,3 +127,21 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-2223681699940315461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1890098930471171346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32e35690333aaeb4d8b10f370dead619, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minRotationSpeed: 30
+  maxRotationSpeed: 90
+  minBounceAmplitude: 0.15
+  maxBounceAmplitude: 0.25
+  minBounceFrequency: 1.5
+  maxBounceFrequency: 3

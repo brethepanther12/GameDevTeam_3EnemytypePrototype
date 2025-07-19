@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1679717506506347948}
   - component: {fileID: 660991024164706306}
   - component: {fileID: 8096024765830237619}
+  - component: {fileID: 7747137812073480625}
   m_Layer: 0
   m_Name: Health Pickup
   m_TagString: Untagged
@@ -130,3 +131,21 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7747137812073480625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 812925201868858803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32e35690333aaeb4d8b10f370dead619, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minRotationSpeed: 30
+  maxRotationSpeed: 90
+  minBounceAmplitude: 0.15
+  maxBounceAmplitude: 0.25
+  minBounceFrequency: 1.5
+  maxBounceFrequency: 3

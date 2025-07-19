@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8845167261559961431}
   - component: {fileID: 2264163231448195400}
   - component: {fileID: 8900871798118360853}
+  - component: {fileID: 4088311079403786847}
   m_Layer: 0
   m_Name: Damage Pickup
   m_TagString: Untagged
@@ -126,3 +127,21 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4088311079403786847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5461723071722007646}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32e35690333aaeb4d8b10f370dead619, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minRotationSpeed: 30
+  maxRotationSpeed: 90
+  minBounceAmplitude: 0.15
+  maxBounceAmplitude: 0.25
+  minBounceFrequency: 1.5
+  maxBounceFrequency: 3
