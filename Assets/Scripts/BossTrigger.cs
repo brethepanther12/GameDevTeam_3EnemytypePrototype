@@ -2,44 +2,38 @@ using UnityEngine;
 
 public class BossTrigger : MonoBehaviour
 {
-    private BossAI boss;
+    public Animator gateAnimator;
+    public GameObject enemyPortalPrefab;
+    public Transform enemyPortalSpawnPoint;
+    public GameObject bossPrefab;
+    public Transform bossSpawnPoint;
 
-    public GameObject[] fireBowls;
-    void Start()
-    {
-        boss = GetComponentInParent<BossAI>();
-    }
+    private bool hasActivated = false;
 
-    void OnTriggerEnter(Collider other)
+    public void ActivateBossFight()
     {
-        if (other.CompareTag("Player"))
+        if (hasActivated) return;
+
+        hasActivated = true;
+
+        // Spawn boss
+        if (bossPrefab && bossSpawnPoint)
         {
-            Debug.Log("Player entered boss trigger!");
-            boss.SetPlayerInSight(true);
+            Instantiate(bossPrefab, bossSpawnPoint.position, bossSpawnPoint.rotation);
+        }
 
-            gamemanager.instance.StartBossFight(boss);
+        // Spawn enemy portal
+        if (enemyPortalPrefab && enemyPortalSpawnPoint)
+        {
+            GameObject portal = Instantiate(enemyPortalPrefab, enemyPortalSpawnPoint.position, enemyPortalSpawnPoint.rotation);
 
-            // Enable fire bowls and lights
-            foreach (GameObject bowl in fireBowls)
+            // Tell the portal to start spawning
+            EnemySpawner spawner = portal.GetComponent<EnemySpawner>();
+            if (spawner != null)
             {
-                if (bowl != null) continue;
-
-                // Start flame particles
-                Transform flameTransform = bowl.transform.Find("Flame");
-                if (flameTransform != null)
-                {
-                    ParticleSystem flame = flameTransform.GetComponent<ParticleSystem>();
-                    if (flame != null) flame.Play();
-                }
-
-                // Enable fire light
-                Transform lightTransform = bowl.transform.Find("FireLight");
-                if (lightTransform != null)
-                {
-                    Light fireLight = lightTransform.GetComponent<Light>();
-                    if (fireBowls != null) fireLight.enabled = true;
-                }
+                spawner.StartSpawning();
             }
         }
     }
-}
+
+    }
