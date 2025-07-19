@@ -9,6 +9,7 @@ public class gamemanager : MonoBehaviour
     [SerializeField] GameObject menuPause;
     [SerializeField] GameObject menuWin;
     [SerializeField] GameObject menuLose;
+    [SerializeField] GameObject menuInventory;
     [SerializeField] TMP_Text EnemiesRemaining;
 
     public Image playerHPBar;
@@ -95,7 +96,13 @@ public class gamemanager : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
     }
+    public void openInventory()
+    {
+        statePause();
+        menuActive = menuInventory;
+        menuActive.SetActive(true);
 
+    }
     public void youLose()
     {
         statePause();
@@ -129,4 +136,5 @@ public class gamemanager : MonoBehaviour
         bossHealthBarUI.SetActive(false);
         currentBoss = null;
     }
+    
 }

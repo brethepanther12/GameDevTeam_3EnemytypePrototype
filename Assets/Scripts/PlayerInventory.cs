@@ -86,6 +86,7 @@ public class PlayerInventory : MonoBehaviour
         {
             currentWeaponScript.InitializeWeapon(equippedWeapon, refillMag: false);
             currentWeaponScript.SetAmmoState(equippedWeapon.currentAmmoInMag, equippedWeapon.currentAmmoInReserve);
+
         }
     }
 
@@ -129,5 +130,9 @@ public class PlayerInventory : MonoBehaviour
 
             
         }
+    }
+    public void updateInventoryUI()
+    {
+        
     }
 }
