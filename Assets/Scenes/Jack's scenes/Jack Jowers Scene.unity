@@ -1020,6 +1020,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player(v5)
       objectReference: {fileID: 0}
+    - target: {fileID: 1481005717222424149, guid: 3ae5b7f76a11c2f49b77f7d14c596062, type: 3}
+      propertyPath: playerMuzzleFlash
+      value: 
+      objectReference: {fileID: 1867731231}
     - target: {fileID: 4746485815185866098, guid: 3ae5b7f76a11c2f49b77f7d14c596062, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1058,14 +1062,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4746485815185866098, guid: 3ae5b7f76a11c2f49b77f7d14c596062, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6095715662116703130, guid: 3ae5b7f76a11c2f49b77f7d14c596062, type: 3}
-      propertyPath: looping
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6095715662116703130, guid: 3ae5b7f76a11c2f49b77f7d14c596062, type: 3}
-      propertyPath: playOnAwake
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1365,6 +1361,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 61b0cc8e4110703459c4f783365629c4, type: 3}
+--- !u!198 &1867731231 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 6095715662116703130, guid: 3ae5b7f76a11c2f49b77f7d14c596062, type: 3}
+  m_PrefabInstance: {fileID: 1501374338}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &428995248421897908
 PrefabInstance:
   m_ObjectHideFlags: 0
