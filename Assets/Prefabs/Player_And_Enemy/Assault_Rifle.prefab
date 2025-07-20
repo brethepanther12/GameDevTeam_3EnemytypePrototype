@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 4041706398998791682}
   - component: {fileID: -2460702860789429743}
   m_Layer: 3
-  m_Name: Gun 1
+  m_Name: Assault_Rifle
   m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -54,11 +54,11 @@ MonoBehaviour:
   ignoreLayer:
     serializedVersion: 2
     m_Bits: 0
-  wepDmg: 2
-  attackRate: 0.4
-  range: 200
-  magSize: 15
-  ammoMax: 75
+  wepDmg: 1
+  attackRate: 0.1
+  range: 100
+  magSize: 20
+  ammoMax: 100
   bullet: {fileID: 7539981003205437294, guid: 97a4c4b329aa6bc4c8a68940aaff17f4, type: 3}
   shootPos: {fileID: 800010388333374786}
   impactSound: {fileID: 0}
@@ -91,7 +91,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a501bb00c34251540a7cffaba4f07182, type: 2}
+  - {fileID: 2100000, guid: 5c7176cef124e1a4793b448ed91b74e1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

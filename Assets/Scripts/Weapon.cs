@@ -78,9 +78,9 @@ public class Weapon : MonoBehaviour {
 
         if (Input.GetButton("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
         {
-           
+
             Shoot();
-                
+      
         }
 
         if (Input.GetKeyDown(KeyCode.R) && ammoInMag < magSize && !equippedPlayer.isReloading)
