@@ -84,8 +84,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 3387b8e4b2ac870438bca51986d5c7bd, type: 3}
   walkStepDelay: 0.5
   sprintStepDelay: 0.3
+  playerMuzzleFlash: {fileID: 6095715662116703130}
   inventory: {fileID: 8173781971442236619}
   weaponSocket: {fileID: 8342596634518005299}
+  jumpCur: 0
   isReloading: 0
   currentAmmo: 0
 --- !u!114 &6019322802797836252
@@ -120,6 +122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdf38471c6fb4b54f90a2ee80936c0cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerRef: {fileID: 0}
   collectedItems:
   - {fileID: 11400000, guid: 96a6ce5e56fb1e349acc8985088cc2aa, type: 2}
   weaponInventory: []
@@ -597,5 +600,10 @@ PrefabInstance:
 --- !u!4 &2526971101294817180 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4643084320600317637, guid: 264a2d95247444949aed566086d048e0, type: 3}
+  m_PrefabInstance: {fileID: 7169192133399392601}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &6095715662116703130 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 4027980978097748675, guid: 264a2d95247444949aed566086d048e0, type: 3}
   m_PrefabInstance: {fileID: 7169192133399392601}
   m_PrefabAsset: {fileID: 0}

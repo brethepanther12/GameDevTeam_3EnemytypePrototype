@@ -9,6 +9,7 @@ public class gamemanager : MonoBehaviour
     [SerializeField] GameObject menuPause;
     [SerializeField] GameObject menuWin;
     [SerializeField] GameObject menuLose;
+    [SerializeField] GameObject menuInventory;
     [SerializeField] TMP_Text EnemiesRemaining;
 
     public Image playerHPBar;
@@ -27,6 +28,10 @@ public class gamemanager : MonoBehaviour
     public TMP_Text playerShield;
     public TMP_Text playerArmor;
     public TMPro.TextMeshProUGUI ammoText;
+    public TMP_Text inventoryAmmo;
+    public TMP_Text redKey;
+    public TMP_Text blueKey;
+    public TMP_Text yellowKey;
 
     public GameObject bossHealthBarUI;
     public Image bossHealthBarFill;
@@ -66,6 +71,18 @@ public class gamemanager : MonoBehaviour
                 stateUnpause();
             }
         }
+        if (Input.GetButtonDown("Inventory"))
+        {
+            if (menuActive == null)
+            {
+                openInventory();
+                updateInventoryUI();
+            }
+            else if (menuActive == menuInventory)
+            {
+                stateUnpause();
+            }
+        }
     }
 
     public void statePause()
@@ -95,7 +112,13 @@ public class gamemanager : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
     }
-
+    public void openInventory()
+    {
+        statePause();
+        menuActive = menuInventory;
+        menuActive.SetActive(true);
+        updateInventoryUI();
+    }
     public void youLose()
     {
         statePause();
@@ -128,5 +151,28 @@ public class gamemanager : MonoBehaviour
     {
         bossHealthBarUI.SetActive(false);
         currentBoss = null;
+    }
+    public void updateInventoryUI()
+    {
+        if (playerScript == null)
+        {
+            return;
+        }
+        PlayerInventory inventory = playerScript.GetComponent<PlayerInventory>();
+        if (inventory == null)
+        {
+            return;
+        }
+        int ammoCount = inventory.GetAmmoAmount("Ammo");
+        inventoryAmmo.text = ammoCount.ToString();
+
+        int redKeys = inventory.GetAmmoAmount("Red Key");
+        redKey.text = redKeys.ToString();
+
+        int blueKeys = inventory.GetAmmoAmount("Blue Key");
+        blueKey.text = blueKeys.ToString();
+
+        int yellowKeys = inventory.GetAmmoAmount("Yellow Key");
+        yellowKey.text = yellowKeys.ToString();
     }
 }
