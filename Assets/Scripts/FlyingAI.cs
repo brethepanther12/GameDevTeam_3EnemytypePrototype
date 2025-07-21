@@ -89,12 +89,15 @@ public class FlyingAI : MonoBehaviour, IDamage
                 ceilingTarget = ceilingPoint;
                 returnToCeiling = true;
             }
+            
+            //returnToCeiling = false;
 
             MoveToCeiling();
             return;
         }
-        returnToCeiling = false;
 
+        if (rigidBody.isKinematic)
+            rigidBody.isKinematic = false;
         // Direction toward the target
         Vector3 direction = (target.position - transform.position).normalized;
 
@@ -211,7 +214,7 @@ public class FlyingAI : MonoBehaviour, IDamage
 
         if (closest < Mathf.Infinity)
         {
-            rigidBody.linearVelocity = (ceilingPoint - transform.position).normalized * flyingSpeed;
+            //rigidBody.linearVelocity = (ceilingPoint - transform.position).normalized * flyingSpeed;
         }
     }
 
@@ -232,9 +235,13 @@ public class FlyingAI : MonoBehaviour, IDamage
         else
         {
             rigidBody.linearVelocity = Vector3.zero;
-            float ceilingHeightOff = bodyCollider.radius * transform.localScale.y;
+            rigidBody.angularVelocity = Vector3.zero;
+
+            rigidBody.isKinematic = true;
+
+            float ceilingHeightOff = bodyCollider.bounds.max.y - transform.position.y; //bodyCollider.radius * transform.localScale.y;
             // snap to point
-            transform.position = ceilingTarget + Vector3.down * ceilingHeightOff; 
+            transform.position = ceilingTarget - new Vector3(0, ceilingHeightOff, 0); 
                                                      
         }
     }
