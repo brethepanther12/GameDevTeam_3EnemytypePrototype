@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using static System.Net.Mime.MediaTypeNames;
+using static UnityEditor.Progress;
+using UnityEngine.UIElements;
 public class gamemanager : MonoBehaviour
 {
     public static gamemanager instance;
