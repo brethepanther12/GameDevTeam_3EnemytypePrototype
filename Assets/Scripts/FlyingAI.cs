@@ -1,13 +1,16 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.LowLevel;
 
 public class FlyingAI : MonoBehaviour, IDamage
 {
     [SerializeField] private Transform target;
+    [SerializeField] private float lostPlayDelay;
     private GameObject playerTarget;
+    private float playerLostTimer;
+
     [SerializeField] private float flyingSpeed;
-    [SerializeField]
-    private float rotationSpeed;
+    [SerializeField] private float rotationSpeed;
     Vector3 playerDirection;
 
     [SerializeField] private Rigidbody rigidBody;
@@ -83,19 +86,27 @@ public class FlyingAI : MonoBehaviour, IDamage
     void FixedUpdate()
     {
         playerVisible = PlayerInFieldOfView();
+        bool playerLost = target == null || !InRange || !playerVisible;
 
-        if (target == null || !InRange || !playerVisible)
+        if (playerLost)
+            playerLostTimer += Time.deltaTime;
+        else
+            playerLostTimer = 0f;
+
+
+
+        if (playerLostTimer >= lostPlayDelay && !returnToCeiling)
         {
-
-            if (!returnToCeiling)
-            {
-                NearestCeiling();
-                ceilingTarget = ceilingPoint;
-                returnToCeiling = true;
-            }
-
+            NearestCeiling();
+            ceilingTarget = ceilingPoint;
+            returnToCeiling = true;
             //returnToCeiling = false;
+        }
 
+        if (!(playerLostTimer >= lostPlayDelay) && returnToCeiling) returnToCeiling = false;
+
+        if (returnToCeiling)
+        {
             MoveToCeiling();
             return;
         }
@@ -136,7 +147,7 @@ public class FlyingAI : MonoBehaviour, IDamage
         if (!Physics.Raycast(transform.position, direction, out RaycastHit wallHit, 1f, enviormentMask))
 
             // Move directly toward the player
-            rigidBody.linearVelocity = transform.forward * flyingSpeed;
+            rigidBody.linearVelocity = direction * flyingSpeed;
 
         else
             rigidBody.linearVelocity = Vector3.zero;
@@ -265,7 +276,7 @@ public class FlyingAI : MonoBehaviour, IDamage
         if (playerDirection.sqrMagnitude > 0.01f)
         {
             Quaternion rotate = Quaternion.LookRotation(playerDirection);
-            transform.rotation = Quaternion.Slerp(rigidBody.rotation, rotate, Time.deltaTime * rotationSpeed);
+            transform.rotation = Quaternion.Lerp(rigidBody.rotation, rotate, Time.deltaTime * rotationSpeed);
 
         }
        
