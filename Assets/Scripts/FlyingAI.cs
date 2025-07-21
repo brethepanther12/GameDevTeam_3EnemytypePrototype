@@ -186,9 +186,17 @@ public class FlyingAI : MonoBehaviour, IDamage
             //Y of the ceiling
             float ceilingY = bounds.center.y - bounds.extents.y;
 
-            //Random z and x points
-            float ceilingX = Random.Range(bounds.min.x, bounds.max.x);
-            float ceilngZ = Random.Range(bounds.min.z, bounds.max.z);
+            float margin = 0.5f;
+
+            float minX = bounds.min.x + margin;
+            float maxX = bounds.max.x - margin;
+            float minZ = bounds.min.z + margin;
+            float maxZ = bounds.max.z - margin;
+
+            if (minX >= maxX || minZ >= maxZ) continue;
+            ////Random z and x points
+            float ceilingX = Random.Range(minX, maxX);
+            float ceilngZ = Random.Range(minZ, maxZ);
 
             Vector3 ceilingBottom = new Vector3(ceilingX, ceilingY, ceilngZ);
             float distance = Vector3.Distance(transform.position, ceilingBottom);
