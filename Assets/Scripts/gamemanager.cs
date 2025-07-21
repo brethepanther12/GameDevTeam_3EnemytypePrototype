@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 //using static System.Net.Mime.MediaTypeNames;
 //using static UnityEditor.Progress;
 public class gamemanager : MonoBehaviour
@@ -34,8 +35,7 @@ public class gamemanager : MonoBehaviour
     public TMP_Text redKey;
     public TMP_Text blueKey;
     public TMP_Text yellowKey;
-    public TMP_Text shotGun;
-    public TMP_Text weaponTextParent;
+    public TMP_Text gunName;
 
     public GameObject bossHealthBarUI;
     public Image bossHealthBarFill;
@@ -178,17 +178,6 @@ public class gamemanager : MonoBehaviour
 
         int yellowKeys = inventory.GetAmmoAmount("Yellow Key");
         yellowKey.text = yellowKeys.ToString();
-        
 
-        foreach(WeaponSO weapon in inventory.weaponInventory)
-        {
-            //GameObject newText = Instantiate(shotGun, weaponTextParent);
-            //Text txt = newText.GetComponent<Text>();
-
-            //if (txt != null)
-            {
-                //txt.text = weapon.weaponName;
-            }
-        }
     }
 }
