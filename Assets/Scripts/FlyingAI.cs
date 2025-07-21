@@ -8,7 +8,7 @@ public class FlyingAI : MonoBehaviour, IDamage
     [SerializeField] private float flyingSpeed;
     [SerializeField]
     private float rotationSpeed;
-    // Vector3 playerDirection;
+    Vector3 playerDirection;
 
     [SerializeField] private Rigidbody rigidBody;
 
@@ -60,7 +60,7 @@ public class FlyingAI : MonoBehaviour, IDamage
     {
         currentHP = HP;
 
-        //playerDirection = gamemanager.instance.player.transform.position - transform.position;
+        
 
         // Store original material color
         if (modelRender != null)
@@ -142,14 +142,18 @@ public class FlyingAI : MonoBehaviour, IDamage
             rigidBody.linearVelocity = Vector3.zero;
 
         // Smooth rotation
-        Quaternion targetRot = Quaternion.LookRotation(direction);
-        rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime));
+        //Quaternion targetRot = Quaternion.LookRotation(direction);
+        //rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime));
+
+        faceTarget();
     }
 
 
     //Logic if the player is in view or not
     private bool PlayerInFieldOfView()
     {
+        //playerDirection = gamemanager.instance.player.transform.position - transform.position;
+
         if (target == null) return false;
 
         //Locate player
@@ -163,10 +167,9 @@ public class FlyingAI : MonoBehaviour, IDamage
 
         if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, fovDistance))
         {
-            if (hit.collider.CompareTag("Player"))
+            if ( hit.collider.CompareTag("Player"))
                 return true;
-
-            else if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
+           else if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
                 return false;
         }
 
@@ -227,6 +230,8 @@ public class FlyingAI : MonoBehaviour, IDamage
     {
         if (!returnToCeiling) return;
 
+        if (rigidBody.isKinematic) return;
+
         Vector3 direction = (ceilingTarget - transform.position).normalized;
         float distance = Vector3.Distance(transform.position, ceilingTarget);
 
@@ -249,6 +254,21 @@ public class FlyingAI : MonoBehaviour, IDamage
             transform.position = ceilingTarget - new Vector3(0, ceilingHeightOff, 0);
 
         }
+    }
+
+    void faceTarget()
+    {
+        if (target == null) return;
+
+        playerDirection = (target.position - transform.position).normalized;
+
+        if (playerDirection.sqrMagnitude > 0.01f)
+        {
+            Quaternion rotate = Quaternion.LookRotation(playerDirection);
+            transform.rotation = Quaternion.Slerp(rigidBody.rotation, rotate, Time.deltaTime * rotationSpeed);
+
+        }
+       
     }
 
     //void faceTarget()
