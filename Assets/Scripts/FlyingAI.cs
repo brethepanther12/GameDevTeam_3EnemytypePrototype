@@ -6,7 +6,9 @@ public class FlyingAI : MonoBehaviour, IDamage
     [SerializeField] private Transform target;
     private GameObject playerTarget;
     [SerializeField] private float flyingSpeed;
-    [SerializeField] private float rotationSpeed;
+    [SerializeField]
+    private float rotationSpeed;
+    // Vector3 playerDirection;
 
     [SerializeField] private Rigidbody rigidBody;
 
@@ -58,6 +60,8 @@ public class FlyingAI : MonoBehaviour, IDamage
     {
         currentHP = HP;
 
+        //playerDirection = gamemanager.instance.player.transform.position - transform.position;
+
         // Store original material color
         if (modelRender != null)
             originColor = modelRender.material.color;
@@ -82,14 +86,14 @@ public class FlyingAI : MonoBehaviour, IDamage
 
         if (target == null || !InRange || !playerVisible)
         {
-            
+
             if (!returnToCeiling)
             {
                 NearestCeiling();
                 ceilingTarget = ceilingPoint;
                 returnToCeiling = true;
             }
-            
+
             //returnToCeiling = false;
 
             MoveToCeiling();
@@ -98,11 +102,12 @@ public class FlyingAI : MonoBehaviour, IDamage
 
         if (rigidBody.isKinematic)
             rigidBody.isKinematic = false;
+
         // Direction toward the target
         Vector3 direction = (target.position - transform.position).normalized;
 
         Debug.DrawRay(transform.position, direction * 1f, Color.red);
-           
+
 
         // Maintain hover height
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight))
@@ -129,11 +134,11 @@ public class FlyingAI : MonoBehaviour, IDamage
 
         //Checking if there is a wall in flying enemy direction
         if (!Physics.Raycast(transform.position, direction, out RaycastHit wallHit, 1f, enviormentMask))
-    
-            // Move directly toward the player
-            rigidBody.linearVelocity = direction * flyingSpeed;
 
-        else 
+            // Move directly toward the player
+            rigidBody.linearVelocity = transform.forward * flyingSpeed;
+
+        else
             rigidBody.linearVelocity = Vector3.zero;
 
         // Smooth rotation
@@ -141,7 +146,7 @@ public class FlyingAI : MonoBehaviour, IDamage
         rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime));
     }
 
-    
+
     //Logic if the player is in view or not
     private bool PlayerInFieldOfView()
     {
@@ -154,7 +159,7 @@ public class FlyingAI : MonoBehaviour, IDamage
         Debug.DrawRay(transform.position, direction.normalized * fovDistance, Color.red);
 
         //check if the player is far from the object
-        if (direction.magnitude > fovDistance || angle > fovAngle)return false;
+        if (direction.magnitude > fovDistance || angle > fovAngle) return false;
 
         if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, fovDistance))
         {
@@ -165,15 +170,15 @@ public class FlyingAI : MonoBehaviour, IDamage
                 return false;
         }
 
-        
+
         return false;
     }
-    
+
 
     void NearestCeiling()
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, ceilingInRadius, ceilingMask);
-        
+
         float closest = Mathf.Infinity;
         ceilingPoint = Vector3.zero;
 
@@ -208,7 +213,7 @@ public class FlyingAI : MonoBehaviour, IDamage
             if (distance < closest)
             {
                 closest = distance;
-                ceilingPoint = ceilingBottom; 
+                ceilingPoint = ceilingBottom;
             }
         }
 
@@ -239,13 +244,17 @@ public class FlyingAI : MonoBehaviour, IDamage
 
             rigidBody.isKinematic = true;
 
-            float ceilingHeightOff = bodyCollider.bounds.max.y - transform.position.y; //bodyCollider.radius * transform.localScale.y;
+            float ceilingHeightOff = bodyCollider.bounds.extents.y; //bodyCollider.radius * transform.localScale.y;
             // snap to point
-            transform.position = ceilingTarget - new Vector3(0, ceilingHeightOff, 0); 
-                                                     
+            transform.position = ceilingTarget - new Vector3(0, ceilingHeightOff, 0);
+
         }
     }
-
+    //void faceTarget()
+    //{
+    //    Quaternion rotate = Quaternion.LookRotation(new Vector3(playerDirection.x, 0, playerDirection.z));
+    //    transform.rotation = Quaternion.Lerp(transform.rotation, rotate, Time.deltaTime * faceTargetSpeed);
+    //}
     public void takeDamage(int amount)
     {
 
@@ -255,7 +264,7 @@ public class FlyingAI : MonoBehaviour, IDamage
 
         if (currentHP <= 0)
         {
-           //Die method
+            //Die method
             Die();
         }
         else
@@ -318,7 +327,7 @@ public class FlyingAI : MonoBehaviour, IDamage
     {
         Dead = true;
 
-        
+
         rigidBody.linearVelocity = Vector3.zero;
 
         gamemanager.instance.updateGameGoal(-1);
@@ -328,7 +337,7 @@ public class FlyingAI : MonoBehaviour, IDamage
         Destroy(gameObject);
     }
 
-    IEnumerator DOT (IDamage target)
+    IEnumerator DOT(IDamage target)
     {
         isDamaging = true;
 
@@ -340,13 +349,14 @@ public class FlyingAI : MonoBehaviour, IDamage
     }
     IEnumerator FlashRed()
     {
+        if (modelRender == null) yield break;
         //foreach (var part in modelRender)
-            modelRender.material.color = Color.red;
+        modelRender.material.color = Color.red;
 
         yield return new WaitForSeconds(0.1f);
 
-      //  foreach (var part in modelRender)
-            modelRender.material.color = originColor;
+        //  foreach (var part in modelRender)
+        modelRender.material.color = originColor;
     }
 
 }
