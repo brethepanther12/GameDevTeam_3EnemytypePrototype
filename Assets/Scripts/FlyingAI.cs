@@ -24,7 +24,9 @@ public class FlyingAI : MonoBehaviour, IDamage
     //Ceiling variables
     [SerializeField] private float ceilingInRadius;
     [SerializeField] private float ceilingAttachmentRange;
+    //[SerializeField] private float ceilingHeightOff;
     [SerializeField] private LayerMask ceilingMask;
+    [SerializeField] private SphereCollider bodyCollider;
     private bool returnToCeiling;
     private Vector3 ceilingTarget;
     private Vector3 ceilingPoint;
@@ -230,9 +232,9 @@ public class FlyingAI : MonoBehaviour, IDamage
         else
         {
             rigidBody.linearVelocity = Vector3.zero;
-
+            float ceilingHeightOff = bodyCollider.radius * transform.localScale.y;
             // snap to point
-            transform.position = ceilingTarget; 
+            transform.position = ceilingTarget + Vector3.down * ceilingHeightOff; 
                                                      
         }
     }
