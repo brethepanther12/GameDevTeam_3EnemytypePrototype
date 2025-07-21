@@ -48,7 +48,7 @@ public class FlyingAI : MonoBehaviour, IDamage
     [SerializeField] private float deathVolume;
 
     //Render
-    [SerializeField] private SkinnedMeshRenderer[] modelParts;
+    [SerializeField] private Renderer modelRender;
     private Color originColor;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -57,8 +57,8 @@ public class FlyingAI : MonoBehaviour, IDamage
         currentHP = HP;
 
         // Store original material color
-        if (modelParts != null && modelParts.Length > 0)
-            originColor = modelParts[0].material.color;
+        if (modelRender != null)
+            originColor = modelRender.material.color;
 
         if (rigidBody == null) rigidBody = GetComponent<Rigidbody>();
 
@@ -331,13 +331,13 @@ public class FlyingAI : MonoBehaviour, IDamage
     }
     IEnumerator FlashRed()
     {
-        foreach (var part in modelParts)
-            part.material.color = Color.red;
+        //foreach (var part in modelRender)
+            modelRender.material.color = Color.red;
 
         yield return new WaitForSeconds(0.1f);
 
-        foreach (var part in modelParts)
-            part.material.color = originColor;
+      //  foreach (var part in modelRender)
+            modelRender.material.color = originColor;
     }
 
 }
