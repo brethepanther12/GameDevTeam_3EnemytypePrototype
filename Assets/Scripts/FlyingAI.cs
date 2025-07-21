@@ -154,7 +154,7 @@ public class FlyingAI : MonoBehaviour, IDamage
 
         //Locate player
         Vector3 direction = target.position - transform.position;
-        float angle = Vector3.Angle(transform.forward, direction);
+        float angle = Vector3.Angle(direction, transform.forward);
 
         Debug.DrawRay(transform.position, direction.normalized * fovDistance, Color.red);
 
@@ -250,11 +250,13 @@ public class FlyingAI : MonoBehaviour, IDamage
 
         }
     }
+
     //void faceTarget()
     //{
     //    Quaternion rotate = Quaternion.LookRotation(new Vector3(playerDirection.x, 0, playerDirection.z));
     //    transform.rotation = Quaternion.Lerp(transform.rotation, rotate, Time.deltaTime * faceTargetSpeed);
     //}
+
     public void takeDamage(int amount)
     {
 
