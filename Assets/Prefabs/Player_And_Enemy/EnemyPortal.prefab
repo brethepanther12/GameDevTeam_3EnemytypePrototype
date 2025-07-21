@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 1705679291920054558}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -30.1, y: 154.3, z: -95.5}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4953,6 +4953,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9082048279679264868}
   - component: {fileID: 3408878718436060143}
+  - component: {fileID: -243101897024743668}
   m_Layer: 0
   m_Name: EnemyPortal
   m_TagString: Untagged
@@ -4998,3 +4999,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-243101897024743668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4023937010971967821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e610a62c2060e8d468f9f31d8fea2909, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyPrefab: {fileID: 675110745737325981, guid: 05e3bbd065f3e2142be811eff3e08c31, type: 3}
+  numberToSpawn: 5
+  minDelay: 0.5
+  maxDelay: 1.5

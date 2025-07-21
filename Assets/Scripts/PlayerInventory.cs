@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerInventory : MonoBehaviour
 {
+    [HideInInspector] public playerController playerRef;
+
     [Header("Weapon Inventory")]
     public List<ItemSO> collectedItems = new List<ItemSO>();
     public List<WeaponSO> weaponInventory = new List<WeaponSO>();
@@ -86,6 +88,7 @@ public class PlayerInventory : MonoBehaviour
         {
             currentWeaponScript.InitializeWeapon(equippedWeapon, refillMag: false);
             currentWeaponScript.SetAmmoState(equippedWeapon.currentAmmoInMag, equippedWeapon.currentAmmoInReserve);
+            currentWeaponScript.muzzleFlash = playerRef.playerMuzzleFlash;
 
         }
     }
@@ -130,9 +133,5 @@ public class PlayerInventory : MonoBehaviour
 
             
         }
-    }
-    public void updateInventoryUI()
-    {
-        
     }
 }

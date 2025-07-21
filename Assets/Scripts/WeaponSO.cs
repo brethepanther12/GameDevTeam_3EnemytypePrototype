@@ -1,4 +1,7 @@
+using System.Diagnostics.Contracts;
 using UnityEngine;
+
+public enum AmmoType { Standard, Shell, Energy, Fuel, Rocket, Grenade}
 
 [CreateAssetMenu(menuName = "Inventory/Weapon")]
 public class WeaponSO : ScriptableObject
@@ -14,6 +17,7 @@ public class WeaponSO : ScriptableObject
     public int range;
     public int magSize;
     public int ammoMax;
+
     [HideInInspector] public int currentAmmoInMag;
     [HideInInspector] public int currentAmmoInReserve;
     

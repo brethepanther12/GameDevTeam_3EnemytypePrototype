@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
+//using static System.Net.Mime.MediaTypeNames;
+//using static UnityEditor.Progress;
 public class gamemanager : MonoBehaviour
 {
     public static gamemanager instance;
@@ -28,6 +31,11 @@ public class gamemanager : MonoBehaviour
     public TMP_Text playerShield;
     public TMP_Text playerArmor;
     public TMPro.TextMeshProUGUI ammoText;
+    public TMP_Text inventoryAmmo;
+    public TMP_Text redKey;
+    public TMP_Text blueKey;
+    public TMP_Text yellowKey;
+    public TMP_Text gunName;
 
     public GameObject bossHealthBarUI;
     public Image bossHealthBarFill;
@@ -67,6 +75,18 @@ public class gamemanager : MonoBehaviour
                 stateUnpause();
             }
         }
+        if (Input.GetButtonDown("Inventory"))
+        {
+            if (menuActive == null)
+            {
+                openInventory();
+                updateInventoryUI();
+            }
+            else if (menuActive == menuInventory)
+            {
+                stateUnpause();
+            }
+        }
     }
 
     public void statePause()
@@ -101,7 +121,7 @@ public class gamemanager : MonoBehaviour
         statePause();
         menuActive = menuInventory;
         menuActive.SetActive(true);
-
+        updateInventoryUI();
     }
     public void youLose()
     {
@@ -136,5 +156,28 @@ public class gamemanager : MonoBehaviour
         bossHealthBarUI.SetActive(false);
         currentBoss = null;
     }
-    
+    public void updateInventoryUI()
+    {
+        if (playerScript == null)
+        {
+            return;
+        }
+        PlayerInventory inventory = playerScript.GetComponent<PlayerInventory>();
+        if (inventory == null)
+        {
+            return;
+        }
+        int ammoCount = inventory.GetAmmoAmount("Ammo");
+        inventoryAmmo.text = ammoCount.ToString();
+
+        int redKeys = inventory.GetAmmoAmount("Red Key");
+        redKey.text = redKeys.ToString();
+
+        int blueKeys = inventory.GetAmmoAmount("Blue Key");
+        blueKey.text = blueKeys.ToString();
+
+        int yellowKeys = inventory.GetAmmoAmount("Yellow Key");
+        yellowKey.text = yellowKeys.ToString();
+
+    }
 }

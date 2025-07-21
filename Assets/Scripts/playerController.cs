@@ -34,6 +34,7 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] private float walkStepDelay = 0.5f;
     [SerializeField] private float sprintStepDelay = 0.3f;
 
+    public ParticleSystem playerMuzzleFlash;
     public PlayerInventory inventory;
     public GameObject weaponSocket;
     public int jumpCur;
@@ -69,7 +70,10 @@ public class playerController : MonoBehaviour, IDamage
         inventory = GetComponent<PlayerInventory>();
 
         if (inventory != null)
+        {
             inventory.weaponSocket = weaponSocket;
+            inventory.playerRef = this;
+        }
 
         HPOrig = HP;
         armorOrig = armor;
@@ -362,6 +366,10 @@ public class playerController : MonoBehaviour, IDamage
         gamemanager.instance.playerHp.text = $"{HP} / {maxHP}";
         gamemanager.instance.playerArmor.text = $"{armor} / {maxArmor}";
         gamemanager.instance.playerShield.text = $"{shield} / {maxShield}";
+        if (inventory.weaponInventory.Count > 0)
+        {
+            gamemanager.instance.gunName.text = $"{inventory.weaponInventory[inventory.weaponListPos].weaponName}";
+        }
         Weapon activeWep = weaponSocket.GetComponentInChildren<Weapon>();
 
         if (activeWep != null)

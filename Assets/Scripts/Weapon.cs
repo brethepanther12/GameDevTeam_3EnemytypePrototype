@@ -40,7 +40,7 @@ public class Weapon : MonoBehaviour {
     }
     private void Start() 
     {
-
+        if(weaponData !=null)
         InitializeWeapon(weaponData);
     }
 
@@ -78,9 +78,9 @@ public class Weapon : MonoBehaviour {
 
         if (Input.GetButton("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
         {
-           
+
             Shoot();
-                
+      
         }
 
         if (Input.GetKeyDown(KeyCode.R) && ammoInMag < magSize && !equippedPlayer.isReloading)
@@ -116,7 +116,7 @@ public class Weapon : MonoBehaviour {
         if (gunAnim != null)
             gunAnim.SetBool("Reloading", true);
 
-        yield return new WaitForSeconds(weaponData.reloadSound.length);
+        yield return new WaitForSeconds(1f);
 
         if (gunAnim != null)
             gunAnim.SetBool("Reloading", false);

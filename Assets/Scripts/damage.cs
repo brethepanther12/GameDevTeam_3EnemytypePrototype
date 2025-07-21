@@ -56,7 +56,7 @@ public class damage : MonoBehaviour
 
         if (dmg != null && type != damagetype.DOT)
         {
-        
+
             dmg.takeDamage(damageAmount + weaponDMG);
 
             if (other.CompareTag("Enemy"))
@@ -64,24 +64,24 @@ public class damage : MonoBehaviour
                 GameObject reticle = GameObject.Find("Reticle");
                 ReticleController rc = reticle.GetComponent<ReticleController>();
                 rc.Pulse(true);
-
             }
-
-
         }
 
-        if (type == damagetype.moving || type == damagetype.homing)
+        if ((type == damagetype.moving || type == damagetype.homing) && impactPrefab != null)
         {
+            RaycastHit hit;
+            Vector3 rayOrigin = transform.position + transform.forward * 0.2f;
+            Vector3 rayDirection = -transform.forward;
 
-            if (impactPrefab != null)
+            if (Physics.Raycast(rayOrigin, rayDirection, out hit, 1f, ~0, QueryTriggerInteraction.Ignore))
             {
-                Instantiate(impactPrefab, transform.position, Quaternion.LookRotation(transform.forward));
+                Instantiate(impactPrefab, hit.point, Quaternion.LookRotation(hit.normal));
             }
-
-            Destroy(gameObject);
+            else
+            {
+                Instantiate(impactPrefab, transform.position, Quaternion.LookRotation(-transform.forward));
+            }
         }
-
-        
     }
 
     private void OnTriggerStay(Collider other)
