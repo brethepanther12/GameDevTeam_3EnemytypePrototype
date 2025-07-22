@@ -82,6 +82,11 @@ public class damage : MonoBehaviour
                 Instantiate(impactPrefab, transform.position, Quaternion.LookRotation(-transform.forward));
             }
         }
+        if(type == damagetype.moving || type== damagetype.homing)
+        {
+            Destroy(gameObject);
+        }
+
     }
 
     private void OnTriggerStay(Collider other)

@@ -80,6 +80,11 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable
         if (isDead || isBeingGrappled)
             return;
 
+        if (!isReloading)
+        {
+            animator.ResetTrigger("Reload");
+        }
+
         animator.SetFloat("Speed", agent.velocity.magnitude);
 
         HandleFootsteps();
@@ -177,7 +182,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable
                         Shoot();
                     }
 
-                    if (currentAmmo <= 0 && !isReloading && !isDead)
+                    if (currentAmmo <= 0 && !isReloading && !isDead && reloadingRT == null)
                     {
                         reloadingRT = StartCoroutine(Reload());
                     }
@@ -309,25 +314,30 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable
 
     IEnumerator Reload()
     {
-        if (isDead)
-        {
+        if (isDead || isReloading)
             yield break;
-        }
+
         isReloading = true;
-        AudioSource.PlayClipAtPoint(reloadSound, transform.position, reloadVolume);
         animator.SetTrigger("Reload");
 
+        AudioSource.PlayClipAtPoint(reloadSound, transform.position, reloadVolume);
 
-        yield return new WaitForSeconds(reloadTime -.25f);
-       
-        if (isDead)
+        float timer = 0f;
+        while (timer < reloadTime)
         {
-            yield break;
+            if (isDead)
+            {
+                isReloading = false; // safety reset
+                yield break;
+            }
+
+            timer += Time.deltaTime;
+            yield return null;
         }
 
-        isReloading = false;
-        yield return new WaitForSeconds(.25f);
         currentAmmo = maxAmmo;
+        isReloading = false;
+        reloadingRT = null;
     }
 
     IEnumerator Die()
