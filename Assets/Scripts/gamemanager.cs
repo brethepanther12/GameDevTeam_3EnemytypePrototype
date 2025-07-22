@@ -23,6 +23,7 @@ public class gamemanager : MonoBehaviour
     public GameObject playerShieldDamagePanel;
     public GameObject playerArmorDamagePanel;
     public GameObject PlayerSpawnPOS;
+    public GameObject checkpointReached;
 
     public bool isPaused;
     public GameObject player;
