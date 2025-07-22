@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using Unity.VisualScripting;
+using System;
 //using static System.Net.Mime.MediaTypeNames;
 //using static UnityEditor.Progress;
 public class gamemanager : MonoBehaviour
@@ -21,6 +22,7 @@ public class gamemanager : MonoBehaviour
     public GameObject playerDamagePanel;
     public GameObject playerShieldDamagePanel;
     public GameObject playerArmorDamagePanel;
+    public GameObject PlayerSpawnPOS;
 
     public bool isPaused;
     public GameObject player;
@@ -57,6 +59,7 @@ public class gamemanager : MonoBehaviour
         player = GameObject.FindWithTag("Player");
         playerScript = player.GetComponent<playerController>();
         timescaleOrig = Time.timeScale;
+        PlayerSpawnPOS = GameObject.FindWithTag("Player Spawn POS");
     }
 
     // Update is called once per frame

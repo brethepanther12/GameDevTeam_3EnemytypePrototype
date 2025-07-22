@@ -22,5 +22,11 @@ public class buttonFunctions : MonoBehaviour
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
     }
+
+    public void respawnPlayer()
+    {
+        gamemanager.instance.playerScript.spawnPlayer();
+        gamemanager.instance.stateUnpause();
+    }
 }
 

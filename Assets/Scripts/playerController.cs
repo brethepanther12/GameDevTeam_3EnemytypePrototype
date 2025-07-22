@@ -66,6 +66,10 @@ public class playerController : MonoBehaviour, IDamage
 
     void Start()
     {
+        HPOrig = HP;
+        armorOrig = armor;
+        shieldOrig = shield;
+        spawnPlayer();
 
         inventory = GetComponent<PlayerInventory>();
 
@@ -75,11 +79,6 @@ public class playerController : MonoBehaviour, IDamage
             inventory.playerRef = this;
         }
 
-        HPOrig = HP;
-        armorOrig = armor;
-        shieldOrig = shield;
-
-        updatePlayerUI();
     }
 
     void Update()
@@ -400,4 +399,18 @@ public class playerController : MonoBehaviour, IDamage
         gamemanager.instance.playerShieldDamagePanel.SetActive(false);
     }
 
+    public void spawnPlayer()
+    {
+        if (controller != null)
+            controller.enabled = false;
+
+        transform.position = gamemanager.instance.PlayerSpawnPOS.transform.position;
+        transform.localRotation = gamemanager.instance.PlayerSpawnPOS.transform.localRotation;
+
+        if (controller != null)
+            controller.enabled = true;
+
+        HP = HPOrig;
+        updatePlayerUI();
+    }
 }
