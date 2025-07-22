@@ -47,11 +47,12 @@ public class Grenade : MonoBehaviour
         if (OnStickyBomb && !OnSurface)
         {   
             //Making it stationary
-            grenadeRigidB.isKinematic = true;
+            
 
             grenadeRigidB.linearVelocity = Vector3.zero;
             grenadeRigidB.angularVelocity = Vector3.zero;
 
+            grenadeRigidB.isKinematic = true;
 
             //Making it stick to a surface; Moving with the object it parents
             transform.SetParent(collision.transform);
