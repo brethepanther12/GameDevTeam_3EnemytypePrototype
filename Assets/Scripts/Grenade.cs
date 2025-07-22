@@ -11,8 +11,8 @@ public class Grenade : MonoBehaviour
 
     [SerializeField] private GameObject explosionPrefab;
 
-    [SerializeField] private bool OnStickyBomb;
-    [SerializeField] private bool isTracking;
+   [SerializeField] private bool OnStickyBomb;
+    //[SerializeField] private bool isTracking;
     bool OnSurface;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
