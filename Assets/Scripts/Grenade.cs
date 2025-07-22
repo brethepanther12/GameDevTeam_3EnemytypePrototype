@@ -11,23 +11,35 @@ public class Grenade : MonoBehaviour
 
     [SerializeField] private GameObject explosionPrefab;
 
-   [SerializeField] private bool OnStickyBomb;
+    [SerializeField] private bool OnStickyBomb;
+
+    private damage damageStats;
     //[SerializeField] private bool isTracking;
     bool OnSurface;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-      
-        
+
+        damageStats = GetComponent<damage>();
+        if (damageStats != null)
+        {
+            grenadeSpeed = damageStats.speed;
+            destroyTimer = damageStats.destroyTime;
+        }
+
         grenadeRigidB.useGravity = true;
         grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed) + (transform.up * grenadeSpeedY);
       
         StartCoroutine(explode());
+
+
     }
 
     // Update is called once per frame
     void Update()
-    { }
+    { 
+    
+    }
     
 
     private void OnCollisionEnter(Collision collision)
