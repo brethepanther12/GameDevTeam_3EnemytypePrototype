@@ -16,6 +16,7 @@ public class Grenade : MonoBehaviour
     void Start()
     {
         grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed) + (transform.up * grenadeSpeedY);
+        StartCoroutine(explode());
     }
 
     // Update is called once per frame
@@ -24,7 +25,7 @@ public class Grenade : MonoBehaviour
         
     }
 
-    IEnumerable explode()
+    IEnumerator explode()
     {
         yield return new WaitForSeconds(destroyTimer);
         Instantiate(explosionPrefab, transform.position, Quaternion.identity);
