@@ -21,27 +21,22 @@ public class Grenade : MonoBehaviour
         {
             grenadeRigidB.useGravity = true;
             grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed) + (transform.up * grenadeSpeedY);
-            StartCoroutine(explode());
         }
         else
         {
             grenadeRigidB.useGravity = false;
             grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed);
-            StartCoroutine(explode());
         }
-        
+        StartCoroutine(explode());
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (isTracking)
+        if (isTracking && OnStickyBomb && !OnSurface)
         {
             grenadeRigidB.useGravity = false;
-            grenadeRigidB.linearVelocity = gamemanager.instance;
-        } else if(isTracking && OnStickyBomb)
-        {
-
+            grenadeRigidB.linearVelocity = (gamemanager.instance.player.transform.position - transform.position).normalized * grenadeSpeed * Time.deltaTime;
         }
     }
 
