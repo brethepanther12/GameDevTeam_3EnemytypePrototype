@@ -6,7 +6,7 @@ public class damage : MonoBehaviour
 
     enum damagetype { moving, stationary, DOT, homing, explosion}
     [SerializeField] damagetype type;
-    [SerializeField] Rigidbody rb;
+    [SerializeField] public Rigidbody rb;
 
     [SerializeField] public int damageAmount;
     [SerializeField] public float damageRate;
