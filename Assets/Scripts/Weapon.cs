@@ -11,6 +11,10 @@ public class Weapon : MonoBehaviour {
     public int range;
     public int magSize;
     public int ammoMax;
+    public int pellets;
+    public float spread;
+
+    public AmmoType ammoType;
 
     //Info for shooting
     public GameObject bullet;
@@ -53,6 +57,11 @@ public class Weapon : MonoBehaviour {
         magSize = weaponData.magSize;
         ammoMax = weaponData.ammoMax;
 
+        pellets = weaponData.pelletCount;
+        spread = weaponData.pelletSpread;
+
+        ammoType = weaponData.ammoType;
+
         bullet = weaponData.bullet;
         impactSound = weaponData.impactSound;
         impactVolume = weaponData.impactVolume;
@@ -64,6 +73,7 @@ public class Weapon : MonoBehaviour {
 
         shootTimer = 0f;
     }
+
 
     public void SetAmmoState(int mag, int reserve)
     {
@@ -78,8 +88,11 @@ public class Weapon : MonoBehaviour {
 
         if (Input.GetButton("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
         {
-
-            Shoot();
+            if (ammoType == AmmoType.Standard)
+                Shoot();
+            else if (ammoType == AmmoType.Shell)
+                ShootMultiple();
+            //Shoot();
       
         }
 
@@ -105,6 +118,42 @@ public class Weapon : MonoBehaviour {
             dmgScript.SetWeaponDamage(wepDmg);
 
         equippedPlayer.updatePlayerUI();
+    }
+
+    void ShootMultiple()
+    {
+        shootTimer = 0f;
+        ammoInMag--;
+
+        if (muzzleFlash != null)
+            muzzleFlash.Play();
+
+        if (gunAudio != null && gunShotSound != null)
+            gunAudio.PlayOneShot(gunShotSound);
+
+        equippedPlayer.updatePlayerUI();
+
+        for (int i = 0; i < pellets; i++)
+        {
+           
+            Vector3 spreadOffset = new Vector3(
+                Random.Range(-spread, spread),
+                Random.Range(-spread, spread),
+                0f
+            );
+
+            Quaternion pelletRotation = Quaternion.Euler(
+                shootPos.rotation.eulerAngles + spreadOffset
+            );
+
+            GameObject pellet = Instantiate(bullet, shootPos.position, pelletRotation);
+
+            damage dmgScript = pellet.GetComponent<damage>();
+            if (dmgScript != null)
+            {
+                dmgScript.SetWeaponDamage(wepDmg / pellets);
+            }
+        }
     }
     IEnumerator Reload()
     {

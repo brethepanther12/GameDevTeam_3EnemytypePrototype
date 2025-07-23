@@ -4,14 +4,14 @@ using System.Collections;
 public class damage : MonoBehaviour
 {
 
-    enum damagetype { moving, stationary, DOT, homing }
+    enum damagetype { moving, stationary, DOT, homing, explosion}
     [SerializeField] damagetype type;
-    [SerializeField] Rigidbody rb;
+    [SerializeField] public Rigidbody rb;
 
     [SerializeField] public int damageAmount;
     [SerializeField] public float damageRate;
     [SerializeField] public int speed;
-    [SerializeField] public int destroyTime;
+    [SerializeField] public float destroyTime;
 
     [SerializeField] GameObject impactPrefab;
 
@@ -27,7 +27,7 @@ public class damage : MonoBehaviour
             audio.Play();
         }
 
-        if (type == damagetype.moving || type == damagetype.homing)
+        if (type == damagetype.moving || type == damagetype.homing || type == damagetype.explosion)
         {
             Destroy(gameObject, destroyTime);
             if (type == damagetype.moving)

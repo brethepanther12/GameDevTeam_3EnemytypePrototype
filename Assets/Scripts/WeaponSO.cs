@@ -10,6 +10,7 @@ public class WeaponSO : ScriptableObject
     public LayerMask ignoreLayer;
 
     public string weaponName;
+    public AmmoType ammoType;
 
     //Weapon Stats
     public int wepDmg;
@@ -17,6 +18,9 @@ public class WeaponSO : ScriptableObject
     public int range;
     public int magSize;
     public int ammoMax;
+
+    public int pelletCount;
+    public float pelletSpread;
 
     [HideInInspector] public int currentAmmoInMag;
     [HideInInspector] public int currentAmmoInReserve;

@@ -1,0 +1,137 @@
+using UnityEngine;
+using System.Collections;
+
+public class Grenade : MonoBehaviour
+{
+    [SerializeField] private Rigidbody grenadeRigidB;
+
+    [SerializeField] private int grenadeSpeed;
+    [SerializeField] private int grenadeSpeedY;
+    [SerializeField] private float destroyTimer;
+
+    [SerializeField] private GameObject explosionPrefab;
+
+    [SerializeField] private bool OnStickyBomb;
+    [SerializeField] private bool isTracking;
+    private Transform playerTarget;
+    private damage damageStats;
+    
+    bool OnSurface;
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        playerTarget = gamemanager.instance.player.transform;
+        damageStats = GetComponent<damage>();
+        if (damageStats != null)
+        {
+            grenadeSpeed = damageStats.speed;
+            destroyTimer = damageStats.destroyTime;
+            grenadeRigidB = damageStats.rb;
+        }
+        if (isTracking && playerTarget != null)
+            return;
+        else
+        {
+            grenadeRigidB.useGravity = true;
+            grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed) + (transform.up * grenadeSpeedY);
+        }
+            
+      
+        StartCoroutine(explode());
+
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    { 
+    //if(isTracking && !OnSurface && playerTarget != null)
+    //    {
+    //        grenadeRigidB.linearVelocity = (playerTarget.position - transform.position).normalized * grenadeSpeed * Time.deltaTime;
+    //    }
+
+    }
+    
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (OnStickyBomb && !OnSurface)
+        {   
+            //Making it stationary
+            
+
+            grenadeRigidB.linearVelocity = Vector3.zero;
+            grenadeRigidB.angularVelocity = Vector3.zero;
+
+            grenadeRigidB.isKinematic = true;
+
+            //Making it stick to a surface; Moving with the object it parents
+            transform.SetParent(collision.transform);
+
+            //Setting it true that it is on a surface
+            OnSurface = true;
+        }
+    }
+
+    IEnumerator explode()
+    {
+        yield return new WaitForSeconds(destroyTimer);
+        Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        Destroy(gameObject);
+    }
+
+    //[SerializeField] private bool isTracking;
+    //bool OnSurface;
+    //// Start is called once before the first execution of Update after the MonoBehaviour is created
+    //void Start()
+    //{
+    //    if (!OnStickyBomb)
+    //    {
+    //        grenadeRigidB.useGravity = true;
+    //        grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed) + (transform.up * grenadeSpeedY);
+    //    }
+    //    else
+    //    {
+    //        grenadeRigidB.useGravity = false;
+    //        grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed);
+    //    }
+    //    StartCoroutine(explode());
+    //}
+
+    //// Update is called once per frame
+    //void Update()
+    //{
+    //    if (isTracking && OnStickyBomb && !OnSurface)
+    //    {
+    //        grenadeRigidB.useGravity = false;
+    //        grenadeRigidB.linearVelocity = (gamemanager.instance.player.transform.position - transform.position).normalized * grenadeSpeed * Time.deltaTime;
+    //    }
+    //}
+
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    if (OnStickyBomb && !OnSurface)
+    //    {
+    //        //Making it stationary
+    //        grenadeRigidB.isKinematic = true;
+
+    //        grenadeRigidB.linearVelocity = Vector3.zero;
+    //        grenadeRigidB.angularVelocity = Vector3.zero;
+
+
+    //        //Making it stick to a surface; Moving with the object it parents
+    //        transform.SetParent(collision.transform);
+
+    //        //Setting it true that it is on a surface
+    //        OnSurface = true;
+    //    }
+    //}
+
+    //IEnumerator explode()
+    //{
+    //    yield return new WaitForSeconds(destroyTimer);
+    //    Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+    //    Destroy(gameObject);
+    //}
+}
+
