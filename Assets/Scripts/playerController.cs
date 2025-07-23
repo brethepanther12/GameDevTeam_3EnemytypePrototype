@@ -419,8 +419,23 @@ public class playerController : MonoBehaviour, IDamage
         updatePlayerUI();
     }
 
+    //Delete if causing difficulties
     public void Throw()
     {
-        
+        ItemSO grenade = inventory.collectedItems.Find(item => item.itemName == "Grenade");
+
+        if(grenade != null && grenade.quantityHeld > 0)
+        {
+            GameObject prefab = GameObject.Instantiate(grenadePrefab, throwPoint.position, Quaternion.identity);
+            Rigidbody rb = prefab.GetComponent<Rigidbody>();
+
+            if (rb != null)
+            {
+                rb.linearVelocity = throwPoint.forward * throwingForce * Time.deltaTime;
+            }
+
+            grenade.quantityHeld -= 1;
+            updatePlayerUI();
+        }
     }
 }
