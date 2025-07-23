@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class BossHealthUI : MonoBehaviour
 {
-    public Image bossHealthBarFill;
+    public Image BossHealthBarFill;
 
     void Update()
     {
@@ -16,7 +16,7 @@ public class BossHealthUI : MonoBehaviour
             return;
 
         // Update health bar fill amount
-             bossHealthBarFill.fillAmount =
+             BossHealthBarFill.fillAmount =
              (float)gamemanager.instance.currentBoss.CurrentHealthPoints / gamemanager.instance.currentBoss.MaxHealthPoints;
     }
 }
