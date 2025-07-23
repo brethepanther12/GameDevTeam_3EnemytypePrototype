@@ -20,7 +20,9 @@ public class Grenade : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        playerTarget = gamemanager.instance.player.transform;
+        if (gamemanager.instance != null && gamemanager.instance.player != null)
+            playerTarget = gamemanager.instance.player.transform;
+
         damageStats = GetComponent<damage>();
         if (damageStats != null)
         {
@@ -28,20 +30,18 @@ public class Grenade : MonoBehaviour
             destroyTimer = damageStats.destroyTime;
             grenadeRigidB = damageStats.rb;
         }
+
         if (!isTracking)
         {
             grenadeRigidB.useGravity = true;
-            grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed) + (transform.up * grenadeSpeedY);
+            grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed) + (transform.up * grenadeSpeedY) * Time.deltaTime;
         }
         else
         {
             grenadeRigidB.useGravity = false;
         }
 
-
         StartCoroutine(explode());
-
-
     }
 
     // Update is called once per frame

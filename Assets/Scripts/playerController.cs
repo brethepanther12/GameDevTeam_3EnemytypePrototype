@@ -122,6 +122,12 @@ public class playerController : MonoBehaviour, IDamage
 
         jump();
 
+        //Delete if causing issue
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            throwGrenade();
+        }
+
         controller.Move(playerVel * Time.deltaTime);
         playerVel.y -= gravity * Time.deltaTime;
 
@@ -420,7 +426,7 @@ public class playerController : MonoBehaviour, IDamage
     }
 
     //Delete if causing difficulties
-    public void Throw()
+    public void throwGrenade()
     {
         ItemSO grenade = inventory.collectedItems.Find(item => item.itemName == "Grenade");
 
@@ -431,7 +437,7 @@ public class playerController : MonoBehaviour, IDamage
 
             if (rb != null)
             {
-                rb.linearVelocity = throwPoint.forward * throwingForce * Time.deltaTime;
+                rb.linearVelocity = throwPoint.forward * throwingForce;
             }
 
             grenade.quantityHeld -= 1;

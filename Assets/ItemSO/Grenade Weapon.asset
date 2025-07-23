@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b01ecd4177fe8f04bb6e8c84c5f1fa90, type: 3}
+  m_Name: Grenade Weapon
+  m_EditorClassIdentifier: 
+  ignoreLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  weaponName: Grenade
+  ammoType: 0
+  wepDmg: 0
+  attackRate: 0
+  range: 0
+  magSize: 0
+  ammoMax: 0
+  pelletCount: 0
+  pelletSpread: 0
+  currentAmmoInMag: 0
+  currentAmmoInReserve: 0
+  bullet: {fileID: 0}
+  impactPrefab: {fileID: 0}
+  weaponModel: {fileID: 3219972179486975252, guid: a9c34932f2cfc72418f04b1eb4970ab2, type: 3}
+  impactSound: {fileID: 0}
+  impactVolume: 1
+  reloadSound: {fileID: 0}
+  gunShotSound: {fileID: 0}
