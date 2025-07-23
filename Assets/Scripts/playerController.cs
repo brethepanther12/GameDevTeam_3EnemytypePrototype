@@ -26,6 +26,11 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] int shootDist;
 
+    //Added for grenade logic, delete if causing any errors
+    [SerializeField] private GameObject grenadePrefab;
+    [SerializeField] private Transform throwPoint;
+    [SerializeField] private float throwingForce;
+
     [SerializeField] private AudioClip hurtSound;
     [SerializeField] private float hurtVol;
     [SerializeField] private float footstepVol = 1f;
@@ -412,5 +417,10 @@ public class playerController : MonoBehaviour, IDamage
 
         HP = HPOrig;
         updatePlayerUI();
+    }
+
+    public void Throw()
+    {
+        
     }
 }
