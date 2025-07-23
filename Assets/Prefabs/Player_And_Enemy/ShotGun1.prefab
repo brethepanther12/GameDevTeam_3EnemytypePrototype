@@ -473,7 +473,7 @@ GameObject:
   - component: {fileID: 6314913753436699982}
   - component: {fileID: 5498948702735635385}
   - component: {fileID: 3418184736941941894}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: ShotGun1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -526,6 +526,9 @@ MonoBehaviour:
   range: 20
   magSize: 5
   ammoMax: 25
+  pellets: 0
+  spread: 0
+  ammoType: 0
   bullet: {fileID: 0}
   shootPos: {fileID: 3059565290805846455}
   impactSound: {fileID: 0}

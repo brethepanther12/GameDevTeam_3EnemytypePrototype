@@ -40,9 +40,9 @@ public class gamemanager : MonoBehaviour
     public TMP_Text yellowKey;
     public TMP_Text gunName;
 
-    public GameObject bossHealthBarUI;
-    public Image bossHealthBarFill;
-    public TMPro.TextMeshProUGUI bossNameText;
+    public GameObject BossHealthBarUI;
+    public Image BossHealthBarFill;
+    public TMPro.TextMeshProUGUI BossNameText;
 
     public BossAI currentBoss;
 
@@ -144,20 +144,20 @@ public class gamemanager : MonoBehaviour
     public void StartBossFight(BossAI boss)
     {
         currentBoss = boss;
-        bossHealthBarUI.SetActive(true);
-        bossNameText.text = boss.bossName;
+        BossHealthBarUI.SetActive(true);
+        BossNameText.text = boss.bossName;
     }
     public void UpdateBossHealthBar(int currentHP, int maxHP)
     {
-        if (bossHealthBarFill != null)
+        if (BossHealthBarFill != null)
         {
-            bossHealthBarFill.fillAmount = (float)currentHP / maxHP;
+            BossHealthBarFill.fillAmount = (float)currentHP / maxHP;
         }
     }
 
     public void EndBossFight()
     {
-        bossHealthBarUI.SetActive(false);
+        BossHealthBarUI.SetActive(false);
         currentBoss = null;
     }
     public void updateInventoryUI()
