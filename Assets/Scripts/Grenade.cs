@@ -28,15 +28,17 @@ public class Grenade : MonoBehaviour
             destroyTimer = damageStats.destroyTime;
             grenadeRigidB = damageStats.rb;
         }
-        if (isTracking && playerTarget != null)
-            return;
-        else
+        if (!isTracking)
         {
             grenadeRigidB.useGravity = true;
             grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed) + (transform.up * grenadeSpeedY);
         }
-            
-      
+        else
+        {
+            grenadeRigidB.useGravity = false;
+        }
+
+
         StartCoroutine(explode());
 
 
