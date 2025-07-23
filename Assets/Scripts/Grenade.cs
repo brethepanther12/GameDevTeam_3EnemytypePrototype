@@ -44,11 +44,11 @@ public class Grenade : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    { 
-    //if(isTracking && !OnSurface && playerTarget != null)
-    //    {
-    //        grenadeRigidB.linearVelocity = (playerTarget.position - transform.position).normalized * grenadeSpeed * Time.deltaTime;
-    //    }
+    {
+        if (isTracking && !OnSurface && playerTarget != null)
+        {
+            grenadeRigidB.linearVelocity = (playerTarget.position - transform.position).normalized * grenadeSpeed * Time.deltaTime;
+        }
 
     }
     
