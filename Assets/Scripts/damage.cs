@@ -67,7 +67,7 @@ public class damage : MonoBehaviour
             }
         }
 
-        if ((type == damagetype.moving || type == damagetype.homing) && impactPrefab != null)
+        if ((type == damagetype.moving || type == damagetype.homing || type == damagetype.explosion) && impactPrefab != null)
         {
             RaycastHit hit;
             Vector3 rayOrigin = transform.position + transform.forward * 0.2f;

@@ -24,6 +24,7 @@ public class Grenade : MonoBehaviour
         damageStats = GetComponent<damage>();
         if (damageStats != null)
         {
+
             grenadeSpeed = damageStats.speed;
             destroyTimer = damageStats.destroyTime;
             grenadeRigidB = damageStats.rb;
