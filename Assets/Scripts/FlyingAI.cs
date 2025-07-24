@@ -42,6 +42,7 @@ public class FlyingAI : MonoBehaviour, IDamage
     [SerializeField] private LayerMask enviormentMask;
     private bool playerVisible;
     private bool InRange;
+    private bool isVisible;
 
     //Health
     [SerializeField] private int HP;
@@ -179,7 +180,7 @@ public class FlyingAI : MonoBehaviour, IDamage
     {
         //playerDirection = gamemanager.instance.player.transform.position - transform.position;
 
-        if (playerTarget == null) return false;
+        if (playerTarget == null|| isVisible) return false;
 
         //Locate player
         Vector3 direction = playerTarget.transform.position - transform.position;
@@ -202,7 +203,16 @@ public class FlyingAI : MonoBehaviour, IDamage
         return false;
     }
 
-
+    public void SetInvisible(bool invisible)
+    {
+        isVisible = invisible;
+        if (invisible)
+        {
+            target = null;
+            playerVisible = false;
+            InRange = false;
+        }
+    }
     void NearestCeiling()
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, ceilingInRadius, ceilingMask);
