@@ -27,6 +27,7 @@ public class ItemPickup : MonoBehaviour, IGrapplable
         if (weaponToGive != null)
         {
             inventory.AddWeapon(weaponToGive);
+            GlobalInventory.instance.AddWeapon(weaponToGive);
             Debug.Log($"Picked up weapon: {weaponToGive.weaponName}");
         }
         else if (itemToGive != null)
