@@ -204,7 +204,8 @@ GameObject:
   - component: {fileID: 4653043193018784034}
   - component: {fileID: 851128922732625617}
   - component: {fileID: 4484993860492549835}
-  m_Layer: 0
+  - component: {fileID: 2432455409814809882}
+  m_Layer: 14
   m_Name: Ammo Pickup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -239,9 +240,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32e35690333aaeb4d8b10f370dead619, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationSpeed: 45
-  bounceAmplitude: 0.2
-  bounceFrequency: 2
+  minRotationSpeed: 30
+  maxRotationSpeed: 90
+  minBounceAmplitude: 0.15
+  maxBounceAmplitude: 0.25
+  minBounceFrequency: 1.5
+  maxBounceFrequency: 3
+  isBeingPulled: 0
 --- !u!114 &-8142256520381952207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -254,6 +259,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf530e3bd43c726448976eedd7c0d11b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rb: {fileID: 2432455409814809882}
   itemToGive: {fileID: 11400000, guid: 96a6ce5e56fb1e349acc8985088cc2aa, type: 2}
   weaponToGive: {fileID: 0}
 --- !u!33 &4653043193018784034
@@ -328,5 +334,32 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
+  m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &2432455409814809882
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4224810875791295614}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0

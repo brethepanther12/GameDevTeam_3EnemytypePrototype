@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class ItemPickup : MonoBehaviour, IGrapplable
 {
-    [SerializeField] private Rigidbody rb;
+    [SerializeField] public Rigidbody rb;
 
     public ItemSO itemToGive;
     public WeaponSO weaponToGive;

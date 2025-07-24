@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.LowLevel;
 
-public class FlyingAI : MonoBehaviour, IDamage
+public class FlyingAI : MonoBehaviour, IDamage, Visibility
 {
     [SerializeField] private Transform target;
     [SerializeField] private float lostPlayDelay;
@@ -42,7 +42,7 @@ public class FlyingAI : MonoBehaviour, IDamage
     [SerializeField] private LayerMask enviormentMask;
     private bool playerVisible;
     private bool InRange;
-    private bool isVisible;
+    private bool isBlind;
 
     //Health
     [SerializeField] private int HP;
@@ -77,16 +77,24 @@ public class FlyingAI : MonoBehaviour, IDamage
         Damage = GetComponent<damage>();
         if (Damage != null)
             Damage.enabled = false;
-        //gamemanager.instance.updateGameGoal(1);
+        gamemanager.instance.updateGameGoal(1);
     }
 
 
     // Update is called once per frame
     void FixedUpdate()
-    { 
+    {
+        if (isBlind)
+        {
+            playerVisible = false;
+            target = null;
+        }
+        else
+        {
+            //  check if the player is in range and visible
+            playerVisible = PlayerInFieldOfView();
+        }
         
-        //  check if the player is in range and visible
-        playerVisible = PlayerInFieldOfView();
 
         // Assign or clear the target based on FOV + trigger
         if (InRange && playerVisible && target == null)
@@ -180,7 +188,7 @@ public class FlyingAI : MonoBehaviour, IDamage
     {
         //playerDirection = gamemanager.instance.player.transform.position - transform.position;
 
-        if (playerTarget == null|| isVisible) return false;
+        if (playerTarget == null|| isBlind) return false;
 
         //Locate player
         Vector3 direction = playerTarget.transform.position - transform.position;
@@ -205,7 +213,7 @@ public class FlyingAI : MonoBehaviour, IDamage
 
     public void SetInvisible(bool invisible)
     {
-        isVisible = invisible;
+        isBlind = invisible;
         if (invisible)
         {
             target = null;

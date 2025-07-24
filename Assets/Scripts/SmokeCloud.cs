@@ -1,17 +1,20 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SmokeCloud : MonoBehaviour
 {
-    // Duration the smoke lasts in seconds
-    [SerializeField] public float smokeDuration;
+    [SerializeField] private float smokeDuration;
+    [SerializeField] private GameObject smokePrefab;
+    [SerializeField] private int damageAmount;
+    [SerializeField] private float damageRate;
 
-    // List to keep track of enemies inside the cloud
+    // Track enemies and their DOT coroutines
+    private Dictionary<IDamage, Coroutine> damageCoroutines = new Dictionary<IDamage, Coroutine>();
     private List<FlyingAI> enemiesInSmoke = new List<FlyingAI>();
 
     private void Start()
     {
-        // Destroy the smoke cloud after duration
         Destroy(gameObject, smokeDuration);
     }
 
@@ -24,6 +27,13 @@ public class SmokeCloud : MonoBehaviour
             {
                 enemiesInSmoke.Add(enemy);
                 enemy.SetInvisible(true);
+            }
+
+            IDamage dmg = other.GetComponent<IDamage>();
+            if (dmg != null && !damageCoroutines.ContainsKey(dmg))
+            {
+                Coroutine co = StartCoroutine(DamageOverTime(dmg));
+                damageCoroutines.Add(dmg, co);
             }
         }
     }
@@ -38,17 +48,44 @@ public class SmokeCloud : MonoBehaviour
                 enemiesInSmoke.Remove(enemy);
                 enemy.SetInvisible(false);
             }
+
+            IDamage dmg = other.GetComponent<IDamage>();
+            if (dmg != null && damageCoroutines.ContainsKey(dmg))
+            {
+                StopCoroutine(damageCoroutines[dmg]);
+                damageCoroutines.Remove(dmg);
+            }
         }
     }
 
     private void OnDestroy()
     {
-        // When smoke disappears, reset invisibility on all enemies inside
         foreach (var enemy in enemiesInSmoke)
         {
             if (enemy != null)
                 enemy.SetInvisible(false);
         }
         enemiesInSmoke.Clear();
+
+        // Stop all damage coroutines
+        foreach (var co in damageCoroutines.Values)
+        {
+            if (co != null)
+                StopCoroutine(co);
+        }
+        damageCoroutines.Clear();
+    }
+
+    private IEnumerator DamageOverTime(IDamage target)
+    {
+        while (true)
+        {
+            target.takeDamage(damageAmount);
+
+            if (smokePrefab != null)
+                Instantiate(smokePrefab, target as Component != null ? ((Component)target).transform.position : transform.position, Quaternion.identity);
+
+            yield return new WaitForSeconds(damageRate);
+        }
     }
 }

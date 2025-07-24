@@ -6,7 +6,7 @@ using UnityEngine.AI;
 using UnityEngine.Assertions.Must;
 using UnityEngine.Rendering;
 
-public class Enemy : MonoBehaviour, IDamage, IGrapplable
+public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
 {
 
     [SerializeField] SkinnedMeshRenderer[] modelParts;
@@ -60,7 +60,8 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable
     float roamTimer;
     float stoppingDistanceOrig;
 
-    private List<Collider> smokeZone = new List<Collider>();
+    //private List<Collider> smokeZone = new List<Collider>();
+    bool IsBlind;
 
     Vector3 playerDir;
     Vector3 startingPos;
@@ -71,7 +72,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable
         shootTimer = 0f;
         currentAmmo = maxAmmo;
         colorOrig = modelParts[0].material.color;
-        //gamemanager.instance.updateGameGoal(1);
+        gamemanager.instance.updateGameGoal(1);
         startingPos = transform.position;
         stoppingDistanceOrig = agent.stoppingDistance;
 
@@ -157,7 +158,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable
 
     bool CanSeePlayer()
     {
-        if (isDead || PlayerInSmoke())
+        if (isDead || IsBlind)
         {
             return false;
         }
@@ -233,10 +234,11 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable
         if (other.CompareTag("Player"))
         {
             playerInTrigger = true;
-        }else if (other.CompareTag("Smoke"))
-        {
-            smokeZone.Add(other);
         }
+        //else if (other.CompareTag("Smoke"))
+        //{
+        //    smokeZone.Add(other);
+        //}
     }
 
     private void OnTriggerExit(Collider other)
@@ -247,10 +249,11 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable
             playerInTrigger = false;
             agent.stoppingDistance = 0;
         }
-        else if (other.CompareTag("Smoke"))
-        {
-            smokeZone.Remove(other);
-        }
+        //else if (other.CompareTag("Smoke"))
+        //{
+        //    smokeZone.Remove(other);
+        //}
+        //
     }
 
     public void takeDamage(int amount)
@@ -396,15 +399,16 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable
         PlayFootstep();
     }
 
-    private bool PlayerInSmoke()
+    
+
+    public void SetInvisible(bool state)
     {
-        foreach (var smoke in smokeZone)
+        IsBlind = state;
+
+        foreach (var part in modelParts)
         {
-            if (smoke != null && smoke.bounds.Contains(gamemanager.instance.player.transform.position))
-            {
-                return true;
-            }
+            part.material.color = state ? Color.gray : colorOrig;
         }
-        return false;
     }
+   
 }
