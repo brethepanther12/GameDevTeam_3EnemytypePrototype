@@ -26,10 +26,11 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] int shootDist;
 
-    //Added for grenade logic, delete if causing any errors
-    [SerializeField] private GameObject grenadePrefab;
-    [SerializeField] private Transform throwPoint;
-    [SerializeField] private float throwingForce;
+    ////Added for grenade logic, delete if causing any errors
+    //[SerializeField] private GameObject grenadePrefab;
+    //[SerializeField] private Transform throwPoint;
+    //[SerializeField] private float throwingForce;
+    //[SerializeField] private Transform grenadeThrowOrigin;
 
     [SerializeField] private AudioClip hurtSound;
     [SerializeField] private float hurtVol;
@@ -123,10 +124,10 @@ public class playerController : MonoBehaviour, IDamage
         jump();
 
         //Delete if causing issue
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            throwGrenade();
-        }
+        //if (Input.GetKeyDown(KeyCode.G))
+        //{
+        //    throwGrenade();
+        //}
 
         controller.Move(playerVel * Time.deltaTime);
         playerVel.y -= gravity * Time.deltaTime;
@@ -426,22 +427,26 @@ public class playerController : MonoBehaviour, IDamage
     }
 
     //Delete if causing difficulties
-    public void throwGrenade()
-    {
-        ItemSO grenade = inventory.collectedItems.Find(item => item.itemName == "Grenade");
+    //public void throwGrenade()
+    //{
+    //    ItemSO grenade = inventory.collectedItems.Find(item => item.itemName == "Grenade");
 
-        if(grenade != null && grenade.quantityHeld > 0)
-        {
-            GameObject prefab = GameObject.Instantiate(grenadePrefab, throwPoint.position, Quaternion.identity);
-            Rigidbody rb = prefab.GetComponent<Rigidbody>();
+    //    if (grenade != null && grenade.quantityHeld > 0 && grenadePrefab != null && grenadeThrowOrigin != null)
+    //    {
+            
+    //        Vector3 throwDirection = grenadeThrowOrigin.forward;
 
-            if (rb != null)
-            {
-                rb.linearVelocity = throwPoint.forward * throwingForce;
-            }
+           
+    //        GameObject grenadeObj = Instantiate(grenadePrefab, grenadeThrowOrigin.position, Quaternion.identity);
+    //        Rigidbody rb = grenadeObj.GetComponent<Rigidbody>();
 
-            grenade.quantityHeld -= 1;
-            updatePlayerUI();
-        }
-    }
+    //        if (rb != null)
+    //        {
+    //            rb.linearVelocity = throwDirection.normalized * throwingForce;
+    //        }
+
+    //        grenade.quantityHeld--;
+    //        updatePlayerUI();
+    //    }
+    //}
 }
