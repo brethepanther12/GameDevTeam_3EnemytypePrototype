@@ -28,7 +28,7 @@ public class BossAI : EnemyAIBase, IGrapplable
     private bool isDodging = false;
     private bool isRetreating = false;
     private bool isPhaseTwo = false;
-    private float detectionRange = 30f;
+    private float detectionRange = 60f;
 
     private float phaseTwoHealthThreshold => enemyHealthPointsMax * 0.5f;
 
@@ -53,6 +53,9 @@ public class BossAI : EnemyAIBase, IGrapplable
 
     protected override void Update()
     {
+
+        
+
         if (isDead) return;
 
         if (enemyPlayerObject == null)
@@ -85,8 +88,8 @@ public class BossAI : EnemyAIBase, IGrapplable
             }
             else
             {
-                enemyNavAgent.isStopped = true;
-                bossAnimator.SetFloat("Speed", 0);
+                //enemyNavAgent.isStopped = true;
+                //bossAnimator.SetFloat("Speed", 0);
 
                 if (attackTimer >= attackCooldown)
                 {
@@ -102,8 +105,8 @@ public class BossAI : EnemyAIBase, IGrapplable
         else
         {
             // If player not in sight or dodging/retreating, boss stops moving
-            enemyNavAgent.isStopped = true;
-            bossAnimator.SetFloat("Speed", 0);
+            //enemyNavAgent.isStopped = true;
+            //bossAnimator.SetFloat("Speed", 0);
         }
 
         // Timers
@@ -204,8 +207,8 @@ public class BossAI : EnemyAIBase, IGrapplable
             yield return null;
         }
 
-        enemyNavAgent.isStopped = true;
-        bossAnimator.SetFloat("Speed", 0);
+        //enemyNavAgent.isStopped = true;
+        //bossAnimator.SetFloat("Speed", 0);
 
         for (int i = 0; i < burstCount; i++)
         {
