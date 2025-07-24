@@ -227,6 +227,11 @@ public class playerController : MonoBehaviour, IDamage
         else
         {
             HP -= amount;
+
+            if (HP < 0)
+            {
+                HP = 0;
+            }
             AudioSource.PlayClipAtPoint(hurtSound, transform.position, hurtVol);
             updatePlayerUI();
             StartCoroutine(damageFlashScreen());

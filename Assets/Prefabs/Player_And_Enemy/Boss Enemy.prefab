@@ -134,7 +134,7 @@ Transform:
   m_GameObject: {fileID: 4950421625475038431}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -45.35, y: 1.5, z: 14.54}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -173,7 +173,7 @@ MonoBehaviour:
   - {fileID: 8623609034818132615}
   - {fileID: 8623609034818132617}
   - {fileID: 8623609034818132619}
-  enemySpeed: 0
+  enemySpeed: 10
   enemyNavAgent: {fileID: 1870442285534933377}
   enemyPlayerObject: {fileID: 0}
   projectilePrefab: {fileID: 50080487290348897, guid: 981d0196c4d79634cac04e11abd3c987, type: 3}
@@ -211,7 +211,7 @@ NavMeshAgent:
   m_Height: 1
   m_BaseOffset: 0.5
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 0
 --- !u!136 &3154987454671368886
 CapsuleCollider:
   m_ObjectHideFlags: 0
