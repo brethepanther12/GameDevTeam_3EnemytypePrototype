@@ -26,7 +26,17 @@ public class BossTrigger : MonoBehaviour
         // Spawn boss
         if (bossPrefab != null && bossSpawnPoint != null)
         {
-            Instantiate(bossPrefab, bossSpawnPoint.position, bossSpawnPoint.rotation);
+            GameObject spawnedBoss = Instantiate(bossPrefab, bossSpawnPoint.position, bossSpawnPoint.rotation);
+            BossAI bossAI = spawnedBoss.GetComponent<BossAI>();
+
+            if (bossAI != null)
+            {
+                gamemanager.instance.currentBoss = bossAI;
+            }
+            else
+            {
+                Debug.LogWarning("Spawned boss is missing BossAI component!");
+            }
         }
 
         // Spawn enemy portal

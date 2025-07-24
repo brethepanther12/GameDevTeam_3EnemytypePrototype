@@ -11,6 +11,18 @@ public class BossAI : EnemyAIBase, IGrapplable
     [SerializeField] float attackCooldown = 2f;
     [SerializeField] GameObject deathEffect;
     [SerializeField] Animator bossAnimator;
+    [SerializeField] GameObject aoeEffectPrefab;
+    [SerializeField] float aoeRange = 6f;
+    [SerializeField] float aoeCooldown = 8f;
+    [SerializeField] float burstCooldown = 10f;
+    [SerializeField] int burstCount = 3;
+
+    private float burstTimer = 0f;
+    private bool isRetreating = false;
+
+    private float aoeTimer = 0f;
+    private bool isPhaseTwo = false;
+    private float phaseTwoHealthThreshold => enemyHealthPointsMax * 0.5f;
 
     [SerializeField] AudioSource bossRoarSource;
     [SerializeField] AudioClip roarClip;
@@ -39,11 +51,26 @@ public class BossAI : EnemyAIBase, IGrapplable
         if (enemyPlayerObject == null)
             enemyPlayerObject = GameObject.FindGameObjectWithTag("Player")?.transform;
 
+        // Disable NavMeshAgent auto rotation to control rotation manually
+        enemyNavAgent.updateRotation = false;
+
         gamemanager.instance.updateGameGoal(+1);
+    }
+
+    private void EnterPhaseTwo()
+    {
+        isPhaseTwo = true;
+        Debug.Log("Boss has entered Phase 2!");
+        attackCooldown *= 0.75f; // Attack faster
     }
 
     protected override void Update()
     {
+        if (!isPhaseTwo && enemyCurrentHealthPoints <= phaseTwoHealthThreshold)
+        {
+            EnterPhaseTwo();
+        }
+
         if (isDead)
             return;
 
@@ -56,25 +83,22 @@ public class BossAI : EnemyAIBase, IGrapplable
         }
 
         float distanceToPlayer = Vector3.Distance(transform.position, enemyPlayerObject.position);
-
-        // Detect player based on distance
         SetPlayerInSight(distanceToPlayer <= detectionRange);
 
-        if (enemyPlayerInSight)
+        if (enemyPlayerInSight && !isDodging && !isRetreating)
         {
-            // If dodging, just continue dodge movement
-            if (isDodging) return;
+            SmoothFacePlayer();
 
             if (distanceToPlayer > attackRange)
             {
-                // Chase player
+                enemyNavAgent.isStopped = false;
                 enemyNavAgent.SetDestination(enemyPlayerObject.position);
                 bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
             }
             else
             {
-                // In attack range
-                enemyNavAgent.SetDestination(transform.position); // Stop moving to attack
+                enemyNavAgent.isStopped = true;
+                bossAnimator.SetFloat("Speed", 0);
 
                 if (attackTimer >= attackCooldown)
                 {
@@ -83,7 +107,6 @@ public class BossAI : EnemyAIBase, IGrapplable
                 }
                 else
                 {
-                    // Chance to dodge while waiting to attack
                     if (Random.value < 0.01f)  // 1% chance per frame to dodge
                     {
                         StartCoroutine(Dodge());
@@ -93,15 +116,97 @@ public class BossAI : EnemyAIBase, IGrapplable
         }
         else
         {
-            // Player not in sight, idle or patrol could go here
+            enemyNavAgent.isStopped = true;
             bossAnimator.SetFloat("Speed", 0);
         }
 
         attackTimer += Time.deltaTime;
+        aoeTimer += Time.deltaTime;
+
+        if (isPhaseTwo && Vector3.Distance(transform.position, enemyPlayerObject.position) < aoeRange && aoeTimer >= aoeCooldown)
+        {
+            StartCoroutine(PerformAOEAttack());
+            aoeTimer = 0f;
+        }
+
+        if (isPhaseTwo && !isRetreating)
+        {
+            burstTimer += Time.deltaTime;
+
+            if (burstTimer >= burstCooldown)
+            {
+                StartCoroutine(RetreatAndBurst());
+                burstTimer = 0f;
+            }
+        }
+    }
+
+    private void SmoothFacePlayer()
+    {
+        Vector3 direction = enemyPlayerObject.position - transform.position;
+        direction.y = 0; // Keep only horizontal direction
+
+        if (direction.sqrMagnitude > 0.01f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+        }
+    }
+
+    IEnumerator RetreatAndBurst()
+    {
+        isRetreating = true;
+
+        Vector3 retreatDir = -(enemyPlayerObject.position - transform.position).normalized;
+        Vector3 retreatTarget = transform.position + retreatDir * 5f;
+
+        enemyNavAgent.isStopped = false;
+        enemyNavAgent.SetDestination(retreatTarget);
+        bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
+
+        float timer = 0f;
+        while (Vector3.Distance(transform.position, retreatTarget) > 0.5f && timer < 2f)
+        {
+            SmoothFacePlayer();
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        enemyNavAgent.isStopped = true;
+        bossAnimator.SetFloat("Speed", 0);
+
+        for (int i = 0; i < burstCount; i++)
+        {
+            SmoothFacePlayer();
+
+            // Randomly choose between homing or moving projectile
+            damage.damagetype typeToFire = (Random.value > 0.5f)
+                ? damage.damagetype.homing
+                : damage.damagetype.moving;
+
+            FireProjectile(typeToFire);
+
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        isRetreating = false;
+    }
+
+    IEnumerator PerformAOEAttack()
+    {
+        bossAnimator.SetTrigger("AOE");
+
+        yield return new WaitForSeconds(0.5f); // Animation wind-up delay
+
+        if (aoeEffectPrefab != null)
+            Instantiate(aoeEffectPrefab, transform.position, Quaternion.identity);
+
+        Debug.Log("Boss performed AOE attack!");
     }
 
     protected void BossAttack()
     {
+        SmoothFacePlayer();
         bossAnimator.SetTrigger("Attack");
         attackTimer = 0f;
     }
@@ -121,20 +226,21 @@ public class BossAI : EnemyAIBase, IGrapplable
 
         Vector3 dodgeTarget = transform.position + dodgeDirection * dodgeDistance;
 
+        enemyNavAgent.isStopped = false;
         enemyNavAgent.SetDestination(dodgeTarget);
         bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
 
-        // Wait until close to dodgeTarget or timeout
         float timer = 0f;
         while (Vector3.Distance(transform.position, dodgeTarget) > 0.5f && timer < 1.5f)
         {
+            SmoothFacePlayer();
             timer += Time.deltaTime;
             yield return null;
         }
 
         isDodging = false;
 
-        // Resume chasing player after dodge
+        enemyNavAgent.isStopped = false;
         enemyNavAgent.SetDestination(enemyPlayerObject.position);
         bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
     }
@@ -175,11 +281,12 @@ public class BossAI : EnemyAIBase, IGrapplable
     {
         if (enemyPlayerInSight && !isDodging)
         {
+            enemyNavAgent.isStopped = false;
             enemyNavAgent.SetDestination(enemyPlayerObject.position);
 
             if (enemyNavAgent.remainingDistance <= enemyNavAgent.stoppingDistance)
             {
-                enemyFacePlayer();
+                SmoothFacePlayer();
             }
         }
     }
@@ -194,7 +301,7 @@ public class BossAI : EnemyAIBase, IGrapplable
     {
         enemyCurrentHealthPoints -= amount;
 
-        // Update the centralized boss health bar via GameManager
+        // Update boss health bar via GameManager
         if (gamemanager.instance.currentBoss == this)
         {
             gamemanager.instance.UpdateBossHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
@@ -228,7 +335,7 @@ public class BossAI : EnemyAIBase, IGrapplable
         }
     }
 
-    public void FireProjectile()
+    public void FireProjectile(damage.damagetype typeToUse)
     {
         if (projectilePrefab == null || projectileSpawnPoint == null)
         {
@@ -238,14 +345,22 @@ public class BossAI : EnemyAIBase, IGrapplable
 
         GameObject proj = Instantiate(projectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
 
+        damage dmg = proj.GetComponent<damage>();
         Rigidbody rb = proj.GetComponent<Rigidbody>();
-        if (rb != null)
+
+        if (dmg != null)
         {
-            rb.AddForce(proj.transform.forward * 20f, ForceMode.VelocityChange);
+            dmg.SetDamageType(typeToUse);
+
+            if (typeToUse == damage.damagetype.moving && rb != null)
+            {
+                rb.linearVelocity = proj.transform.forward * dmg.speed;
+            }
+            // For homing, Update() handles it
         }
         else
         {
-            Debug.LogWarning("Boss projectile has no Rigidbody attached!");
+            Debug.LogWarning("Projectile has no 'damage' component!");
         }
     }
 }
