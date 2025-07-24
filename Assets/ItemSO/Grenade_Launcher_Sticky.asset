@@ -10,26 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b01ecd4177fe8f04bb6e8c84c5f1fa90, type: 3}
-  m_Name: Grenade_Launcher
+  m_Name: Grenade_Launcher_Sticky
   m_EditorClassIdentifier: 
   ignoreLayer:
     serializedVersion: 2
     m_Bits: 8
-  weaponName: Grenade Launcher
+  weaponName: Sticky GL
   ammoType: 0
   wepDmg: 0
-  attackRate: 0.7
+  attackRate: 0.8
   range: 200
   magSize: 5
-  ammoMax: 35
+  ammoMax: 25
   pelletCount: 0
   pelletSpread: 0
   currentAmmoInMag: 0
   currentAmmoInReserve: 0
-  bullet: {fileID: 3219972179486975252, guid: a9c34932f2cfc72418f04b1eb4970ab2, type: 3}
+  bullet: {fileID: 998822898000568821, guid: cf7198b756ccb074fa5100d7f3c88671, type: 3}
   impactPrefab: {fileID: 0}
-  weaponModel: {fileID: 1857800780366904617, guid: 3252a142dd6474d4fbe821b78fa811e4, type: 3}
+  weaponModel: {fileID: 6956448025344457614, guid: 8dc5bbb43734fe94aafdd8121a4f145d, type: 3}
   impactSound: {fileID: 8300000, guid: cb26d32b4d23a314493d288c2c2dfe2e, type: 3}
   impactVolume: 100
   reloadSound: {fileID: 8300000, guid: a40641150cd218c49a68a971c7304757, type: 3}
-  gunShotSound: {fileID: 8300000, guid: a28f97506cbe82d479cd46f40fa6efe0, type: 3}
+  gunShotSound: {fileID: 8300000, guid: 0e62edad5075cf547ad4869c8bfdf834, type: 3}

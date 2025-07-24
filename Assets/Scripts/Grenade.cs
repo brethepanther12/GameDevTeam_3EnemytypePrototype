@@ -1,5 +1,7 @@
-using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
+using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class Grenade : MonoBehaviour
 {
@@ -17,39 +19,70 @@ public class Grenade : MonoBehaviour
     private damage damageStats;
     
     bool OnSurface;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    
     void Start()
     {
-        playerTarget = gamemanager.instance.player.transform;
+        
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        if (enemies.Length > 0)
+        {
+            GameObject closest = enemies[0];
+            float minDist = Vector3.Distance(transform.position, closest.transform.position);
+
+            foreach (GameObject enemy in enemies)
+            {
+                float dist = Vector3.Distance(transform.position, enemy.transform.position);
+                if (dist < minDist)
+                {
+                    closest = enemy;
+                    minDist = dist;
+
+                    StartCoroutine(explode());
+
+                }
+            }
+
+            playerTarget = closest.transform;
+        }
+
+        
         damageStats = GetComponent<damage>();
+
         if (damageStats != null)
         {
-
             grenadeSpeed = damageStats.speed;
             destroyTimer = damageStats.destroyTime;
             grenadeRigidB = damageStats.rb;
         }
-        if (isTracking && playerTarget != null)
-            return;
-        else
+
+        
+        if (!isTracking)
         {
             grenadeRigidB.useGravity = true;
             grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed) + (transform.up * grenadeSpeedY);
         }
-            
-      
-        StartCoroutine(explode());
 
+        
+        StartCoroutine(explode());
 
     }
 
     // Update is called once per frame
     void Update()
-    { 
-    //if(isTracking && !OnSurface && playerTarget != null)
-    //    {
-    //        grenadeRigidB.linearVelocity = (playerTarget.position - transform.position).normalized * grenadeSpeed * Time.deltaTime;
-    //    }
+    {
+        
+        if (isTracking && !OnSurface && playerTarget != null)
+        {
+            grenadeRigidB.linearVelocity = (playerTarget.position - transform.position).normalized * grenadeSpeed;
+
+            float proximity = Vector3.Distance(transform.position, playerTarget.transform.position);
+
+            if (proximity <= 0.5f)
+            {
+                destroyTimer = 0;
+                StartCoroutine(explode());
+            }
+        }
 
     }
     
@@ -72,6 +105,8 @@ public class Grenade : MonoBehaviour
             //Setting it true that it is on a surface
             OnSurface = true;
         }
+
+        
     }
 
     IEnumerator explode()
