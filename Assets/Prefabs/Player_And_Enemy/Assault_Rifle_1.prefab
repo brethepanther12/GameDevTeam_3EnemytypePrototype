@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 6067834147052501327}
   - component: {fileID: 839454176682726423}
   - component: {fileID: 4041706398998791682}
-  - component: {fileID: -2460702860789429743}
   m_Layer: 3
   m_Name: Assault_Rifle_1
   m_TagString: Weapon
@@ -59,6 +58,9 @@ MonoBehaviour:
   range: 200
   magSize: 15
   ammoMax: 75
+  pellets: 0
+  spread: 0
+  ammoType: 0
   bullet: {fileID: 7539981003205437294, guid: 97a4c4b329aa6bc4c8a68940aaff17f4, type: 3}
   shootPos: {fileID: 800010388333374786}
   impactSound: {fileID: 0}
@@ -240,27 +242,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!135 &-2460702860789429743
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2441261489494950324}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Radius: 0.416143
-  m_Center: {x: 0.000000044703484, y: 0.02280002, z: 0.27416432}
 --- !u!1 &8005505277547344314
 GameObject:
   m_ObjectHideFlags: 0

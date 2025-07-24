@@ -4,7 +4,7 @@ using System.Collections;
 public class damage : MonoBehaviour
 {
 
-    public enum damagetype { moving, stationary, DOT, homing, explosion}
+    public enum damagetype { moving, stationary, DOT, homing, explosion }
     [SerializeField] damagetype type;
     [SerializeField] public Rigidbody rb;
 
@@ -84,7 +84,7 @@ public class damage : MonoBehaviour
                 Instantiate(impactPrefab, transform.position, Quaternion.LookRotation(-transform.forward));
             }
         }
-        if(type == damagetype.moving || type== damagetype.homing)
+        if (type == damagetype.moving || type == damagetype.homing)
         {
             Destroy(gameObject);
         }

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b01ecd4177fe8f04bb6e8c84c5f1fa90, type: 3}
+  m_Name: Grenade_Launcher_Reg
+  m_EditorClassIdentifier: 
+  ignoreLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  weaponName: Standard GL
+  ammoType: 0
+  wepDmg: 0
+  attackRate: 0.8
+  range: 200
+  magSize: 5
+  ammoMax: 25
+  pelletCount: 0
+  pelletSpread: 0
+  currentAmmoInMag: 5
+  currentAmmoInReserve: 64
+  bullet: {fileID: 3219972179486975252, guid: a9c34932f2cfc72418f04b1eb4970ab2, type: 3}
+  impactPrefab: {fileID: 0}
+  weaponModel: {fileID: 6956448025344457614, guid: 8dc5bbb43734fe94aafdd8121a4f145d, type: 3}
+  impactSound: {fileID: 8300000, guid: cb26d32b4d23a314493d288c2c2dfe2e, type: 3}
+  impactVolume: 100
+  reloadSound: {fileID: 8300000, guid: a40641150cd218c49a68a971c7304757, type: 3}
+  gunShotSound: {fileID: 8300000, guid: 0e62edad5075cf547ad4869c8bfdf834, type: 3}

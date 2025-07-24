@@ -16558,6 +16558,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 19319548a139fde42b93b2f1674bb5d6, type: 3}
+--- !u!114 &1536728601 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1156977349367845821, guid: afe9cf9af07bebc48a92a0b86985473d, type: 3}
+  m_PrefabInstance: {fileID: 1982501935}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1572206868 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2877169571789981239, guid: 20154e460b5399a488be6aedfeb6464b, type: 3}
@@ -16595,6 +16606,11 @@ MonoBehaviour:
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 098ec46a7299c9d48b470710fdd68b9e, type: 2}
   m_BuildHeightMesh: 0
+--- !u!1 &1578018740 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1994062323000604936, guid: afe9cf9af07bebc48a92a0b86985473d, type: 3}
+  m_PrefabInstance: {fileID: 1982501935}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1584332190
 GameObject:
   m_ObjectHideFlags: 0
@@ -22380,6 +22396,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -391
       objectReference: {fileID: 0}
+    - target: {fileID: 5261293416698651821, guid: afe9cf9af07bebc48a92a0b86985473d, type: 3}
+      propertyPath: BossNameText
+      value: 
+      objectReference: {fileID: 1536728601}
+    - target: {fileID: 5261293416698651821, guid: afe9cf9af07bebc48a92a0b86985473d, type: 3}
+      propertyPath: BossHealthBarUI
+      value: 
+      objectReference: {fileID: 1578018740}
+    - target: {fileID: 5261293416698651821, guid: afe9cf9af07bebc48a92a0b86985473d, type: 3}
+      propertyPath: BossHealthBarFill
+      value: 
+      objectReference: {fileID: 103741256}
     - target: {fileID: 5726403454726237759, guid: afe9cf9af07bebc48a92a0b86985473d, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -392

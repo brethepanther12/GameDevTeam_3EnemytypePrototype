@@ -14,7 +14,8 @@ GameObject:
   - component: {fileID: 5929499173752618496}
   - component: {fileID: 8210607489656433015}
   - component: {fileID: -8185789632198128811}
-  m_Layer: 0
+  - component: {fileID: 9129472017658129336}
+  m_Layer: 14
   m_Name: YellowKey
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -48,6 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf530e3bd43c726448976eedd7c0d11b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rb: {fileID: 9129472017658129336}
   itemToGive: {fileID: 11400000, guid: 18e2ca765a62e6c419f9eb48a7881463, type: 2}
   weaponToGive: {fileID: 0}
 --- !u!33 &2787604416504317605
@@ -142,3 +144,31 @@ MonoBehaviour:
   maxBounceAmplitude: 0.25
   minBounceFrequency: 1.5
   maxBounceFrequency: 3
+  isBeingPulled: 0
+--- !u!54 &9129472017658129336
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8472883938721518753}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
