@@ -63,6 +63,11 @@ public class PlayerInventory : MonoBehaviour
         }
     }
 
+    public bool HasWeapon(WeaponSO weapon)
+    {
+        return weaponInventory.Contains(weapon);
+    }
+
     public void EquipWeapon()
     {
         if (weaponInventory.Count == 0)
