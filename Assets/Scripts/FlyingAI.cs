@@ -83,10 +83,18 @@ public class FlyingAI : MonoBehaviour, IDamage
 
     // Update is called once per frame
     void FixedUpdate()
-    { 
+    {
+        if (isVisible)
+        {
+            playerVisible = false;
+            target = null;
+        }
+        else
+        {
+            //  check if the player is in range and visible
+            playerVisible = PlayerInFieldOfView();
+        }
         
-        //  check if the player is in range and visible
-        playerVisible = PlayerInFieldOfView();
 
         // Assign or clear the target based on FOV + trigger
         if (InRange && playerVisible && target == null)
