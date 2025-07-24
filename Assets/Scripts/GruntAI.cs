@@ -36,6 +36,10 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
     [SerializeField] int roamDistance;
     [SerializeField] int roamPauseTime;
 
+    [SerializeField] private AudioSource footstepSource;
+    [SerializeField] private AudioClip footstepClip;
+    [SerializeField] private float footstepDelay = 0.5f;
+
     [SerializeField] GameObject bullet;
     [SerializeField] float shootRate;
 
@@ -52,6 +56,7 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
     float angleToPlayer;
     float roamTimer;
     float stoppingDistanceOrig;
+    private float footstepTimer;
 
     Vector3 playerDir;
     Vector3 startingPos;
@@ -76,6 +81,8 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
         }
            
             animator.SetFloat("Speed", agent.velocity.magnitude);
+
+        HandleFootsteps();
 
         if (agent.remainingDistance < 0.01f)
         {
@@ -111,13 +118,19 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
         roamTimer = 0;
         agent.stoppingDistance = 0;
 
-        Vector3 ranPos = Random.insideUnitSphere * roamDistance;
-        ranPos += startingPos;
+        Vector3 ranPos = Random.insideUnitSphere * roamDistance + startingPos;
 
         NavMeshHit hit;
-        NavMesh.SamplePosition(ranPos, out hit, roamDistance, 1);
-        agent.SetDestination(hit.position);
+        bool foundHit = NavMesh.SamplePosition(ranPos, out hit, roamDistance, NavMesh.AllAreas);
 
+        if (agent.isOnNavMesh && foundHit)
+        {
+            agent.SetDestination(hit.position);
+        }
+        else
+        {
+            Debug.LogWarning("Failed to find valid NavMesh position or agent is not on NavMesh.");
+        }
     }
 
     bool CanSeePlayer()
@@ -341,5 +354,39 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
                 drop = Instantiate(ammoPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
             }
         }
+    }
+
+    void HandleFootsteps()
+    {
+        bool isMoving = agent.velocity.magnitude > 0.2f && agent.remainingDistance > agent.stoppingDistance;
+
+        if (isMoving)
+        {
+            footstepTimer += Time.deltaTime;
+
+            if (footstepTimer >= footstepDelay)
+            {
+                PlayFootstep();
+                footstepTimer = 0f;
+            }
+        }
+        else
+        {
+            footstepTimer = 0f;
+        }
+    }
+
+    void PlayFootstep()
+    {
+        if (footstepClip != null && footstepSource != null)
+        {
+            footstepSource.pitch = Random.Range(0.95f, 1.05f);
+            footstepSource.PlayOneShot(footstepClip);
+        }
+    }
+
+    public void FootStep()
+    {
+        PlayFootstep();
     }
 }

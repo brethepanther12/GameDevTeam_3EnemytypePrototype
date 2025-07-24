@@ -4,7 +4,7 @@ using System.Collections;
 public class damage : MonoBehaviour
 {
 
-    enum damagetype { moving, stationary, DOT, homing, explosion}
+    public enum damagetype { moving, stationary, DOT, homing, explosion}
     [SerializeField] damagetype type;
     [SerializeField] public Rigidbody rb;
 
@@ -12,6 +12,8 @@ public class damage : MonoBehaviour
     [SerializeField] public float damageRate;
     [SerializeField] public int speed;
     [SerializeField] public float destroyTime;
+    [SerializeField] GameObject projectileStraightPrefab;
+    [SerializeField] GameObject projectileHomingPrefab;
 
     [SerializeField] GameObject impactPrefab;
 
@@ -110,6 +112,11 @@ public class damage : MonoBehaviour
     public void SetWeaponDamage(int wepDmg)
     {
         weaponDMG = wepDmg;
+    }
+
+    public void SetDamageType(damagetype newType)
+    {
+        type = newType;
     }
 
     IEnumerator damageOther(IDamage d)
