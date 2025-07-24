@@ -1,4 +1,6 @@
+using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Assertions.Must;
@@ -58,6 +60,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable
     float roamTimer;
     float stoppingDistanceOrig;
 
+    private List<Collider> smokeZone = new List<Collider>();
 
     Vector3 playerDir;
     Vector3 startingPos;
@@ -68,7 +71,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable
         shootTimer = 0f;
         currentAmmo = maxAmmo;
         colorOrig = modelParts[0].material.color;
-        gamemanager.instance.updateGameGoal(1);
+        //gamemanager.instance.updateGameGoal(1);
         startingPos = transform.position;
         stoppingDistanceOrig = agent.stoppingDistance;
 
@@ -154,7 +157,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable
 
     bool CanSeePlayer()
     {
-        if (isDead)
+        if (isDead || PlayerInSmoke())
         {
             return false;
         }
@@ -230,6 +233,9 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable
         if (other.CompareTag("Player"))
         {
             playerInTrigger = true;
+        }else if (other.CompareTag("Smoke"))
+        {
+            smokeZone.Add(other);
         }
     }
 
@@ -240,6 +246,10 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable
         {
             playerInTrigger = false;
             agent.stoppingDistance = 0;
+        }
+        else if (other.CompareTag("Smoke"))
+        {
+            smokeZone.Remove(other);
         }
     }
 
@@ -384,5 +394,17 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable
     public void FootStep()
     {
         PlayFootstep();
+    }
+
+    private bool PlayerInSmoke()
+    {
+        foreach (var smoke in smokeZone)
+        {
+            if (smoke != null && smoke.bounds.Contains(gamemanager.instance.player.transform.position))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
