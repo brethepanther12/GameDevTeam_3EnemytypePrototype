@@ -9,10 +9,11 @@ public class GrappleHook : MonoBehaviour
     public Transform grappleOrigin;
     public float grappleRange = 15f;
     public float pullSpeed = 15f;
-    public LayerMask enemyLayer;
+    public LayerMask grappleLayer;
     [SerializeField] private float grappleCD = 5f;
     [SerializeField] private Image grappleCooldownUI;
 
+    private Rigidbody grappledRigidbody;
     private GameObject grappledEnemy;
     private bool isPulling = false;
     private float lastGrapple = -Mathf.Infinity;
@@ -80,7 +81,7 @@ public class GrappleHook : MonoBehaviour
 
         Debug.DrawRay(rayStart, Camera.main.transform.forward * grappleRange, Color.cyan, 1f);
 
-        if (Physics.Raycast(rayStart, Camera.main.transform.forward, out hit, grappleRange, enemyLayer))
+        if (Physics.Raycast(rayStart, Camera.main.transform.forward, out hit, grappleRange, grappleLayer, QueryTriggerInteraction.Collide))
         {
             GameObject target = hit.collider.gameObject;
 
@@ -97,6 +98,11 @@ public class GrappleHook : MonoBehaviour
                 grappledAI.isBeingGrappled = true;
                 isPulling = true;
                 lastGrapple = Time.time;
+
+                if (target.TryGetComponent<PickupMotion>(out PickupMotion motion))
+                {
+                    motion.isBeingPulled = true;
+                }
 
                 if (target.TryGetComponent<NavMeshAgent>(out grappledAgent))
                 {
@@ -120,18 +126,39 @@ public class GrappleHook : MonoBehaviour
     {
         if (grappledEnemy == null) return;
 
-        grappledEnemy.transform.position = Vector3.MoveTowards(
+        Vector3 newPos = Vector3.MoveTowards(
             grappledEnemy.transform.position,
             grappleOrigin.position,
             pullSpeed * Time.deltaTime
         );
 
+        if (grappledRigidbody != null)
+        {
+            grappledRigidbody.MovePosition(newPos);
+        }
+        else
+        {
+            grappledEnemy.transform.position = newPos;
+        }
+
         float distance = Vector3.Distance(grappledEnemy.transform.position, grappleOrigin.position);
 
-        if (distance <= 2f && !isReleased)
+        if (distance <= 1.5f && !isReleased)
         {
             isPulling = false;
             isReleased = true;
+
+
+            if (grappledEnemy.TryGetComponent<ItemPickup>(out ItemPickup pickup))
+            {
+
+                grappledEnemy = null;
+                grappledAgent = null;
+                grappledAI = null;
+                isReleased = false;
+                return;
+            }
+
             StartCoroutine(ResumeEnemyAI());
         }
     }

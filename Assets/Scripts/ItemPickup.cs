@@ -1,9 +1,20 @@
 using UnityEngine;
 
-public class ItemPickup : MonoBehaviour
+public class ItemPickup : MonoBehaviour, IGrapplable
 {
+    [SerializeField] private Rigidbody rb;
+
     public ItemSO itemToGive;
     public WeaponSO weaponToGive;
+
+    public bool isBeingGrappled { get; set; }
+
+    public bool canBeGrappled => true;
+
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
 
     private void OnTriggerEnter(Collider other)
     {
