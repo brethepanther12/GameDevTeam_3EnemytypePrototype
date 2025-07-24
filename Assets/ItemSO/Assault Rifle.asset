@@ -16,13 +16,16 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   weaponName: Starter Rifle
+  ammoType: 0
   wepDmg: 1
   attackRate: 0.2
   range: 200
   magSize: 20
   ammoMax: 100
-  currentAmmoInMag: 20
-  currentAmmoInReserve: 52
+  pelletCount: 0
+  pelletSpread: 0
+  currentAmmoInMag: 12
+  currentAmmoInReserve: 27
   bullet: {fileID: 7539981003205437294, guid: 97a4c4b329aa6bc4c8a68940aaff17f4, type: 3}
   impactPrefab: {fileID: 2408714428905375140, guid: ec2cd9d24f8932148ab9480fc3b65b15, type: 3}
   weaponModel: {fileID: 2441261489494950324, guid: 7aa3bb9e2f359bc4cb22004cc0ddaf3f, type: 3}
