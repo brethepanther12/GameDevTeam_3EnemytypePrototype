@@ -20,9 +20,13 @@ public class BossAI : EnemyAIBase, IGrapplable
     private bool isDead = false;
     float attackTimer;
 
+    private bool isDodging = false;
+
     public bool isBeingGrappled { get; set; }
 
     public bool canBeGrappled => false;
+
+    private float detectionRange = 30f;  // How far boss can see player
 
     protected override void Start()
     {
@@ -31,28 +35,69 @@ public class BossAI : EnemyAIBase, IGrapplable
         base.Start();
         attackTimer = 0;
 
+        // Try to find player if not set in base class
+        if (enemyPlayerObject == null)
+            enemyPlayerObject = GameObject.FindGameObjectWithTag("Player")?.transform;
+
         gamemanager.instance.updateGameGoal(+1);
     }
 
     protected override void Update()
     {
         if (isDead)
-        {
             return;
-        }
 
         base.Update();
-        attackTimer += Time.deltaTime;
-        bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
+
+        if (enemyPlayerObject == null)
+        {
+            enemyPlayerObject = GameObject.FindGameObjectWithTag("Player")?.transform;
+            if (enemyPlayerObject == null) return;  // Can't do AI without player
+        }
+
+        float distanceToPlayer = Vector3.Distance(transform.position, enemyPlayerObject.position);
+
+        // Detect player based on distance
+        SetPlayerInSight(distanceToPlayer <= detectionRange);
 
         if (enemyPlayerInSight)
         {
-            float distance = Vector3.Distance(transform.position, enemyPlayerObject.position);
-            if (distance <= attackRange && attackTimer >= attackCooldown)
+            // If dodging, just continue dodge movement
+            if (isDodging) return;
+
+            if (distanceToPlayer > attackRange)
             {
-                BossAttack();
+                // Chase player
+                enemyNavAgent.SetDestination(enemyPlayerObject.position);
+                bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
+            }
+            else
+            {
+                // In attack range
+                enemyNavAgent.SetDestination(transform.position); // Stop moving to attack
+
+                if (attackTimer >= attackCooldown)
+                {
+                    BossAttack();
+                    attackTimer = 0f;
+                }
+                else
+                {
+                    // Chance to dodge while waiting to attack
+                    if (Random.value < 0.01f)  // 1% chance per frame to dodge
+                    {
+                        StartCoroutine(Dodge());
+                    }
+                }
             }
         }
+        else
+        {
+            // Player not in sight, idle or patrol could go here
+            bossAnimator.SetFloat("Speed", 0);
+        }
+
+        attackTimer += Time.deltaTime;
     }
 
     protected void BossAttack()
@@ -61,17 +106,48 @@ public class BossAI : EnemyAIBase, IGrapplable
         attackTimer = 0f;
     }
 
+    IEnumerator Dodge()
+    {
+        isDodging = true;
+
+        float dodgeDistance = 5f;
+        Vector3 directionToPlayer = (enemyPlayerObject.position - transform.position).normalized;
+
+        // Dodge direction perpendicular to player direction (left or right)
+        Vector3 dodgeDirection = Vector3.Cross(directionToPlayer, Vector3.up);
+
+        if (Random.value > 0.5f)
+            dodgeDirection = -dodgeDirection;
+
+        Vector3 dodgeTarget = transform.position + dodgeDirection * dodgeDistance;
+
+        enemyNavAgent.SetDestination(dodgeTarget);
+        bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
+
+        // Wait until close to dodgeTarget or timeout
+        float timer = 0f;
+        while (Vector3.Distance(transform.position, dodgeTarget) > 0.5f && timer < 1.5f)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        isDodging = false;
+
+        // Resume chasing player after dodge
+        enemyNavAgent.SetDestination(enemyPlayerObject.position);
+        bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
+    }
+
     protected override void enemyDeath()
     {
         if (isDead)
-        {
-            return; 
-        }
+            return;
 
         isDead = true;
 
         Debug.Log($"{gameObject.name} the Boss has been defeated!");
-     
+
         bossAnimator.SetTrigger("IsDead");
 
         enemyNavAgent.isStopped = true;
@@ -92,18 +168,13 @@ public class BossAI : EnemyAIBase, IGrapplable
 
         gamemanager.instance.TriggerWinScreen();
 
-
         Destroy(gameObject);
- 
-
     }
-
 
     protected override void enemyMoveToPlayer()
     {
-        if (enemyPlayerInSight)
+        if (enemyPlayerInSight && !isDodging)
         {
-           // Debug.Log("Boss is moving toward player!");
             enemyNavAgent.SetDestination(enemyPlayerObject.position);
 
             if (enemyNavAgent.remainingDistance <= enemyNavAgent.stoppingDistance)
@@ -123,7 +194,7 @@ public class BossAI : EnemyAIBase, IGrapplable
     {
         enemyCurrentHealthPoints -= amount;
 
-        //vUpdate the centralized boss health bar via GameManager
+        // Update the centralized boss health bar via GameManager
         if (gamemanager.instance.currentBoss == this)
         {
             gamemanager.instance.UpdateBossHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
