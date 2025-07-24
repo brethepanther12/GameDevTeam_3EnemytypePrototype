@@ -4,10 +4,9 @@ using UnityEngine;
 public class BossAI : EnemyAIBase, IGrapplable
 {
     [Header("Boss Settings")]
-    [Header("Boss Info")]
     [SerializeField] GameObject projectilePrefab;
     [SerializeField] Transform projectileSpawnPoint;
-    [SerializeField] float attackRange = 20f;
+    [SerializeField] float attackRange = 30f;
     [SerializeField] float attackCooldown = 2f;
     [SerializeField] GameObject deathEffect;
     [SerializeField] Animator bossAnimator;
@@ -17,82 +16,71 @@ public class BossAI : EnemyAIBase, IGrapplable
     [SerializeField] float burstCooldown = 10f;
     [SerializeField] int burstCount = 3;
 
-    private float burstTimer = 0f;
-    private bool isRetreating = false;
-
-    private float aoeTimer = 0f;
-    private bool isPhaseTwo = false;
-    private float phaseTwoHealthThreshold => enemyHealthPointsMax * 0.5f;
-
     [SerializeField] AudioSource bossRoarSource;
     [SerializeField] AudioClip roarClip;
 
     public string bossName = "Boss 1";
 
+    private float burstTimer = 0f;
+    private float aoeTimer = 0f;
+    private float attackTimer = 0f;
     private bool isDead = false;
-    float attackTimer;
-
     private bool isDodging = false;
+    private bool isRetreating = false;
+    private bool isPhaseTwo = false;
+    private float detectionRange = 30f;
+
+    private float phaseTwoHealthThreshold => enemyHealthPointsMax * 0.5f;
 
     public bool isBeingGrappled { get; set; }
-
     public bool canBeGrappled => false;
-
-    private float detectionRange = 30f;  // How far boss can see player
 
     protected override void Start()
     {
         bossRoarSource.PlayOneShot(roarClip);
 
         base.Start();
-        attackTimer = 0;
 
-        // Try to find player if not set in base class
-        if (enemyPlayerObject == null)
-            enemyPlayerObject = GameObject.FindGameObjectWithTag("Player")?.transform;
+        attackTimer = 0f;
 
-        // Disable NavMeshAgent auto rotation to control rotation manually
+        // Ensure NavMesh works
+        enemyNavAgent.enabled = false;
+        enemyNavAgent.enabled = true;
         enemyNavAgent.updateRotation = false;
 
         gamemanager.instance.updateGameGoal(+1);
     }
 
-    private void EnterPhaseTwo()
-    {
-        isPhaseTwo = true;
-        Debug.Log("Boss has entered Phase 2!");
-        attackCooldown *= 0.75f; // Attack faster
-    }
-
     protected override void Update()
     {
-        if (!isPhaseTwo && enemyCurrentHealthPoints <= phaseTwoHealthThreshold)
-        {
-            EnterPhaseTwo();
-        }
-
-        if (isDead)
-            return;
-
-        base.Update();
+        if (isDead) return;
 
         if (enemyPlayerObject == null)
         {
-            enemyPlayerObject = GameObject.FindGameObjectWithTag("Player")?.transform;
-            if (enemyPlayerObject == null) return;  // Can't do AI without player
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null) enemyPlayerObject = playerObj.transform;
+            if (enemyPlayerObject == null) return;
         }
 
         float distanceToPlayer = Vector3.Distance(transform.position, enemyPlayerObject.position);
         SetPlayerInSight(distanceToPlayer <= detectionRange);
 
+        if (!isPhaseTwo && enemyCurrentHealthPoints <= phaseTwoHealthThreshold)
+            EnterPhaseTwo();
+
         if (enemyPlayerInSight && !isDodging && !isRetreating)
         {
             SmoothFacePlayer();
 
-            if (distanceToPlayer > attackRange)
+            // Boss tries to keep a bit of space before attacking
+            float desiredDistance = attackRange - 3f;
+
+            if (distanceToPlayer > desiredDistance)
             {
+                // Move to maintain distance, don't rush player
+                Vector3 targetPos = enemyPlayerObject.position - (enemyPlayerObject.position - transform.position).normalized * desiredDistance;
                 enemyNavAgent.isStopped = false;
-                enemyNavAgent.SetDestination(enemyPlayerObject.position);
+                enemyNavAgent.SetDestination(targetPos);
                 bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
             }
             else
@@ -105,52 +93,96 @@ public class BossAI : EnemyAIBase, IGrapplable
                     BossAttack();
                     attackTimer = 0f;
                 }
-                else
+                else if (Random.value < 0.05f) // increased dodge chance
                 {
-                    if (Random.value < 0.01f)  // 1% chance per frame to dodge
-                    {
-                        StartCoroutine(Dodge());
-                    }
+                    StartCoroutine(Dodge());
                 }
             }
         }
         else
         {
+            // If player not in sight or dodging/retreating, boss stops moving
             enemyNavAgent.isStopped = true;
             bossAnimator.SetFloat("Speed", 0);
         }
 
+        // Timers
         attackTimer += Time.deltaTime;
         aoeTimer += Time.deltaTime;
+        burstTimer += Time.deltaTime;
 
-        if (isPhaseTwo && Vector3.Distance(transform.position, enemyPlayerObject.position) < aoeRange && aoeTimer >= aoeCooldown)
+        // AOE attack in phase 2
+        if (isPhaseTwo && distanceToPlayer < aoeRange && aoeTimer >= aoeCooldown)
         {
             StartCoroutine(PerformAOEAttack());
             aoeTimer = 0f;
         }
 
-        if (isPhaseTwo && !isRetreating)
+        // Burst retreat & shoot in phase 2
+        if (isPhaseTwo && !isRetreating && burstTimer >= burstCooldown)
         {
-            burstTimer += Time.deltaTime;
-
-            if (burstTimer >= burstCooldown)
-            {
-                StartCoroutine(RetreatAndBurst());
-                burstTimer = 0f;
-            }
+            StartCoroutine(RetreatAndBurst());
+            burstTimer = 0f;
         }
     }
 
-    private void SmoothFacePlayer()
+    void EnterPhaseTwo()
     {
-        Vector3 direction = enemyPlayerObject.position - transform.position;
-        direction.y = 0; // Keep only horizontal direction
+        isPhaseTwo = true;
+        attackCooldown *= 0.75f;
+        Debug.Log("Boss has entered Phase 2");
+    }
 
-        if (direction.sqrMagnitude > 0.01f)
+    void SmoothFacePlayer()
+    {
+        if (enemyPlayerObject == null) return;
+
+        Vector3 direction = enemyPlayerObject.position - transform.position;
+        direction.y = 0;
+
+        if (direction.sqrMagnitude > 0.1f)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+            Quaternion lookRot = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Time.deltaTime * 5f);
         }
+    }
+
+    protected void BossAttack()
+    {
+        SmoothFacePlayer();
+        bossAnimator.SetTrigger("Attack");
+        FireProjectile(Random.value > 0.5f ? damage.damagetype.homing : damage.damagetype.moving);
+    }
+
+    IEnumerator Dodge()
+    {
+        isDodging = true;
+
+        Vector3 toPlayer = (enemyPlayerObject.position - transform.position).normalized;
+        Vector3 dodgeDir = Vector3.Cross(toPlayer, Vector3.up) * (Random.value > 0.5f ? 1 : -1);
+        Vector3 dodgeTarget = transform.position + dodgeDir * 5f;
+
+        enemyNavAgent.isStopped = false;
+        enemyNavAgent.SetDestination(dodgeTarget);
+        bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
+
+        float t = 0f;
+        while (Vector3.Distance(transform.position, dodgeTarget) > 0.5f && t < 1.5f)
+        {
+            SmoothFacePlayer();
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+        isDodging = false;
+    }
+
+    IEnumerator PerformAOEAttack()
+    {
+        bossAnimator.SetTrigger("AOE");
+        yield return new WaitForSeconds(0.5f);
+        if (aoeEffectPrefab)
+            Instantiate(aoeEffectPrefab, transform.position, Quaternion.identity);
     }
 
     IEnumerator RetreatAndBurst()
@@ -164,11 +196,11 @@ public class BossAI : EnemyAIBase, IGrapplable
         enemyNavAgent.SetDestination(retreatTarget);
         bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
 
-        float timer = 0f;
-        while (Vector3.Distance(transform.position, retreatTarget) > 0.5f && timer < 2f)
+        float t = 0f;
+        while (Vector3.Distance(transform.position, retreatTarget) > 0.5f && t < 2f)
         {
             SmoothFacePlayer();
-            timer += Time.deltaTime;
+            t += Time.deltaTime;
             yield return null;
         }
 
@@ -179,101 +211,56 @@ public class BossAI : EnemyAIBase, IGrapplable
         {
             SmoothFacePlayer();
 
-            // Randomly choose between homing or moving projectile
-            damage.damagetype typeToFire = (Random.value > 0.5f)
+            damage.damagetype type = (Random.value > 0.5f)
                 ? damage.damagetype.homing
                 : damage.damagetype.moving;
 
-            FireProjectile(typeToFire);
-
+            FireProjectile(type);
             yield return new WaitForSeconds(0.5f);
         }
 
         isRetreating = false;
     }
 
-    IEnumerator PerformAOEAttack()
+    public void FireProjectile(damage.damagetype type)
     {
-        bossAnimator.SetTrigger("AOE");
+        if (!projectilePrefab || !projectileSpawnPoint) return;
 
-        yield return new WaitForSeconds(0.5f); // Animation wind-up delay
+        GameObject proj = Instantiate(projectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
+        damage dmg = proj.GetComponent<damage>();
+        Rigidbody rb = proj.GetComponent<Rigidbody>();
 
-        if (aoeEffectPrefab != null)
-            Instantiate(aoeEffectPrefab, transform.position, Quaternion.identity);
-
-        Debug.Log("Boss performed AOE attack!");
-    }
-
-    protected void BossAttack()
-    {
-        SmoothFacePlayer();
-        bossAnimator.SetTrigger("Attack");
-        attackTimer = 0f;
-    }
-
-    IEnumerator Dodge()
-    {
-        isDodging = true;
-
-        float dodgeDistance = 5f;
-        Vector3 directionToPlayer = (enemyPlayerObject.position - transform.position).normalized;
-
-        // Dodge direction perpendicular to player direction (left or right)
-        Vector3 dodgeDirection = Vector3.Cross(directionToPlayer, Vector3.up);
-
-        if (Random.value > 0.5f)
-            dodgeDirection = -dodgeDirection;
-
-        Vector3 dodgeTarget = transform.position + dodgeDirection * dodgeDistance;
-
-        enemyNavAgent.isStopped = false;
-        enemyNavAgent.SetDestination(dodgeTarget);
-        bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
-
-        float timer = 0f;
-        while (Vector3.Distance(transform.position, dodgeTarget) > 0.5f && timer < 1.5f)
+        if (dmg != null)
         {
-            SmoothFacePlayer();
-            timer += Time.deltaTime;
-            yield return null;
+            dmg.SetDamageType(type);
+
+            if (rb != null)
+            {
+                // Use AddForce for smooth projectile velocity (no rb.velocity warning)
+                rb.AddForce(proj.transform.forward * dmg.speed, ForceMode.VelocityChange);
+            }
         }
-
-        isDodging = false;
-
-        enemyNavAgent.isStopped = false;
-        enemyNavAgent.SetDestination(enemyPlayerObject.position);
-        bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
     }
 
     protected override void enemyDeath()
     {
-        if (isDead)
-            return;
+        if (isDead) return;
 
         isDead = true;
-
-        Debug.Log($"{gameObject.name} the Boss has been defeated!");
-
         bossAnimator.SetTrigger("IsDead");
-
         enemyNavAgent.isStopped = true;
 
         GetComponent<Collider>().enabled = false;
-
         StartCoroutine(DestroyAfterDeathAnim());
 
         if (gamemanager.instance.currentBoss == this)
-        {
             gamemanager.instance.EndBossFight();
-        }
     }
 
     IEnumerator DestroyAfterDeathAnim()
     {
         yield return new WaitForSeconds(3.5f);
-
         gamemanager.instance.TriggerWinScreen();
-
         Destroy(gameObject);
     }
 
@@ -285,23 +272,16 @@ public class BossAI : EnemyAIBase, IGrapplable
             enemyNavAgent.SetDestination(enemyPlayerObject.position);
 
             if (enemyNavAgent.remainingDistance <= enemyNavAgent.stoppingDistance)
-            {
                 SmoothFacePlayer();
-            }
         }
     }
 
-    public void SetPlayerInSight(bool isInSight)
-    {
-        enemyPlayerInSight = isInSight;
-    }
+    public void SetPlayerInSight(bool inSight) => enemyPlayerInSight = inSight;
 
-    // Boss takes damage and flashes red
     public override void takeDamage(int amount)
     {
         enemyCurrentHealthPoints -= amount;
 
-        // Update boss health bar via GameManager
         if (gamemanager.instance.currentBoss == this)
         {
             gamemanager.instance.UpdateBossHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
@@ -319,48 +299,14 @@ public class BossAI : EnemyAIBase, IGrapplable
         }
     }
 
-    // Flash boss red briefly on hit
     protected override IEnumerator enemyFlashRead()
     {
         foreach (var part in enemyModel)
-        {
             part.material.color = Color.red;
-        }
 
         yield return new WaitForSeconds(0.1f);
 
         foreach (var part in enemyModel)
-        {
             part.material.color = enemyColorOrigin;
-        }
-    }
-
-    public void FireProjectile(damage.damagetype typeToUse)
-    {
-        if (projectilePrefab == null || projectileSpawnPoint == null)
-        {
-            Debug.LogWarning("Projectile prefab or spawn point is not assigned!");
-            return;
-        }
-
-        GameObject proj = Instantiate(projectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
-
-        damage dmg = proj.GetComponent<damage>();
-        Rigidbody rb = proj.GetComponent<Rigidbody>();
-
-        if (dmg != null)
-        {
-            dmg.SetDamageType(typeToUse);
-
-            if (typeToUse == damage.damagetype.moving && rb != null)
-            {
-                rb.linearVelocity = proj.transform.forward * dmg.speed;
-            }
-            // For homing, Update() handles it
-        }
-        else
-        {
-            Debug.LogWarning("Projectile has no 'damage' component!");
-        }
     }
 }
