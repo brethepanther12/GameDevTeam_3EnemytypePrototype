@@ -26,6 +26,12 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] int shootDist;
 
+    ////Added for grenade logic, delete if causing any errors
+    //[SerializeField] private GameObject grenadePrefab;
+    //[SerializeField] private Transform throwPoint;
+    //[SerializeField] private float throwingForce;
+    //[SerializeField] private Transform grenadeThrowOrigin;
+
     [SerializeField] private AudioClip hurtSound;
     [SerializeField] private float hurtVol;
     [SerializeField] private float footstepVol = 1f;
@@ -116,6 +122,12 @@ public class playerController : MonoBehaviour, IDamage
         HandleFootsteps();
 
         jump();
+
+        //Delete if causing issue
+        //if (Input.GetKeyDown(KeyCode.G))
+        //{
+        //    throwGrenade();
+        //}
 
         controller.Move(playerVel * Time.deltaTime);
         playerVel.y -= gravity * Time.deltaTime;
@@ -413,4 +425,28 @@ public class playerController : MonoBehaviour, IDamage
         HP = HPOrig;
         updatePlayerUI();
     }
+
+    //Delete if causing difficulties
+    //public void throwGrenade()
+    //{
+    //    ItemSO grenade = inventory.collectedItems.Find(item => item.itemName == "Grenade");
+
+    //    if (grenade != null && grenade.quantityHeld > 0 && grenadePrefab != null && grenadeThrowOrigin != null)
+    //    {
+            
+    //        Vector3 throwDirection = grenadeThrowOrigin.forward;
+
+           
+    //        GameObject grenadeObj = Instantiate(grenadePrefab, grenadeThrowOrigin.position, Quaternion.identity);
+    //        Rigidbody rb = grenadeObj.GetComponent<Rigidbody>();
+
+    //        if (rb != null)
+    //        {
+    //            rb.linearVelocity = throwDirection.normalized * throwingForce;
+    //        }
+
+    //        grenade.quantityHeld--;
+    //        updatePlayerUI();
+    //    }
+    //}
 }

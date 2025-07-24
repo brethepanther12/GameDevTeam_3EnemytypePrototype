@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &8873835544158007701
+--- !u!1 &3438204607052667122
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,68 +8,68 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6661332754121284464}
-  - component: {fileID: 8533481134735433184}
-  - component: {fileID: 7472055187840015431}
-  - component: {fileID: 5998227389458969501}
-  - component: {fileID: 3020099037960048332}
+  - component: {fileID: 1539952938583143072}
+  - component: {fileID: 8906204787593989720}
+  - component: {fileID: 5432497292364807}
+  - component: {fileID: 4418956644349095601}
+  - component: {fileID: 5920006719019401736}
+  - component: {fileID: 8370704875535580590}
   m_Layer: 0
-  m_Name: Explosion
-  m_TagString: Untagged
+  m_Name: Grenade(Homing)Not Working
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6661332754121284464
+--- !u!4 &1539952938583143072
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8873835544158007701}
+  m_GameObject: {fileID: 3438204607052667122}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4, y: 2, z: -0.75}
-  m_LocalScale: {x: 5.5, y: 5.5, z: 5.5}
+  m_LocalPosition: {x: -4.75, y: 1.1003704, z: -2.3498373}
+  m_LocalScale: {x: 0.45, y: 0.45, z: 0.45}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8533481134735433184
+--- !u!114 &8906204787593989720
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8873835544158007701}
+  m_GameObject: {fileID: 3438204607052667122}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a08e3e2a22e8a3249b0a8a55c9a74c1e, type: 3}
+  m_Script: {fileID: 11500000, guid: 36afbddc563010740a9bd08b06d5f664, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 4
-  rb: {fileID: 0}
-  damageAmount: 10
-  damageRate: 0
-  speed: 0
-  destroyTime: 0.25
-  impactPrefab: {fileID: 0}
-  weaponDMG: 0
---- !u!33 &7472055187840015431
+  grenadeRigidB: {fileID: 8370704875535580590}
+  grenadeSpeed: 5
+  grenadeSpeedY: 0
+  destroyTimer: 5.5
+  explosionPrefab: {fileID: 8873835544158007701, guid: dad52519f43160f458163ccabe8f1cef, type: 3}
+  OnStickyBomb: 0
+  isTracking: 1
+--- !u!33 &5432497292364807
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8873835544158007701}
+  m_GameObject: {fileID: 3438204607052667122}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &5998227389458969501
+--- !u!23 &4418956644349095601
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8873835544158007701}
+  m_GameObject: {fileID: 3438204607052667122}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -86,7 +86,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c31df95805b8653419a5700d7cb794ad, type: 2}
+  - {fileID: 2100000, guid: aa29582ac0585944a9ad663f6f604f65, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -108,13 +108,13 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &3020099037960048332
+--- !u!135 &5920006719019401736
 SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8873835544158007701}
+  m_GameObject: {fileID: 3438204607052667122}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -123,9 +123,36 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &8370704875535580590
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3438204607052667122}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 1
