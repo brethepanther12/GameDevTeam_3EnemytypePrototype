@@ -74,8 +74,8 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
         {
             return;
         }
-           
-            animator.SetFloat("Speed", agent.velocity.magnitude);
+
+        animator.SetFloat("Speed", agent.velocity.magnitude);
 
         if (agent.remainingDistance < 0.01f)
         {
@@ -111,19 +111,13 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
         roamTimer = 0;
         agent.stoppingDistance = 0;
 
-        Vector3 ranPos = Random.insideUnitSphere * roamDistance + startingPos;
+        Vector3 ranPos = Random.insideUnitSphere * roamDistance;
+        ranPos += startingPos;
 
         NavMeshHit hit;
-        bool foundHit = NavMesh.SamplePosition(ranPos, out hit, roamDistance, NavMesh.AllAreas);
+        NavMesh.SamplePosition(ranPos, out hit, roamDistance, 1);
+        agent.SetDestination(hit.position);
 
-        if (agent.isOnNavMesh && foundHit)
-        {
-            agent.SetDestination(hit.position);
-        }
-        else
-        {
-            Debug.LogWarning("Failed to find valid NavMesh position or agent is not on NavMesh.");
-        }
     }
 
     bool CanSeePlayer()
