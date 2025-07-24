@@ -6,7 +6,7 @@ public class BossAI : EnemyAIBase, IGrapplable
     [Header("Boss Settings")]
     [SerializeField] GameObject projectilePrefab;
     [SerializeField] Transform projectileSpawnPoint;
-    [SerializeField] float attackRange = 20f;
+    [SerializeField] float attackRange = 30f;
     [SerializeField] float attackCooldown = 2f;
     [SerializeField] GameObject deathEffect;
     [SerializeField] Animator bossAnimator;

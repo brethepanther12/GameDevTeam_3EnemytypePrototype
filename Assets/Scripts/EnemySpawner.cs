@@ -28,7 +28,11 @@ public class EnemySpawner : MonoBehaviour
         for (int i = 0; i < numberToSpawn; i++)
         {
             Vector3 spawnPosition = customSpawnPoint != null ? customSpawnPoint.position : transform.position;
-            Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+
+            Quaternion spawnRotation = Quaternion.Euler(0f, 0f, 0f);
+
+            Instantiate(enemyPrefab, spawnPosition, spawnRotation);
+
             float delay = Random.Range(minDelay, maxDelay);
             yield return new WaitForSeconds(delay);
         }
