@@ -10,11 +10,13 @@ GameObject:
   m_Component:
   - component: {fileID: 122774037440200813}
   - component: {fileID: 111315145667360564}
+  - component: {fileID: 8283060881273788453}
+  - component: {fileID: 7138837133929675643}
   - component: {fileID: 2592366460513571701}
   - component: {fileID: 5483482318574257853}
   - component: {fileID: 6784676125001643446}
-  - component: {fileID: 7138837133929675643}
-  m_Layer: 0
+  - component: {fileID: -9174994992440048561}
+  m_Layer: 14
   m_Name: Max Armor Pickup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,10 +51,44 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   magnitude: 1
-  quantity: 5
+  quantity: 10
   duration: 0
   increaseMax: 1
   pickup: 2
+--- !u!114 &8283060881273788453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8703792668583944645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf530e3bd43c726448976eedd7c0d11b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: -9174994992440048561}
+  itemToGive: {fileID: 0}
+  weaponToGive: {fileID: 0}
+--- !u!114 &7138837133929675643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8703792668583944645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32e35690333aaeb4d8b10f370dead619, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minRotationSpeed: 30
+  maxRotationSpeed: 90
+  minBounceAmplitude: 0.15
+  maxBounceAmplitude: 0.25
+  minBounceFrequency: 1.5
+  maxBounceFrequency: 3
+  isBeingPulled: 0
 --- !u!33 &2592366460513571701
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -127,21 +163,30 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7138837133929675643
-MonoBehaviour:
+--- !u!54 &-9174994992440048561
+Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8703792668583944645}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32e35690333aaeb4d8b10f370dead619, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minRotationSpeed: 30
-  maxRotationSpeed: 90
-  minBounceAmplitude: 0.15
-  maxBounceAmplitude: 0.25
-  minBounceFrequency: 1.5
-  maxBounceFrequency: 3
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0

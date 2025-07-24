@@ -205,12 +205,22 @@ public class playerController : MonoBehaviour, IDamage
         if (shield > 0)
         {
             shield -= amount;
+
+            if (shield < 0)
+            {
+                shield = 0;
+            }
             updatePlayerUI();
             StartCoroutine(ShieldDamageFlashScreen());
         }
         else if (armor > 0)
         {
             armor -= amount;
+
+            if (armor < 0)
+            {
+                armor = 0;
+            }
             updatePlayerUI();
             StartCoroutine(ArmorDamageFlashScreen());
         }
