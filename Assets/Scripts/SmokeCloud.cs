@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,6 +6,10 @@ public class SmokeCloud : MonoBehaviour
 {
     // Duration the smoke lasts in seconds
     [SerializeField] public float smokeDuration;
+    [SerializeField] public GameObject smokePrefab;
+    [SerializeField] public int damageAmount;
+    [SerializeField] public int damageRate;
+    bool isDamaging;
 
     // List to keep track of enemies inside the cloud
     private List<FlyingAI> enemiesInSmoke = new List<FlyingAI>();
@@ -40,7 +45,23 @@ public class SmokeCloud : MonoBehaviour
             }
         }
     }
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.isTrigger)
+            return;
 
+        if (smokePrefab != null && !isDamaging)
+        {
+            Instantiate(smokePrefab, transform.position, Quaternion.LookRotation(transform.forward));
+        }
+
+        IDamage dmg = other.GetComponent<IDamage>();
+
+        if (dmg != null && !isDamaging)
+        {
+            StartCoroutine(damageOther(dmg));
+        }
+    }
     private void OnDestroy()
     {
         // When smoke disappears, reset invisibility on all enemies inside
@@ -50,5 +71,14 @@ public class SmokeCloud : MonoBehaviour
                 enemy.SetInvisible(false);
         }
         enemiesInSmoke.Clear();
+    }
+    IEnumerator damageOther(IDamage d)
+    {
+        isDamaging = true;
+
+        d.takeDamage(damageAmount);
+
+        yield return new WaitForSeconds(damageRate);
+        isDamaging = false;
     }
 }
