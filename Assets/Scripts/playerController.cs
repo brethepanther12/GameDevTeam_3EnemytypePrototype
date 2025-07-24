@@ -83,8 +83,12 @@ public class playerController : MonoBehaviour, IDamage
         {
             inventory.weaponSocket = weaponSocket;
             inventory.playerRef = this;
-        }
 
+            foreach (var weapon in GlobalInventory.instance.collectedWeapons)
+            {
+                inventory.AddWeapon(weapon);
+            }
+        }
     }
 
     void Update()

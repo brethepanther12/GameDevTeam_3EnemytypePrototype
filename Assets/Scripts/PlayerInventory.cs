@@ -18,18 +18,6 @@ public class PlayerInventory : MonoBehaviour
     private Weapon currentWeaponScript;
 
 
-    void Start()
-    {
-        //restore saved SO weapons from global list
-        foreach (var weapon in GlobalInventory.instance.collectedWeapons)
-        {
-            if (!HasWeapon(weapon))
-            {
-                AddWeapon(weapon);
-            }
-        }
-    }
-
     public void AddItem(ItemSO item)
     {
         if (!collectedItems.Contains(item))
