@@ -380,4 +380,9 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable
             }
         }
     }
+
+    public void FootStep()
+    {
+        PlayFootstep();
+    }
 }
