@@ -72,8 +72,6 @@ public class FlyingAI : MonoBehaviour, IDamage
         if (rigidBody == null) rigidBody = GetComponent<Rigidbody>();
 
         playerTarget = gamemanager.instance.player;
-        if (playerTarget != null)
-            target = playerTarget.transform;
 
         Damage = GetComponent<damage>();
         if (Damage != null)
@@ -84,79 +82,95 @@ public class FlyingAI : MonoBehaviour, IDamage
 
     // Update is called once per frame
     void FixedUpdate()
-    {
+    { 
+        
+        //  check if the player is in range and visible
         playerVisible = PlayerInFieldOfView();
-        bool playerLost = target == null || !InRange || !playerVisible;
 
+        // Assign or clear the target based on FOV + trigger
+        if (InRange && playerVisible && target == null)
+        {
+            target = playerTarget.transform;
+        }
+        else if ((!InRange || !playerVisible) && target != null)
+        {
+            target = null;
+        }
+
+        // Determine if the player is "lost"
+        bool playerLost = target == null;
+
+        // Handle player loss timer
         if (playerLost)
-            playerLostTimer += Time.deltaTime;
+        {
+            playerLostTimer += Time.fixedDeltaTime;
+        }
         else
+        {
             playerLostTimer = 0f;
+        }
 
-
-
+        // If lost for long enough, go to ceiling
         if (playerLostTimer >= lostPlayDelay && !returnToCeiling)
         {
             NearestCeiling();
             ceilingTarget = ceilingPoint;
             returnToCeiling = true;
-            //returnToCeiling = false;
         }
 
-        if (!(playerLostTimer >= lostPlayDelay) && returnToCeiling) returnToCeiling = false;
+        if (!playerLost && returnToCeiling)
+        {
+            returnToCeiling = false;
+        }
 
+        // If returning to ceiling, override all movement
         if (returnToCeiling)
         {
             MoveToCeiling();
             return;
         }
-
-        if (rigidBody.isKinematic)
-            rigidBody.isKinematic = false;
-
-        // Direction toward the target
-        Vector3 direction = (target.position - transform.position).normalized;
-
-        Debug.DrawRay(transform.position, direction * 1f, Color.red);
-
-
-        // Maintain hover height
+        
+        // Hover logic (always active)
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight))
         {
             float hoverError = hoverHeight - hit.distance;
             float upwardForce = hoverClamp * hoverError;
 
-            // Boost if very close to the ground
             if (hit.distance < 0.2f)
+            {
                 upwardForce *= 3f;
+            }
 
             rigidBody.AddForce(Vector3.up * upwardForce, ForceMode.Acceleration);
         }
-        /*
-         
-         // Smooth rotation
-        Quaternion targetRot = Quaternion.LookRotation(direction);
-        rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime));
+        
+        // Movement logic
+        if (!playerLost && target != null)
+        {
+            if (rigidBody.isKinematic)
+            {
+                rigidBody.isKinematic = false;
+            }
 
-        // Move forward
-        rigidBody.linearVelocity = transform.forward * flyingSpeed;
-         
-         */
+            Vector3 direction = (target.position - transform.position).normalized;
+            Debug.DrawRay(transform.position, direction * 1f, Color.red);
 
-        //Checking if there is a wall in flying enemy direction
-        if (!Physics.Raycast(transform.position, direction, out RaycastHit wallHit, 1f, enviormentMask))
+            if (!Physics.Raycast(transform.position, direction, 1f, enviormentMask))
+            {
+                rigidBody.linearVelocity = direction * flyingSpeed; 
+            }
+            else
+            {
+                rigidBody.linearVelocity = Vector3.zero;
+            }
 
-            // Move directly toward the player
-            rigidBody.linearVelocity = direction * flyingSpeed;
-
+            faceTarget();
+        }
         else
+        {
             rigidBody.linearVelocity = Vector3.zero;
-
-        // Smooth rotation
-        //Quaternion targetRot = Quaternion.LookRotation(direction);
-        //rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime));
-
-        faceTarget();
+        }
+        
     }
 
 
@@ -165,10 +179,10 @@ public class FlyingAI : MonoBehaviour, IDamage
     {
         //playerDirection = gamemanager.instance.player.transform.position - transform.position;
 
-        if (target == null) return false;
+        if (playerTarget == null) return false;
 
         //Locate player
-        Vector3 direction = target.position - transform.position;
+        Vector3 direction = playerTarget.transform.position - transform.position;
         float angle = Vector3.Angle(direction, transform.forward);
 
         Debug.DrawRay(transform.position, direction.normalized * fovDistance, Color.red);

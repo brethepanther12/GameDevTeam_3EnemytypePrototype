@@ -98,6 +98,14 @@ public class playerController : MonoBehaviour, IDamage
 
     }
 
+    void Awake()
+    {
+        if (gamemanager.instance != null)
+        {
+            gamemanager.instance.player = this.gameObject;
+        }
+    }
+
     bool IsGrounded()
     {
         Ray ray = new Ray(transform.position, Vector3.down);
