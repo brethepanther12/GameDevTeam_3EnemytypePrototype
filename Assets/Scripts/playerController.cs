@@ -205,18 +205,33 @@ public class playerController : MonoBehaviour, IDamage
         if (shield > 0)
         {
             shield -= amount;
+
+            if (shield < 0)
+            {
+                shield = 0;
+            }
             updatePlayerUI();
             StartCoroutine(ShieldDamageFlashScreen());
         }
         else if (armor > 0)
         {
             armor -= amount;
+
+            if (armor < 0)
+            {
+                armor = 0;
+            }
             updatePlayerUI();
             StartCoroutine(ArmorDamageFlashScreen());
         }
         else
         {
             HP -= amount;
+
+            if (HP < 0)
+            {
+                HP = 0;
+            }
             AudioSource.PlayClipAtPoint(hurtSound, transform.position, hurtVol);
             updatePlayerUI();
             StartCoroutine(damageFlashScreen());

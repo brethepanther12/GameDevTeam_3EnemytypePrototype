@@ -20,6 +20,7 @@ public class PickupMotion : MonoBehaviour
     private float timeOffset;
 
     public bool isBeingPulled = false;
+    
 
     void Start()
     {
@@ -33,11 +34,17 @@ public class PickupMotion : MonoBehaviour
 
     void Update()
     {
-        if (isBeingPulled) return;
+        if (isBeingPulled)
+        {
+            return;
+        }
 
         transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime, Space.World);
 
         float offsetY = Mathf.Sin(Time.time * bounceFrequency + timeOffset) * bounceAmplitude;
         transform.localPosition = startLocalPos + Vector3.up * offsetY;
+
+
+
     }
 }
