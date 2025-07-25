@@ -207,16 +207,12 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             } else if (hit.collider.CompareTag("Smoke"))
             {
                 return false;
-            }
-           else if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
-            {
-
+            } else if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
+            { 
                 return false;
             }
                 
         }
-
-
         return false;
     }
 
