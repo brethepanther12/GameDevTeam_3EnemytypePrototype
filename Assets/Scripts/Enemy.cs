@@ -217,7 +217,6 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
                 }
             }
         }
-
         agent.stoppingDistance = 0;
         return false;
     }
