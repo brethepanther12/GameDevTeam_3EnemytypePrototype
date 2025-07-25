@@ -173,6 +173,10 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
 
         if (Physics.Raycast(headPos.position, playerDir, out hit))
         {
+
+            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Smoke"))
+                return false;
+            
             if (hit.collider.CompareTag("Player") && angleToPlayer <= fov)
             {
                 float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
