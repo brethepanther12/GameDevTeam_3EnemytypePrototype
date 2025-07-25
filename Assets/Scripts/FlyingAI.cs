@@ -201,10 +201,19 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, fovDistance))
         {
-            if ( hit.collider.CompareTag("Player"))
+            if (hit.collider.CompareTag("Player"))
+            {
                 return true;
-           else if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
+            } else if (hit.collider.CompareTag("Smoke"))
+            {
                 return false;
+            }
+           else if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
+            {
+
+                return false;
+            }
+                
         }
 
 

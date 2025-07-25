@@ -12,7 +12,6 @@ public class Grenade : MonoBehaviour
     [SerializeField] private float destroyTimer;
 
     [SerializeField] private GameObject explosionPrefab;
-    [SerializeField] private GameObject smokeCloudPrefab;
 
     [SerializeField] private bool OnStickyBomb;
     [SerializeField] private bool isTracking;
