@@ -36,6 +36,15 @@ public class SmokeCloud : MonoBehaviour
                 damageCoroutines.Add(dmg, co);
             }
         }
+
+        if (other.CompareTag("Player"))
+        {
+            Visibility visible = other.GetComponent<Visibility>();
+            if (visible != null)
+            {
+                visible.SetInvisible(true);
+            }
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -56,6 +65,15 @@ public class SmokeCloud : MonoBehaviour
                 damageCoroutines.Remove(dmg);
             }
         }
+
+        if (other.CompareTag("Player"))
+        {
+            Visibility visible = other.GetComponent<Visibility>();
+            if (visible != null)
+            {
+                visible.SetInvisible(false);
+            }
+        }
     }
 
     private void OnDestroy()
@@ -74,6 +92,15 @@ public class SmokeCloud : MonoBehaviour
                 StopCoroutine(co);
         }
         damageCoroutines.Clear();
+
+        if (gamemanager.instance.player != null)
+        {
+            Visibility visible = gamemanager.instance.player.GetComponent<Visibility>();
+            if (visible != null)
+            {
+                visible.SetInvisible(false);
+            }
+        }
     }
 
     private IEnumerator DamageOverTime(IDamage target)

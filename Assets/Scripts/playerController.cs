@@ -1,9 +1,10 @@
 using UnityEngine;
 using System.Collections;
 using Unity.VisualScripting;
+using System.Runtime.CompilerServices;
 
 
-public class playerController : MonoBehaviour, IDamage
+public class playerController : MonoBehaviour, IDamage, Visibility
 {
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
@@ -47,6 +48,7 @@ public class playerController : MonoBehaviour, IDamage
 
     float stepTimer = 0f;
     public bool isReloading;
+    public bool isVisible;
     public int currentAmmo;
 
     private enum powerUpType
@@ -453,6 +455,16 @@ public class playerController : MonoBehaviour, IDamage
         updatePlayerUI();
     }
 
+    public void SetInvisible(bool state)
+    {
+        isVisible = state;
+    }
+
+    public bool IsInvisible()
+    {
+        return isVisible;
+    }
+
     //Delete if causing difficulties
     //public void throwGrenade()
     //{
@@ -460,10 +472,10 @@ public class playerController : MonoBehaviour, IDamage
 
     //    if (grenade != null && grenade.quantityHeld > 0 && grenadePrefab != null && grenadeThrowOrigin != null)
     //    {
-            
+
     //        Vector3 throwDirection = grenadeThrowOrigin.forward;
 
-           
+
     //        GameObject grenadeObj = Instantiate(grenadePrefab, grenadeThrowOrigin.position, Quaternion.identity);
     //        Rigidbody rb = grenadeObj.GetComponent<Rigidbody>();
 
