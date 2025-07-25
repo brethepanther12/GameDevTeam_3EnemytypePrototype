@@ -55,6 +55,8 @@ MonoBehaviour:
   damageRate: 0
   speed: 7
   destroyTime: 5.5
+  projectileStraightPrefab: {fileID: 0}
+  projectileHomingPrefab: {fileID: 0}
   impactPrefab: {fileID: 0}
   weaponDMG: 0
 --- !u!114 &4725865353860591309
@@ -70,10 +72,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grenadeRigidB: {fileID: 8207744021673627751}
-  grenadeSpeed: 50
+  grenadeSpeed: 20
   grenadeSpeedY: 2
   destroyTimer: 3.5
   explosionPrefab: {fileID: 8873835544158007701, guid: cc2a4f70987966446a7595a04e4e90df, type: 3}
+  smokeCloudPrefab: {fileID: 0}
   OnStickyBomb: 0
   isTracking: 1
 --- !u!33 &7696528566794760053
@@ -172,7 +175,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 0

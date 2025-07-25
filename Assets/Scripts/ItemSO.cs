@@ -1,9 +1,9 @@
 using UnityEngine;
 
 
-public enum itemType
+public enum ItemType
 {
-    Weapon, Consumable, Key, Upgrade, Collectable
+    Weapon, Consumable, Key, Upgrade, Collectable, Ammo
 }
 
 [CreateAssetMenu(menuName = "Inventory/Item")]

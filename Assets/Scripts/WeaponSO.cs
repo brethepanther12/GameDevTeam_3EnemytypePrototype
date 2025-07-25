@@ -1,7 +1,7 @@
 using System.Diagnostics.Contracts;
 using UnityEngine;
 
-public enum AmmoType { Standard, Shell, Energy, Fuel, Rocket, Grenade}
+public enum AmmoType { Pistol, AR, Shell, Energy, Fuel, Rocket, Grenade}
 
 [CreateAssetMenu(menuName = "Inventory/Weapon")]
 public class WeaponSO : ScriptableObject
