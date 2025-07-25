@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
 public class PlayerInventory : MonoBehaviour
 {
     [HideInInspector] public playerController playerRef;
@@ -16,6 +17,19 @@ public class PlayerInventory : MonoBehaviour
     public GameObject weaponSocket;
     private GameObject currentWeaponInstance;
     private Weapon currentWeaponScript;
+
+
+    private Dictionary<AmmoType, string> ammoLookup = new Dictionary<AmmoType, string>
+    {
+
+    { AmmoType.AR, "Rifle Ammo" },
+    { AmmoType.Shell, "Shotgun Shells" },
+    { AmmoType.Grenade, "Frag Round" }
+
+
+
+    };
+
 
 
     public void AddItem(ItemSO item)
@@ -135,6 +149,25 @@ public class PlayerInventory : MonoBehaviour
         return 0;
     }
 
+    public bool TryGetAmmoAmount(AmmoType type, out int amount)
+    {
+        amount = 0;
+
+        if (ammoLookup.TryGetValue(type, out string ammoName))
+        {
+            foreach (ItemSO item in collectedItems)
+            {
+                if (item.itemName == ammoName)
+                {
+                    amount = item.quantityHeld;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public void ConsumeAmmo(int amount)
     {
         foreach (ItemSO item in collectedItems)
@@ -148,5 +181,34 @@ public class PlayerInventory : MonoBehaviour
 
             
         }
+    }
+
+    public void ConsumeAmmoByType(AmmoType type, int amount)
+    {
+        if (ammoLookup.TryGetValue(type, out string ammoName))
+        {
+            foreach (ItemSO item in collectedItems)
+            {
+                if (item.itemName == ammoName)
+                {
+                    item.quantityHeld -= amount;
+                    item.quantityHeld = Mathf.Max(0, item.quantityHeld);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Tried to consume ammo for unknown AmmoType: " + type);
+        }
+    }
+
+    public string GetAmmoNameByType(AmmoType type)
+    {
+        if (ammoLookup.TryGetValue(type, out string ammoName))
+            return ammoName;
+
+        Debug.LogWarning("AmmoType not found in lookup: " + type);
+        return string.Empty;
     }
 }

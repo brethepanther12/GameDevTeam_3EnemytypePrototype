@@ -414,9 +414,13 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
         if (activeWep != null)
         {
-            gamemanager.instance.ammoText.text = $"{activeWep.GetAmmoInMag()} / {inventory.GetAmmoAmount("Ammo")}";
+            int mag = activeWep.GetAmmoInMag();
+            int reserve = 0;
+            inventory.TryGetAmmoAmount(activeWep.ammoType, out reserve);
+
+            gamemanager.instance.ammoText.text = $"{mag} / {reserve}";
         }
-        
+
     }
 
     IEnumerator damageFlashScreen()

@@ -88,7 +88,7 @@ public class Weapon : MonoBehaviour {
 
         if (Input.GetButton("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
         {
-            if (ammoType == AmmoType.Standard)
+            if (ammoType == AmmoType.AR || ammoType == AmmoType.Grenade)
                 Shoot();
             else if (ammoType == AmmoType.Shell)
                 ShootMultiple();
@@ -171,15 +171,19 @@ public class Weapon : MonoBehaviour {
             gunAnim.SetBool("Reloading", false);
 
         int ammoNeeded = magSize - ammoInMag;
-        int ammoToLoad = Mathf.Min(ammoNeeded, inventory.GetAmmoAmount("Ammo"));
 
-        ammoInMag += ammoToLoad;
-        inventory.ConsumeAmmo(ammoToLoad);
-        ammoInReserve = inventory.GetAmmoAmount("Ammo");
+        if (inventory.TryGetAmmoAmount(ammoType, out int ammoInStock))
+        {
+            int ammoToLoad = Mathf.Min(ammoNeeded, ammoInStock);
+            ammoInMag += ammoToLoad;
+            inventory.ConsumeAmmoByType(ammoType, ammoToLoad);
+            ammoInReserve = ammoInStock - ammoToLoad;
+        }
 
         equippedPlayer.isReloading = false;
         equippedPlayer.updatePlayerUI();
     }
+
     public int GetAmmoInMag()
     {
         return ammoInMag;
