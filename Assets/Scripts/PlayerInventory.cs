@@ -106,8 +106,18 @@ public class PlayerInventory : MonoBehaviour
         }
 
         weaponListPos += direction;
-        weaponListPos = Mathf.Clamp(weaponListPos, 0, weaponInventory.Count - 1);
-        EquipWeapon();
+
+        if (weaponListPos < 0)
+        {
+            weaponListPos = weaponInventory.Count - 1;
+
+        } 
+        else if (weaponListPos > weaponInventory.Count - 1)
+        {
+            weaponListPos = 0;
+        }
+            //weaponListPos = Mathf.Clamp(weaponListPos, 0, weaponInventory.Count - 1);
+            EquipWeapon();
 
         
     }
