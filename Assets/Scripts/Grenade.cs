@@ -37,7 +37,7 @@ public class Grenade : MonoBehaviour
                     closest = enemy;
                     minDist = dist;
 
-                    StartCoroutine(explode());
+                   // StartCoroutine(explode());
 
                 }
             }
@@ -114,6 +114,7 @@ public class Grenade : MonoBehaviour
         yield return new WaitForSeconds(destroyTimer);
         if (explosionPrefab != null )
         Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 
     //[SerializeField] private bool isTracking;
