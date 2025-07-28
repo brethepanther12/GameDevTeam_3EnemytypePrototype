@@ -20,4 +20,25 @@ public class SmokeCloud : MonoBehaviour
         // Optionally destroy this parent (e.g., grenade shell)
         Destroy(gameObject);
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Visibility visible = other.GetComponent<Visibility>();
+        if (visible != null) { visible.SetInvisible(true); }
+    }
+    
+    private void OnTriggerExit(Collider other)
+    {
+        Visibility visible = other.GetComponent<Visibility>();
+        if (visible != null) { visible.SetInvisible(false); }
+    }
+
+    private void OnDestroy()
+    {
+        if (gamemanager.instance.player != null)
+        {
+            Visibility visible = gamemanager.instance.player.GetComponent<Visibility>();
+            if (visible != null) { visible.SetInvisible(false); }
+        }
+    }
 }
