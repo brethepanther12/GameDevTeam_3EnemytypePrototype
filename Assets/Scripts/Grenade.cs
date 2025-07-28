@@ -114,10 +114,6 @@ public class Grenade : MonoBehaviour
         yield return new WaitForSeconds(destroyTimer);
         if (explosionPrefab != null )
         Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-
-        if (smokeCloudPrefab != null)
-         Instantiate(smokeCloudPrefab, transform.position, Quaternion.identity);
-        Destroy(gameObject);
     }
 
     //[SerializeField] private bool isTracking;
