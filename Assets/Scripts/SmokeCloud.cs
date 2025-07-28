@@ -5,10 +5,18 @@ using UnityEngine;
 public class SmokeCloud : MonoBehaviour
 {
     [SerializeField] private float smokeDuration;
+    private damage damageDestroyTimer;
+
     [SerializeField] private GameObject smokePrefab;
 
     private void Start()
     {
+        damageDestroyTimer = GetComponent<damage>();
+        if (damageDestroyTimer != null)
+        {
+            smokeDuration = damageDestroyTimer.destroyTime;
+        }
+
         if (smokePrefab != null)
         {
             GameObject smoke = Instantiate(smokePrefab, transform.position, Quaternion.identity);
