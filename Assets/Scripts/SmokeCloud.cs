@@ -20,13 +20,14 @@ public class SmokeCloud : MonoBehaviour
         if (smokePrefab != null)
         {
             GameObject smoke = Instantiate(smokePrefab, transform.position, Quaternion.identity);
+            Debug.Log("Smoke instantiated: " + smoke.name);
 
-            // Destroy the smoke after its duration
             Destroy(smoke, smokeDuration);
         }
-
-        // Optionally destroy this parent (e.g., grenade shell)
-        Destroy(gameObject);
+        else
+        {
+            Debug.LogWarning("Smoke prefab is null!");
+        }
     }
 
     private void OnTriggerEnter(Collider other)
