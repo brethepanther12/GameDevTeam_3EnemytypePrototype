@@ -95,6 +95,7 @@ public class damage : MonoBehaviour
     {
         if (other.isTrigger)
             return;
+        Debug.Log("OnTriggerStay with: " + other.name);
 
         if (impactPrefab != null && !isDamaging)
         {
@@ -104,6 +105,7 @@ public class damage : MonoBehaviour
 
         if (dmg != null && type == damagetype.DOT && !isDamaging)
         {
+            Debug.Log("Starting DOT on " + other.name);
             StartCoroutine(damageOther(dmg));
         }
     }
