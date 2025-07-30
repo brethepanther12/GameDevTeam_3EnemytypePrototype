@@ -19,17 +19,15 @@ public class SmokeCloud : MonoBehaviour
         Debug.Log("Smoke instantiated: " + smoke.name);
 
         damage smokeDamage = smoke.GetComponent<damage>();
+        float duration = smokeDuration;
+
         if (smokeDamage != null)
         {
-            float duration = smokeDamage.destroyTime;
-            Destroy(smoke, duration);
-        }
-        else
-        {
-            Debug.LogWarning("Damage.cs not found!");
+            duration = smokeDamage.destroyTime;
         }
 
-        Destroy(gameObject, smokeDuration);
+        Destroy(smoke, duration);
+        Destroy(gameObject, 0.1f);
     }
 
     private void OnTriggerEnter(Collider other)

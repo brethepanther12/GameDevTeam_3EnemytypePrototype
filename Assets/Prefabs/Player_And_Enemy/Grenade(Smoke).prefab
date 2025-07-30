@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3578149910927656593}
   - component: {fileID: 1424546124135394919}
-  - component: {fileID: 9158544623523494115}
   - component: {fileID: 1100090891438867809}
   - component: {fileID: 8010974570030835129}
   - component: {fileID: 4791799757490180382}
@@ -52,24 +51,10 @@ MonoBehaviour:
   grenadeRigidB: {fileID: 5093616987210486059}
   grenadeSpeed: 0
   grenadeSpeedY: 5
-  destroyTimer: 3
+  destroyTimer: 500
   explosionPrefab: {fileID: 644311668812718343, guid: ea87bea118e6d6b4380f1fa60aa4f257, type: 3}
   OnStickyBomb: 0
   isTracking: 0
---- !u!114 &9158544623523494115
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9036177066953337794}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc3ca993506d5f5499caaead80be19e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  smokeDuration: 0
-  smokePrefab: {fileID: 644311668812718343, guid: ea87bea118e6d6b4380f1fa60aa4f257, type: 3}
 --- !u!33 &1100090891438867809
 MeshFilter:
   m_ObjectHideFlags: 0
