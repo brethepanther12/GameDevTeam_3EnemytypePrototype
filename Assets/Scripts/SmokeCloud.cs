@@ -29,7 +29,7 @@ public class SmokeCloud : MonoBehaviour
             Debug.LogWarning("Damage.cs not found!");
         }
 
-        Destroy(gameObject);
+        Destroy(gameObject, smokeDuration);
     }
 
     private void OnTriggerEnter(Collider other)
