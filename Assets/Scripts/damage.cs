@@ -100,13 +100,10 @@ public class damage : MonoBehaviour
         {
             Instantiate(impactPrefab, transform.position, Quaternion.LookRotation(transform.forward));
         }
-        Debug.Log("Smoke detected: " + other.name);
-
         IDamage dmg = other.GetComponent<IDamage>();
 
         if (dmg != null && type == damagetype.DOT && !isDamaging)
         {
-            Debug.Log("Damaging: " + other.name);
             StartCoroutine(damageOther(dmg));
         }
     }
