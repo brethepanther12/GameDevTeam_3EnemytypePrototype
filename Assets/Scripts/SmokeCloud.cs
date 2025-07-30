@@ -24,7 +24,11 @@ public class SmokeCloud : MonoBehaviour
             float duration = smokeDamage.destroyTime;
             Destroy(smoke, duration);
         }
-        
+        else
+        {
+            Debug.LogWarning("Damage.cs not found!");
+        }
+
         Destroy(gameObject);
     }
 
