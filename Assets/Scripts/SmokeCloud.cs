@@ -11,20 +11,16 @@ public class SmokeCloud : MonoBehaviour
 
     private void Start()
     {
-        damageDestroyTimer = GetComponent<damage>();
-        if (damageDestroyTimer != null)
+        if(smokePrefab == null)
         {
-            smokeDuration = damageDestroyTimer.destroyTime;
+            Debug.LogWarning("Smoke prefab is null!");
+            return;
         }
 
-        if (smokePrefab != null)
-        {
-            GameObject smoke = Instantiate(smokePrefab, transform.position, Quaternion.identity);
-            Destroy(smoke, smokeDuration);
-        }
-        else
-        {
-        }
+        GameObject smoke = Instantiate(smokePrefab, transform.position, Quaternion.identity);
+        Debug.Log("Smoke instantiated: " + smoke.name);
+
+        Destroy(gameObject);
     }
 
     private void OnTriggerEnter(Collider other)
