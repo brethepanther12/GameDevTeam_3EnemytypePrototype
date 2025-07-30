@@ -5,8 +5,6 @@ using UnityEngine;
 public class SmokeCloud : MonoBehaviour
 {
     [SerializeField] private float smokeDuration;
-    private damage damageDestroyTimer;
-
     [SerializeField] private GameObject smokePrefab;
 
     private void Start()
@@ -20,6 +18,13 @@ public class SmokeCloud : MonoBehaviour
         GameObject smoke = Instantiate(smokePrefab, transform.position, Quaternion.identity);
         Debug.Log("Smoke instantiated: " + smoke.name);
 
+        damage smokeDamage = smoke.GetComponent<damage>();
+        if (smokeDamage != null)
+        {
+            float duration = smokeDamage.destroyTime;
+            Destroy(smoke, duration);
+        }
+        
         Destroy(gameObject);
     }
 
