@@ -49,8 +49,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 2
   rb: {fileID: -1420230219099697605}
-  damageAmount: 0
-  damageRate: 0
+  damageAmount: 2
+  damageRate: 3
   speed: 0
   destroyTime: 500
   projectileStraightPrefab: {fileID: 0}
@@ -76,7 +76,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 2
+  m_Radius: 1.5
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &-1420230219099697605
 Rigidbody:
