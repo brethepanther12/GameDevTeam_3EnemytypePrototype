@@ -154,8 +154,9 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         }
         
         // Movement logic
-        if (!playerLost && target != null)
+        if (!playerLost && target != null && playerVisible)
         {
+            target = playerTarget.transform;
             if (rigidBody.isKinematic)
             {
                 rigidBody.isKinematic = false;
