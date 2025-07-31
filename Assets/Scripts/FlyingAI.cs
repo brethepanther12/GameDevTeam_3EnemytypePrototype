@@ -188,8 +188,13 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     private bool PlayerInFieldOfView()
     {
         //playerDirection = gamemanager.instance.player.transform.position - transform.position;
+        if (playerTarget == null || isBlind)
+            return false;
 
-        if (playerTarget == null|| isBlind||(gamemanager.instance.playerScript != null && !gamemanager.instance.playerScript.isVisible)) return false;
+        // If the player is invisible by smoke, AI should not see them
+        if (gamemanager.instance.playerScript != null &&
+            !gamemanager.instance.playerScript.isVisible)
+            return false;
 
         //Locate player
         Vector3 direction = playerTarget.transform.position - transform.position;
@@ -198,27 +203,23 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         Debug.DrawRay(transform.position, direction.normalized * fovDistance, Color.red);
 
         //check if the player is far from the object
-        if (direction.magnitude > fovDistance || angle > fovAngle) return false;
+        if (direction.magnitude > fovDistance || angle > fovAngle)
+            return false;
 
         RaycastHit[] hits = Physics.RaycastAll(transform.position, direction.normalized, fovDistance);
 
         foreach (RaycastHit hit in hits)
         {
             if (hit.collider.CompareTag("Smoke"))
-            {
-                return false; 
-            }
+                return false;
 
             if (hit.collider.CompareTag("Player"))
-            {
-                return true; 
-            }
+                return true;
 
             if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
-            {
                 return false;
-            }
         }
+
         return false;
     }
 
