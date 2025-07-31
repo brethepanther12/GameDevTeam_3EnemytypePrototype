@@ -199,19 +199,24 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         //check if the player is far from the object
         if (direction.magnitude > fovDistance || angle > fovAngle) return false;
 
-        if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, fovDistance))
+        RaycastHit[] hits = Physics.RaycastAll(transform.position, direction.normalized, fovDistance);
+
+        foreach (RaycastHit hit in hits)
         {
+            if (hit.collider.CompareTag("Smoke"))
+            {
+                return false; 
+            }
+
             if (hit.collider.CompareTag("Player"))
             {
-                return true;
-            } else if (hit.collider.CompareTag("Smoke"))
+                return true; 
+            }
+
+            if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
             {
                 return false;
-            } else if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
-            { 
-                return false;
             }
-                
         }
         return false;
     }
