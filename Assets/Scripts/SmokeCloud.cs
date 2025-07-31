@@ -46,7 +46,7 @@ public class SmokeCloud : MonoBehaviour
     {
         if (gamemanager.instance.player != null)
         {
-            Visibility visible = gamemanager.instance.player.GetComponent<Visibility>();
+            Visibility visible = gamemanager.instance.playerScript.GetComponent<Visibility>();
             if (visible != null) { visible.SetInvisible(false); }
         }
     }
