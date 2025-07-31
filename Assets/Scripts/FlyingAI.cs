@@ -189,7 +189,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     {
         //playerDirection = gamemanager.instance.player.transform.position - transform.position;
 
-        if (playerTarget == null|| isBlind) return false;
+        if (playerTarget == null|| isBlind||(gamemanager.instance.playerScript != null && !gamemanager.instance.playerScript.isVisible)) return false;
 
         //Locate player
         Vector3 direction = playerTarget.transform.position - transform.position;
