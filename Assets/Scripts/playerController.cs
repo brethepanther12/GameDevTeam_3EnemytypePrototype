@@ -465,6 +465,17 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         return isVisible;
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Smoke"))
+            isVisible = true;
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Smoke"))
+            isVisible = false;
+    }
     //Delete if causing difficulties
     //public void throwGrenade()
     //{
