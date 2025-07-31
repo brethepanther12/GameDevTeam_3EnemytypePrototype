@@ -94,18 +94,18 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             //  check if the player is in range and visible
             playerVisible = PlayerInFieldOfView();
         }
-        
+
 
         // Assign or clear the target based on FOV + trigger
-        if (InRange && playerVisible && target == null)
+        if (playerVisible)
         {
             target = playerTarget.transform;
         }
-        else if ((!InRange || !playerVisible) && target != null)
+        else if (target != null && !playerVisible)
         {
             target = null;
         }
-
+        Debug.Log("Player Visible: " + playerVisible + ", Target Assigned: " + (target != null));
         // Determine if the player is "lost"
         bool playerLost = target == null;
 
@@ -172,7 +172,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             {
                 rigidBody.linearVelocity = Vector3.zero;
             }
-
+            Debug.Log("Chasing player...");
             faceTarget();
         }
         else
