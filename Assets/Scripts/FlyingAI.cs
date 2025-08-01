@@ -193,7 +193,8 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         // If the player is invisible by smoke, AI should not see them
         if (gamemanager.instance.playerScript != null &&
-            !gamemanager.instance.playerScript.isVisible)
+            !gamemanager.instance.playerScript.IsInvisible()) ;
+        else
             return false;
 
         //Locate player
