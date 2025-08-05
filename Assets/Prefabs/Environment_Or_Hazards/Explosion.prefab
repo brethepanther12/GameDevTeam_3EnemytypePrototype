@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5998227389458969501}
   - component: {fileID: 3020099037960048332}
   - component: {fileID: 4736609512819020620}
+  - component: {fileID: 2195081644120192591}
   m_Layer: 11
   m_Name: Explosion
   m_TagString: Untagged
@@ -54,6 +55,8 @@ MonoBehaviour:
   damageRate: 0
   speed: 0
   destroyTime: 0.25
+  projectileStraightPrefab: {fileID: 0}
+  projectileHomingPrefab: {fileID: 0}
   impactPrefab: {fileID: 0}
   weaponDMG: 0
 --- !u!33 &7472055187840015431
@@ -157,3 +160,17 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2195081644120192591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8873835544158007701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc3ca993506d5f5499caaead80be19e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  smokeDuration: 3.5
+  smokePrefab: {fileID: 644311668812718343, guid: ea87bea118e6d6b4380f1fa60aa4f257, type: 3}
