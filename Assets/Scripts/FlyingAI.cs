@@ -76,8 +76,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         Damage = GetComponent<damage>();
         if (Damage != null)
             Damage.enabled = false;
-       // gamemanager.instance.updateGameGoal(1);
-       //remove
+       gamemanager.instance.updateGameGoal(1);
     }
 
 
