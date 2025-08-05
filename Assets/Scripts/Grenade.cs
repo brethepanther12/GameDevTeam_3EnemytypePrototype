@@ -12,7 +12,6 @@ public class Grenade : MonoBehaviour
     [SerializeField] private float destroyTimer;
 
     [SerializeField] private GameObject explosionPrefab;
-    [SerializeField] private GameObject smokeCloudPrefab;
 
     [SerializeField] private bool OnStickyBomb;
     [SerializeField] private bool isTracking;
@@ -38,7 +37,7 @@ public class Grenade : MonoBehaviour
                     closest = enemy;
                     minDist = dist;
 
-                    StartCoroutine(explode());
+                   // StartCoroutine(explode());
 
                 }
             }
@@ -115,9 +114,6 @@ public class Grenade : MonoBehaviour
         yield return new WaitForSeconds(destroyTimer);
         if (explosionPrefab != null )
         Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-
-        if (smokeCloudPrefab != null)
-         Instantiate(smokeCloudPrefab, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
 

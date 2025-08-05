@@ -239,7 +239,6 @@ public class BossAI : EnemyAIBase, IGrapplable
 
             if (rb != null)
             {
-                // Use AddForce for smooth projectile velocity (no rb.velocity warning)
                 rb.AddForce(proj.transform.forward * dmg.speed, ForceMode.VelocityChange);
             }
         }

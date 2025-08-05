@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.LowLevel;
-
 public class FlyingAI : MonoBehaviour, IDamage, Visibility
 {
     [SerializeField] private Transform target;
@@ -64,7 +63,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     {
         currentHP = HP;
 
-        
+
 
         // Store original material color
         if (modelRender != null)
@@ -94,7 +93,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             //  check if the player is in range and visible
             playerVisible = PlayerInFieldOfView();
         }
-        
+
 
         // Assign or clear the target based on FOV + trigger
         if (InRange && playerVisible && target == null)
@@ -138,7 +137,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             MoveToCeiling();
             return;
         }
-        
+
         // Hover logic (always active)
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight))
         {
@@ -152,7 +151,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
             rigidBody.AddForce(Vector3.up * upwardForce, ForceMode.Acceleration);
         }
-        
+
         // Movement logic
         if (!playerLost && target != null)
         {
@@ -166,7 +165,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
             if (!Physics.Raycast(transform.position, direction, 1f, enviormentMask))
             {
-                rigidBody.linearVelocity = direction * flyingSpeed; 
+                rigidBody.linearVelocity = direction * flyingSpeed;
             }
             else
             {
@@ -179,7 +178,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         {
             rigidBody.linearVelocity = Vector3.zero;
         }
-        
+
     }
 
 
@@ -188,7 +187,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     {
         //playerDirection = gamemanager.instance.player.transform.position - transform.position;
 
-        if (playerTarget == null|| isBlind) return false;
+        if (playerTarget == null || isBlind) return false;
 
         //Locate player
         Vector3 direction = playerTarget.transform.position - transform.position;
@@ -201,13 +200,20 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, fovDistance))
         {
-            if ( hit.collider.CompareTag("Player"))
+            if (hit.collider.CompareTag("Player"))
+            {
                 return true;
-           else if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
+            }
+            else if (hit.collider.CompareTag("Smoke"))
+            {
                 return false;
+            }
+            else if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
+            {
+                return false;
+            }
+
         }
-
-
         return false;
     }
 
@@ -311,7 +317,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             transform.rotation = Quaternion.Lerp(rigidBody.rotation, rotate, Time.deltaTime * rotationSpeed);
 
         }
-       
+
     }
 
     //void faceTarget()

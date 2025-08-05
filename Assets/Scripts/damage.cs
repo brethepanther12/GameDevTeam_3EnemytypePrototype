@@ -100,7 +100,6 @@ public class damage : MonoBehaviour
         {
             Instantiate(impactPrefab, transform.position, Quaternion.LookRotation(transform.forward));
         }
-
         IDamage dmg = other.GetComponent<IDamage>();
 
         if (dmg != null && type == damagetype.DOT && !isDamaging)

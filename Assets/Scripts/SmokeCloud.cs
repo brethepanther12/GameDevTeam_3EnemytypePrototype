@@ -6,86 +6,48 @@ public class SmokeCloud : MonoBehaviour
 {
     [SerializeField] private float smokeDuration;
     [SerializeField] private GameObject smokePrefab;
-    [SerializeField] private int damageAmount;
-    [SerializeField] private float damageRate;
-
-    // Track enemies and their DOT coroutines
-    private Dictionary<IDamage, Coroutine> damageCoroutines = new Dictionary<IDamage, Coroutine>();
-    private List<FlyingAI> enemiesInSmoke = new List<FlyingAI>();
 
     private void Start()
     {
-        Destroy(gameObject, smokeDuration);
+        if(smokePrefab == null)
+        {
+            Debug.LogWarning("Smoke prefab is null!");
+            return;
+        }
+
+        GameObject smoke = Instantiate(smokePrefab, transform.position, Quaternion.identity);
+        Debug.Log("Smoke instantiated: " + smoke.name);
+
+        damage smokeDamage = smoke.GetComponent<damage>();
+        float duration = smokeDuration;
+
+        if (smokeDamage != null)
+        {
+            duration = smokeDamage.destroyTime;
+        }
+
+        Destroy(smoke, duration);
+        Destroy(gameObject, 0.1f);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Enemy"))
-        {
-            FlyingAI enemy = other.GetComponent<FlyingAI>();
-            if (enemy != null && !enemiesInSmoke.Contains(enemy))
-            {
-                enemiesInSmoke.Add(enemy);
-                enemy.SetInvisible(true);
-            }
-
-            IDamage dmg = other.GetComponent<IDamage>();
-            if (dmg != null && !damageCoroutines.ContainsKey(dmg))
-            {
-                Coroutine co = StartCoroutine(DamageOverTime(dmg));
-                damageCoroutines.Add(dmg, co);
-            }
-        }
+        Visibility visible = other.GetComponent<Visibility>();
+        if (visible != null) { visible.SetInvisible(true); }
     }
-
+    
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Enemy"))
-        {
-            FlyingAI enemy = other.GetComponent<FlyingAI>();
-            if (enemy != null && enemiesInSmoke.Contains(enemy))
-            {
-                enemiesInSmoke.Remove(enemy);
-                enemy.SetInvisible(false);
-            }
-
-            IDamage dmg = other.GetComponent<IDamage>();
-            if (dmg != null && damageCoroutines.ContainsKey(dmg))
-            {
-                StopCoroutine(damageCoroutines[dmg]);
-                damageCoroutines.Remove(dmg);
-            }
-        }
+        Visibility visible = other.GetComponent<Visibility>();
+        if (visible != null) { visible.SetInvisible(false); }
     }
 
     private void OnDestroy()
     {
-        foreach (var enemy in enemiesInSmoke)
+        if (gamemanager.instance.player != null)
         {
-            if (enemy != null)
-                enemy.SetInvisible(false);
-        }
-        enemiesInSmoke.Clear();
-
-        // Stop all damage coroutines
-        foreach (var co in damageCoroutines.Values)
-        {
-            if (co != null)
-                StopCoroutine(co);
-        }
-        damageCoroutines.Clear();
-    }
-
-    private IEnumerator DamageOverTime(IDamage target)
-    {
-        while (true)
-        {
-            target.takeDamage(damageAmount);
-
-            if (smokePrefab != null)
-                Instantiate(smokePrefab, target as Component != null ? ((Component)target).transform.position : transform.position, Quaternion.identity);
-
-            yield return new WaitForSeconds(damageRate);
+            Visibility visible = gamemanager.instance.playerScript.GetComponent<Visibility>();
+            if (visible != null) { visible.SetInvisible(false); }
         }
     }
 }
