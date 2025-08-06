@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b01ecd4177fe8f04bb6e8c84c5f1fa90, type: 3}
+  m_Name: Rocket_Launcher(Homing)
+  m_EditorClassIdentifier: 
+  ignoreLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  weaponName: Rocket Launcher
+  ammoType: 5
+  wepDmg: 10
+  attackRate: 1.5
+  range: 300
+  magSize: 1
+  ammoMax: 9
+  pelletCount: 0
+  pelletSpread: 0
+  currentAmmoInMag: 0
+  currentAmmoInReserve: 0
+  bullet: {fileID: 8398950515579142867, guid: 017406e5cbe2fcb4db76285446f34a2c, type: 3}
+  impactPrefab: {fileID: 0}
+  weaponModel: {fileID: 8163323428047968632, guid: c9403c844d5da87448e0839363a616a4, type: 3}
+  impactSound: {fileID: 8300000, guid: cb26d32b4d23a314493d288c2c2dfe2e, type: 3}
+  impactVolume: 1
+  reloadSound: {fileID: 8300000, guid: a40641150cd218c49a68a971c7304757, type: 3}
+  gunShotSound: {fileID: 8300000, guid: c58e06ef1f3d5c74d89a178181f148bd, type: 3}
