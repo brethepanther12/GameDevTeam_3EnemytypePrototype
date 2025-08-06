@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class BossAI : EnemyAIBase, IGrapplable
 {
@@ -37,25 +38,25 @@ public class BossAI : EnemyAIBase, IGrapplable
 
     protected override void Start()
     {
-        bossRoarSource.PlayOneShot(roarClip);
-
         base.Start();
 
-        attackTimer = 0f;
+        if (bossRoarSource && roarClip)
+            bossRoarSource.PlayOneShot(roarClip);
 
-        // Ensure NavMesh works
-        enemyNavAgent.enabled = false;
-        enemyNavAgent.enabled = true;
-        enemyNavAgent.updateRotation = false;
+        StartCoroutine(DelayedNavStart());
 
         gamemanager.instance.updateGameGoal(+1);
     }
 
+    IEnumerator DelayedNavStart()
+    {
+        yield return new WaitForEndOfFrame();
+        enemyNavAgent.enabled = true;
+        enemyNavAgent.updateRotation = false;
+    }
+
     protected override void Update()
     {
-
-        
-
         if (isDead) return;
 
         if (enemyPlayerObject == null)
@@ -74,39 +75,24 @@ public class BossAI : EnemyAIBase, IGrapplable
         if (enemyPlayerInSight && !isDodging && !isRetreating)
         {
             SmoothFacePlayer();
-
-            // Boss tries to keep a bit of space before attacking
             float desiredDistance = attackRange - 3f;
 
             if (distanceToPlayer > desiredDistance)
             {
-                // Move to maintain distance, don't rush player
-                Vector3 targetPos = enemyPlayerObject.position - (enemyPlayerObject.position - transform.position).normalized * desiredDistance;
-                enemyNavAgent.isStopped = false;
-                enemyNavAgent.SetDestination(targetPos);
-                bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
+                MoveTowardPlayer(desiredDistance);
             }
             else
             {
-                //enemyNavAgent.isStopped = true;
-                //bossAnimator.SetFloat("Speed", 0);
-
                 if (attackTimer >= attackCooldown)
                 {
                     BossAttack();
                     attackTimer = 0f;
                 }
-                else if (Random.value < 0.05f) // increased dodge chance
+                else if (Random.value < 0.05f)
                 {
                     StartCoroutine(Dodge());
                 }
             }
-        }
-        else
-        {
-            // If player not in sight or dodging/retreating, boss stops moving
-            //enemyNavAgent.isStopped = true;
-            //bossAnimator.SetFloat("Speed", 0);
         }
 
         // Timers
@@ -114,14 +100,12 @@ public class BossAI : EnemyAIBase, IGrapplable
         aoeTimer += Time.deltaTime;
         burstTimer += Time.deltaTime;
 
-        // AOE attack in phase 2
         if (isPhaseTwo && distanceToPlayer < aoeRange && aoeTimer >= aoeCooldown)
         {
             StartCoroutine(PerformAOEAttack());
             aoeTimer = 0f;
         }
 
-        // Burst retreat & shoot in phase 2
         if (isPhaseTwo && !isRetreating && burstTimer >= burstCooldown)
         {
             StartCoroutine(RetreatAndBurst());
@@ -136,10 +120,19 @@ public class BossAI : EnemyAIBase, IGrapplable
         Debug.Log("Boss has entered Phase 2");
     }
 
-    void SmoothFacePlayer()
+    void MoveTowardPlayer(float desiredDistance)
     {
         if (enemyPlayerObject == null) return;
 
+        Vector3 targetPos = enemyPlayerObject.position - (enemyPlayerObject.position - transform.position).normalized * desiredDistance;
+
+        enemyNavAgent.isStopped = false;
+        enemyNavAgent.SetDestination(targetPos);
+        bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
+    }
+
+    void SmoothFacePlayer()
+    {
         Vector3 direction = enemyPlayerObject.position - transform.position;
         direction.y = 0;
 
@@ -157,12 +150,31 @@ public class BossAI : EnemyAIBase, IGrapplable
         FireProjectile(Random.value > 0.5f ? damage.damagetype.homing : damage.damagetype.moving);
     }
 
+    public void FireProjectile(damage.damagetype type)
+    {
+        if (!projectilePrefab || !projectileSpawnPoint) return;
+
+        Vector3 shootDir = (enemyPlayerObject.position + Vector3.up * 1.5f) - projectileSpawnPoint.position;
+        Quaternion rot = Quaternion.LookRotation(shootDir);
+
+        GameObject proj = Instantiate(projectilePrefab, projectileSpawnPoint.position, rot);
+        damage dmg = proj.GetComponent<damage>();
+        Rigidbody rb = proj.GetComponent<Rigidbody>();
+
+        if (dmg != null)
+        {
+            dmg.SetDamageType(type);
+            if (rb != null)
+                rb.AddForce(proj.transform.forward * dmg.speed, ForceMode.VelocityChange);
+        }
+    }
+
     IEnumerator Dodge()
     {
         isDodging = true;
 
-        Vector3 toPlayer = (enemyPlayerObject.position - transform.position).normalized;
-        Vector3 dodgeDir = Vector3.Cross(toPlayer, Vector3.up) * (Random.value > 0.5f ? 1 : -1);
+        Vector3 dodgeDir = Vector3.Cross((enemyPlayerObject.position - transform.position).normalized, Vector3.up) *
+                           (Random.value > 0.5f ? 1 : -1);
         Vector3 dodgeTarget = transform.position + dodgeDir * 5f;
 
         enemyNavAgent.isStopped = false;
@@ -184,6 +196,7 @@ public class BossAI : EnemyAIBase, IGrapplable
     {
         bossAnimator.SetTrigger("AOE");
         yield return new WaitForSeconds(0.5f);
+
         if (aoeEffectPrefab)
             Instantiate(aoeEffectPrefab, transform.position, Quaternion.identity);
     }
@@ -207,41 +220,14 @@ public class BossAI : EnemyAIBase, IGrapplable
             yield return null;
         }
 
-        //enemyNavAgent.isStopped = true;
-        //bossAnimator.SetFloat("Speed", 0);
-
         for (int i = 0; i < burstCount; i++)
         {
             SmoothFacePlayer();
-
-            damage.damagetype type = (Random.value > 0.5f)
-                ? damage.damagetype.homing
-                : damage.damagetype.moving;
-
-            FireProjectile(type);
+            FireProjectile(Random.value > 0.5f ? damage.damagetype.homing : damage.damagetype.moving);
             yield return new WaitForSeconds(0.5f);
         }
 
         isRetreating = false;
-    }
-
-    public void FireProjectile(damage.damagetype type)
-    {
-        if (!projectilePrefab || !projectileSpawnPoint) return;
-
-        GameObject proj = Instantiate(projectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
-        damage dmg = proj.GetComponent<damage>();
-        Rigidbody rb = proj.GetComponent<Rigidbody>();
-
-        if (dmg != null)
-        {
-            dmg.SetDamageType(type);
-
-            if (rb != null)
-            {
-                rb.AddForce(proj.transform.forward * dmg.speed, ForceMode.VelocityChange);
-            }
-        }
     }
 
     protected override void enemyDeath()
@@ -251,7 +237,6 @@ public class BossAI : EnemyAIBase, IGrapplable
         isDead = true;
         bossAnimator.SetTrigger("IsDead");
         enemyNavAgent.isStopped = true;
-
         GetComponent<Collider>().enabled = false;
         StartCoroutine(DestroyAfterDeathAnim());
 
@@ -266,18 +251,6 @@ public class BossAI : EnemyAIBase, IGrapplable
         Destroy(gameObject);
     }
 
-    protected override void enemyMoveToPlayer()
-    {
-        if (enemyPlayerInSight && !isDodging)
-        {
-            enemyNavAgent.isStopped = false;
-            enemyNavAgent.SetDestination(enemyPlayerObject.position);
-
-            if (enemyNavAgent.remainingDistance <= enemyNavAgent.stoppingDistance)
-                SmoothFacePlayer();
-        }
-    }
-
     public void SetPlayerInSight(bool inSight) => enemyPlayerInSight = inSight;
 
     public override void takeDamage(int amount)
@@ -285,9 +258,7 @@ public class BossAI : EnemyAIBase, IGrapplable
         enemyCurrentHealthPoints -= amount;
 
         if (gamemanager.instance.currentBoss == this)
-        {
             gamemanager.instance.UpdateBossHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
-        }
 
         if (enemyCurrentHealthPoints <= 0)
         {
