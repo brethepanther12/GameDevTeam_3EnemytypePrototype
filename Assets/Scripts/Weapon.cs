@@ -91,7 +91,7 @@ public class Weapon : MonoBehaviour
 
         if (Input.GetButton("Fire1") && shootTimer >= attackRate && ammoInMag > 0 && !equippedPlayer.isReloading)
         {
-            if (ammoType == AmmoType.AR || ammoType == AmmoType.Grenade)
+            if (ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket)
                 Shoot();
             else if (ammoType == AmmoType.Shell)
                 ShootMultiple();

@@ -121,7 +121,7 @@ GameObject:
   - component: {fileID: 5102824494872671220}
   - component: {fileID: 8069528957617761421}
   - component: {fileID: 8063308983413026135}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: GL_Sticky(Pickup)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -158,6 +158,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf530e3bd43c726448976eedd7c0d11b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rb: {fileID: 0}
   itemToGive: {fileID: 0}
   weaponToGive: {fileID: 11400000, guid: b5f56c0ae09f3f44eb247c1787b304da, type: 2}
 --- !u!114 &8069528957617761421
@@ -178,6 +179,7 @@ MonoBehaviour:
   maxBounceAmplitude: 0.25
   minBounceFrequency: 1.5
   maxBounceFrequency: 3
+  isBeingPulled: 0
 --- !u!135 &8063308983413026135
 SphereCollider:
   m_ObjectHideFlags: 0

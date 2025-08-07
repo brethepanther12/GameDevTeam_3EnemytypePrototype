@@ -15,6 +15,7 @@ public class Grenade : MonoBehaviour
 
     [SerializeField] private bool OnStickyBomb;
     [SerializeField] private bool isTracking;
+    [SerializeField] private bool isCooked;
     private Transform playerTarget;
     private damage damageStats;
     
@@ -26,6 +27,12 @@ public class Grenade : MonoBehaviour
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         if (enemies.Length > 0)
         {
+            if (!isCooked && !OnStickyBomb)
+            {
+                isTracking = true;
+            }
+            
+
             GameObject closest = enemies[0];
             float minDist = Vector3.Distance(transform.position, closest.transform.position);
 
@@ -37,16 +44,18 @@ public class Grenade : MonoBehaviour
                     closest = enemy;
                     minDist = dist;
 
-                   // StartCoroutine(explode());
 
                 }
             }
 
             playerTarget = closest.transform;
+        } else
+        {
+            isTracking = false;
         }
 
-        
-        damageStats = GetComponent<damage>();
+
+            damageStats = GetComponent<damage>();
 
         if (damageStats != null)
         {
@@ -92,18 +101,33 @@ public class Grenade : MonoBehaviour
         if (OnStickyBomb && !OnSurface)
         {   
             //Making it stationary
+            if (!collision.transform.CompareTag("Weapon"))
+            {
+                grenadeRigidB.linearVelocity = Vector3.zero;
+                grenadeRigidB.angularVelocity = Vector3.zero;
+
+                grenadeRigidB.isKinematic = true;
+
+                //Making it stick to a surface; Moving with the object it parents
+                transform.SetParent(collision.transform);
+
+                //Setting it true that it is on a surface
+                OnSurface = true;
+            }
+
             
-
-            grenadeRigidB.linearVelocity = Vector3.zero;
-            grenadeRigidB.angularVelocity = Vector3.zero;
-
-            grenadeRigidB.isKinematic = true;
-
-            //Making it stick to a surface; Moving with the object it parents
-            transform.SetParent(collision.transform);
-
-            //Setting it true that it is on a surface
-            OnSurface = true;
+        } 
+        else if (collision.transform.CompareTag("Breakable") || collision.transform.CompareTag("Untagged"))
+        {
+            if (!isCooked)
+            {
+                destroyTimer = 0;
+                StartCoroutine(explode());
+            } else
+            {
+                grenadeRigidB.linearVelocity /= 2;
+            }
+            
         }
 
         
