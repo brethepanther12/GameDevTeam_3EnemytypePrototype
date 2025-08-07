@@ -75,7 +75,7 @@ public class BossAI : EnemyAIBase, IGrapplable
         if (enemyPlayerInSight && !isDodging && !isRetreating)
         {
             SmoothFacePlayer();
-            float desiredDistance = attackRange - 3f;
+            float desiredDistance = Mathf.Max(attackRange - 1.5f, 2f); // closes in better
 
             if (distanceToPlayer > desiredDistance)
             {
@@ -83,6 +83,7 @@ public class BossAI : EnemyAIBase, IGrapplable
             }
             else
             {
+                bossAnimator.SetFloat("Speed", 0f); // stop running when attacking
                 if (attackTimer >= attackCooldown)
                 {
                     BossAttack();
@@ -94,6 +95,14 @@ public class BossAI : EnemyAIBase, IGrapplable
                 }
             }
         }
+
+        if (enemyNavAgent.enabled && enemyNavAgent.velocity.magnitude > 0.1f && !isDodging && !isRetreating)
+        {
+            Quaternion targetRot = Quaternion.LookRotation(enemyNavAgent.velocity.normalized);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 7f);
+        }
+
+        bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude); // makes idle/walk/run work
 
         // Timers
         attackTimer += Time.deltaTime;
@@ -125,10 +134,8 @@ public class BossAI : EnemyAIBase, IGrapplable
         if (enemyPlayerObject == null) return;
 
         Vector3 targetPos = enemyPlayerObject.position - (enemyPlayerObject.position - transform.position).normalized * desiredDistance;
-
         enemyNavAgent.isStopped = false;
         enemyNavAgent.SetDestination(targetPos);
-        bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
     }
 
     void SmoothFacePlayer()
@@ -154,7 +161,8 @@ public class BossAI : EnemyAIBase, IGrapplable
     {
         if (!projectilePrefab || !projectileSpawnPoint) return;
 
-        Vector3 shootDir = (enemyPlayerObject.position + Vector3.up * 1.5f) - projectileSpawnPoint.position;
+        Vector3 target = enemyPlayerObject.GetComponent<Collider>()?.bounds.center ?? enemyPlayerObject.position;
+        Vector3 shootDir = (target - projectileSpawnPoint.position).normalized;
         Quaternion rot = Quaternion.LookRotation(shootDir);
 
         GameObject proj = Instantiate(projectilePrefab, projectileSpawnPoint.position, rot);
@@ -165,7 +173,7 @@ public class BossAI : EnemyAIBase, IGrapplable
         {
             dmg.SetDamageType(type);
             if (rb != null)
-                rb.AddForce(proj.transform.forward * dmg.speed, ForceMode.VelocityChange);
+                rb.AddForce(shootDir * dmg.speed, ForceMode.VelocityChange);
         }
     }
 
@@ -179,7 +187,6 @@ public class BossAI : EnemyAIBase, IGrapplable
 
         enemyNavAgent.isStopped = false;
         enemyNavAgent.SetDestination(dodgeTarget);
-        bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
 
         float t = 0f;
         while (Vector3.Distance(transform.position, dodgeTarget) > 0.5f && t < 1.5f)
@@ -210,7 +217,6 @@ public class BossAI : EnemyAIBase, IGrapplable
 
         enemyNavAgent.isStopped = false;
         enemyNavAgent.SetDestination(retreatTarget);
-        bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude);
 
         float t = 0f;
         while (Vector3.Distance(transform.position, retreatTarget) > 0.5f && t < 2f)
