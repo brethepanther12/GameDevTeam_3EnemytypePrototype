@@ -1,16 +1,45 @@
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using UnityEngine;
 
 public enum AmmoType { Pistol, AR, Shell, Energy, Fuel, Rocket, Grenade}
 
+public enum FireMode { Semi, Auto, Burst, Charge, Detonate}
+
+[Serializable]
+public class FireModeData
+{
+    public FireMode mode;
+    public AmmoType projectileType;
+
+    public float fireRate;
+    public int burstCount;
+    public float burstRate;
+    public float chargeTime;
+    public float detonateTime;
+    public int projectileCount;
+
+}
+
 [CreateAssetMenu(menuName = "Inventory/Weapon")]
 public class WeaponSO : ScriptableObject
 {
-
+    
     public LayerMask ignoreLayer;
 
     public string weaponName;
     public AmmoType ammoType;
+
+    [SerializeField]
+    public List<FireMode> availableFireModes = new List<FireMode>();
+
+    [SerializeField]
+    public List<FireModeData> fireModeDatas = new List<FireModeData>();
+
+    
+    
+
 
     //Weapon Stats
     public int wepDmg;

@@ -15,6 +15,8 @@ public class Weapon : MonoBehaviour {
     public float spread;
 
     public AmmoType ammoType;
+    public FireMode currentFireMode;
+    private int fireModeIndex;
 
     //Info for shooting
     public GameObject bullet;
@@ -46,6 +48,7 @@ public class Weapon : MonoBehaviour {
     {
         if(weaponData !=null)
         InitializeWeapon(weaponData);
+        
     }
 
     public void InitializeWeapon(WeaponSO data, bool refillMag = false)
@@ -61,6 +64,7 @@ public class Weapon : MonoBehaviour {
         spread = weaponData.pelletSpread;
 
         ammoType = weaponData.ammoType;
+        currentFireMode = weaponData.availableFireModes[fireModeIndex];
 
         bullet = weaponData.bullet;
         impactSound = weaponData.impactSound;
@@ -86,19 +90,50 @@ public class Weapon : MonoBehaviour {
 
         CheckReticleTarget();
 
-        if (Input.GetButton("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
+        if (currentFireMode == FireMode.Semi)
         {
-            if (ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket)
-                Shoot();
-            else if (ammoType == AmmoType.Shell)
-                ShootMultiple();
-            //Shoot();
-      
+            if (Input.GetButtonDown("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
+            {
+                if (ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket)
+                    Shoot();
+                else if (ammoType == AmmoType.Shell)
+                    ShootMultiple();
+
+            }
+        } 
+        else if (currentFireMode == FireMode.Auto)
+        {
+            if (Input.GetButton("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
+            {
+                if (ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket)
+                    Shoot();
+                else if (ammoType == AmmoType.Shell)
+                    ShootMultiple();
+
+            }
+
         }
+    
+
 
         if (Input.GetKeyDown(KeyCode.R) && ammoInMag < magSize && !equippedPlayer.isReloading)
         {
             StartCoroutine(Reload());
+        }
+
+        if (Input.GetButtonDown("FireModeSelector"))
+        {
+            if (fireModeIndex < weaponData.availableFireModes.Count - 1)
+            {
+                fireModeIndex++;
+                currentFireMode = weaponData.availableFireModes[fireModeIndex];
+            } else
+            {
+                fireModeIndex = 0;
+                currentFireMode = weaponData.availableFireModes[fireModeIndex];
+            }
+
+            equippedPlayer.updatePlayerUI();
         }
     }
     void Shoot()

@@ -94,6 +94,7 @@ public class PlayerInventory : MonoBehaviour
         {
             equippedWeapon.currentAmmoInMag = currentWeaponScript.GetAmmoInMag();
             equippedWeapon.currentAmmoInReserve = currentWeaponScript.GetAmmoInReserve();
+            
             Destroy(currentWeaponInstance);
         }
 

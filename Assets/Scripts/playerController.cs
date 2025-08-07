@@ -419,6 +419,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
             inventory.TryGetAmmoAmount(activeWep.ammoType, out reserve);
 
             gamemanager.instance.ammoText.text = $"{mag} / {reserve}";
+            gamemanager.instance.fireModeText.text = $"{activeWep.currentFireMode}";
         }
 
     }

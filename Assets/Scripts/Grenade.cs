@@ -123,10 +123,8 @@ public class Grenade : MonoBehaviour
             {
                 destroyTimer = 0;
                 StartCoroutine(explode());
-            } else
-            {
-                grenadeRigidB.linearVelocity /= 2;
             }
+            
             
         }
 

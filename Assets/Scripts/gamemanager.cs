@@ -39,7 +39,7 @@ public class gamemanager : MonoBehaviour
     public TMP_Text blueKey;
     public TMP_Text yellowKey;
     public TMP_Text gunName;
-
+    public TMP_Text fireModeText;
     public GameObject BossHealthBarUI;
     public Image BossHealthBarFill;
     public TMPro.TextMeshProUGUI BossNameText;
