@@ -2530,6 +2530,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2678925808358169753, guid: 77bd198ceb9b82547b811237bc9ff4f8, type: 3}
   m_PrefabInstance: {fileID: 2024175567}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &1421821955 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 1573182280811345944, guid: 3ae5b7f76a11c2f49b77f7d14c596062, type: 3}
+  m_PrefabInstance: {fileID: 2141574745}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1445648231
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3637,6 +3642,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player(v5)
       objectReference: {fileID: 0}
+    - target: {fileID: 1481005717222424149, guid: 3ae5b7f76a11c2f49b77f7d14c596062, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 1421821955}
     - target: {fileID: 2357243105725007622, guid: 3ae5b7f76a11c2f49b77f7d14c596062, type: 3}
       propertyPath: m_Layer
       value: 13
