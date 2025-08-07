@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 1975817476725038505}
   m_Layer: 11
   m_Name: Grenade(Sticky)
-  m_TagString: Untagged
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -55,6 +55,7 @@ MonoBehaviour:
   explosionPrefab: {fileID: 8873835544158007701, guid: cc2a4f70987966446a7595a04e4e90df, type: 3}
   OnStickyBomb: 1
   isTracking: 0
+  isCooked: 0
 --- !u!33 &4975756471418038245
 MeshFilter:
   m_ObjectHideFlags: 0

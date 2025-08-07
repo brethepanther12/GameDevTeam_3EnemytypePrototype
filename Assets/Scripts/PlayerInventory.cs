@@ -24,7 +24,8 @@ public class PlayerInventory : MonoBehaviour
 
     { AmmoType.AR, "Rifle Ammo" },
     { AmmoType.Shell, "Shotgun Shells" },
-    { AmmoType.Grenade, "Frag Round" }
+    { AmmoType.Grenade, "Frag Round" },
+    { AmmoType.Rocket, "Rocket(Homing)" }
 
 
 

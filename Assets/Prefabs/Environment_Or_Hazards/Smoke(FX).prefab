@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 5944821887128947146}
   - component: {fileID: 8314191226922844079}
   - component: {fileID: -1420230219099697605}
-  m_Layer: 15
-  m_Name: Smoke
+  m_Layer: 11
+  m_Name: Smoke(FX)
   m_TagString: Smoke
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30,7 +30,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -3.50171, y: 3, z: 1.9973726}
   m_LocalScale: {x: 5.5, y: 5.5, z: 5.5}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2467615258060682410}
   m_Father: {fileID: 0}
@@ -42,17 +42,17 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 644311668812718343}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a08e3e2a22e8a3249b0a8a55c9a74c1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   type: 2
   rb: {fileID: -1420230219099697605}
-  damageAmount: 2
+  damageAmount: 0
   damageRate: 3
   speed: 0
-  destroyTime: 500
+  destroyTime: 3.5
   projectileStraightPrefab: {fileID: 0}
   projectileHomingPrefab: {fileID: 0}
   impactPrefab: {fileID: 0}
@@ -133,8 +133,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 3931772339959193990}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
