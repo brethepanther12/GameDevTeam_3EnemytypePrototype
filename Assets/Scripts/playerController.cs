@@ -3,9 +3,13 @@ using System.Collections;
 using Unity.VisualScripting;
 using System.Runtime.CompilerServices;
 
-
 public class playerController : MonoBehaviour, IDamage, Visibility
 {
+
+    [Header("--- Animation ---")]
+    public Animator animator;
+
+    [Header("--- Components & Stats ---")]
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
 
@@ -27,12 +31,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] float shootRate;
     [SerializeField] int shootDist;
 
-    ////Added for grenade logic, delete if causing any errors
-    //[SerializeField] private GameObject grenadePrefab;
-    //[SerializeField] private Transform throwPoint;
-    //[SerializeField] private float throwingForce;
-    //[SerializeField] private Transform grenadeThrowOrigin;
-
+    [Header("--- Audio ---")]
     [SerializeField] private AudioClip hurtSound;
     [SerializeField] private float hurtVol;
     [SerializeField] private float footstepVol = 1f;
@@ -41,6 +40,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] private float walkStepDelay = 0.5f;
     [SerializeField] private float sprintStepDelay = 0.3f;
 
+    [Header("--- Game Objects & Systems ---")]
     public ParticleSystem playerMuzzleFlash;
     public PlayerInventory inventory;
     public GameObject weaponSocket;
@@ -95,13 +95,24 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     void Update()
     {
-
         sprint();
-
         movement();
-
         HandleWeaponSwitching();
 
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            if (animator != null)
+            {
+                animator.SetTrigger("Reload");
+            }
+
+            Weapon currentWeapon = inventory.GetActiveWeapon();
+
+            if (currentWeapon != null)
+            {
+                currentWeapon.StartReload();
+            }
+        }
     }
 
     void Awake()
@@ -115,9 +126,8 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     bool IsGrounded()
     {
         Ray ray = new Ray(transform.position, Vector3.down);
-        return Physics.Raycast(ray, out _, 1.1f, ~ignoreLayer); 
+        return Physics.Raycast(ray, out _, 1.1f, ~ignoreLayer);
     }
-
 
     void movement()
     {
@@ -125,6 +135,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
         if (controller.isGrounded)
         {
+            animator.SetBool("isGrounded", IsGrounded());
             playerVel = Vector3.zero;
             jumpCount = 0;
             jumpCur = 0;
@@ -133,19 +144,16 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         moveDir = (Input.GetAxis("Horizontal") * transform.right) + (Input.GetAxis("Vertical") * transform.forward);
         controller.Move(moveDir * speed * Time.deltaTime);
 
+        float horizontalSpeed = new Vector3(controller.velocity.x, 0, controller.velocity.z).magnitude;
+        if (animator != null)
+        {
+            animator.SetFloat("Speed", horizontalSpeed);
+        }
+
         HandleFootsteps();
-
         jump();
-
-        //Delete if causing issue
-        //if (Input.GetKeyDown(KeyCode.G))
-        //{
-        //    throwGrenade();
-        //}
-
         controller.Move(playerVel * Time.deltaTime);
         playerVel.y -= gravity * Time.deltaTime;
-
     }
 
     void HandleFootsteps()
@@ -183,6 +191,11 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     {
         if (Input.GetButtonDown("Jump") && jumpCount < jumpMax)
         {
+            if (animator != null)
+            {
+                animator.SetTrigger("Jump");
+            }
+
             playerVel.y = jumpVel;
             jumpCount++;
             jumpCur = jumpCount;
@@ -245,7 +258,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         }
     }
 
-
     public void Heal(int amount, bool doesIncreaseMax)
     {
         HP += amount;
@@ -298,21 +310,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
         updatePlayerUI();
     }
-
-    //public void GainAmmo(int amount, bool doesIncreaseMax)
-    //{
-    //    reserveAmmo += amount;
-
-
-
-    //    if (doesIncreaseMax)
-    //    {
-    //        reserveAmmo += amount;
-
-    //    }
-    //    updatePlayerUI();
-
-    //}
 
     public void IncreaseDamage(int amount, int magnitude)
     {
@@ -397,7 +394,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     }
 
     public void updatePlayerUI()
-    {    
+    {
 
         gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
         gamemanager.instance.playerShieldBar.fillAmount = (float)shield / maxShield;
@@ -481,27 +478,4 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         if (other.CompareTag("Smoke"))
             isVisible = false;
     }
-    //Delete if causing difficulties
-    //public void throwGrenade()
-    //{
-    //    ItemSO grenade = inventory.collectedItems.Find(item => item.itemName == "Grenade");
-
-    //    if (grenade != null && grenade.quantityHeld > 0 && grenadePrefab != null && grenadeThrowOrigin != null)
-    //    {
-
-    //        Vector3 throwDirection = grenadeThrowOrigin.forward;
-
-
-    //        GameObject grenadeObj = Instantiate(grenadePrefab, grenadeThrowOrigin.position, Quaternion.identity);
-    //        Rigidbody rb = grenadeObj.GetComponent<Rigidbody>();
-
-    //        if (rb != null)
-    //        {
-    //            rb.linearVelocity = throwDirection.normalized * throwingForce;
-    //        }
-
-    //        grenade.quantityHeld--;
-    //        updatePlayerUI();
-    //    }
-    //}
 }

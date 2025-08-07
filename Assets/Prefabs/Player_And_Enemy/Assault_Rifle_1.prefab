@@ -35,6 +35,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 800010388333374786}
+  - {fileID: 6757033960386124904}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3522044433227860681
@@ -49,6 +50,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31cc15047268cc943b7da122d8519996, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerCamera: {fileID: 0}
   weaponData: {fileID: 0}
   ignoreLayer:
     serializedVersion: 2
@@ -61,6 +63,7 @@ MonoBehaviour:
   pellets: 0
   spread: 0
   ammoType: 1
+  leftHandGrip: {fileID: 6757033960386124904}
   bullet: {fileID: 7539981003205437294, guid: 97a4c4b329aa6bc4c8a68940aaff17f4, type: 3}
   shootPos: {fileID: 800010388333374786}
   impactSound: {fileID: 0}
@@ -242,6 +245,37 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &6145324613796243927
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6757033960386124904}
+  m_Layer: 3
+  m_Name: LeftHandGrip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6757033960386124904
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6145324613796243927}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.75511014, y: -0.19693768, z: 0.60507894, w: 0.15780932}
+  m_LocalPosition: {x: -0.101, y: 0.0012, z: 0.4582}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7656816343512773518}
+  m_LocalEulerAnglesHint: {x: 28.467, y: 104.355, z: 186.955}
 --- !u!1 &8005505277547344314
 GameObject:
   m_ObjectHideFlags: 0

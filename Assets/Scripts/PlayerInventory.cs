@@ -213,4 +213,9 @@ public class PlayerInventory : MonoBehaviour
         Debug.LogWarning("AmmoType not found in lookup: " + type);
         return string.Empty;
     }
+
+    public Weapon GetActiveWeapon()
+    {
+        return currentWeaponScript;
+    }
 }
