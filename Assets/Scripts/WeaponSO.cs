@@ -12,15 +12,17 @@ public class FireModeData
 {
     public FireMode mode;
     public AmmoType projectileType;
+    public GameObject projectile;
 
     public int damage;
-    //public int range;
+    public int range;
     public float fireRate;
     public int burstCount;
     public float burstRate;
-    //public float chargeTime;
-    //public float detonateTime;
+    public float chargeTime;
+    public float detonateTime;
     public int projectileCount;
+    public float projectileSpread;
 
 }
 
