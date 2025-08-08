@@ -19,7 +19,7 @@ public class Weapon : MonoBehaviour
 
     public AmmoType ammoType;
     public FireMode currentFireMode;
-    private int fireModeIndex;
+    public int fireModeIndex;
 
     //Info for shooting
     public Transform leftHandGrip;
@@ -37,6 +37,7 @@ public class Weapon : MonoBehaviour
     PlayerInventory inventory;
 
     float shootTimer;
+    bool isBursting;
     int ammoInMag;
     int ammoInReserve;
     public Animator gunAnim;
@@ -88,6 +89,7 @@ public class Weapon : MonoBehaviour
         ammoInMag = mag;
         ammoInReserve = reserve;
     }
+
     private void Update()
     {
         shootTimer += Time.deltaTime;
@@ -96,8 +98,10 @@ public class Weapon : MonoBehaviour
 
         if (currentFireMode == FireMode.Semi)
         {
+
             if (Input.GetButtonDown("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
             {
+                shootTimer = 0f;
                 if (ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket)
                     Shoot();
                 else if (ammoType == AmmoType.Shell)
@@ -109,6 +113,7 @@ public class Weapon : MonoBehaviour
         {
             if (Input.GetButton("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
             {
+                shootTimer = 0f;
                 if (ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket)
                     Shoot();
                 else if (ammoType == AmmoType.Shell)
@@ -117,7 +122,17 @@ public class Weapon : MonoBehaviour
             }
 
         }
-    
+        else if (currentFireMode == FireMode.Burst)
+        {
+
+            if (Input.GetButtonDown("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
+            {
+                StartCoroutine(BurstFire());
+
+            }
+
+        }
+
 
 
         if (Input.GetKeyDown(KeyCode.R) && ammoInMag < magSize && !equippedPlayer.isReloading)
@@ -143,9 +158,33 @@ public class Weapon : MonoBehaviour
         }
     }
 
+    private IEnumerator BurstFire()
+    {
+        isBursting = true;
+
+        shootTimer = 0f;
+
+        int shotsToFire = Mathf.Min(3, ammoInMag);
+
+        for (int i = 0; i < shotsToFire; i++)
+        {
+            if (ammoType == AmmoType.Shell)
+                ShootMultiple();
+            else
+                Shoot();
+
+            yield return new WaitForSeconds(0.1f);
+
+            if (ammoInMag <= 0)
+                break;
+        }
+
+        isBursting = false;
+    }
+
     void Shoot()
     {
-        shootTimer = 0f;
+        
         ammoInMag--;
 
         if (muzzleFlash != null)
