@@ -20,6 +20,7 @@ public class Weapon : MonoBehaviour
     public AmmoType ammoType;
     public FireMode currentFireMode;
     public int fireModeIndex;
+    public FireModeData FMData;
 
     //Info for shooting
     public Transform leftHandGrip;
@@ -61,17 +62,20 @@ public class Weapon : MonoBehaviour
 
     public void InitializeWeapon(WeaponSO data, bool refillMag = false)
     {
+        
         weaponData = data;
-        wepDmg = weaponData.wepDmg;
-        attackRate = weaponData.attackRate;
+
+        currentFireMode = weaponData.savedMode;
+        FMData = weaponData.GetFireModeData(currentFireMode);
+
+        wepDmg = FMData.damage;
+        attackRate = FMData.fireRate;
         range = weaponData.range;
         magSize = weaponData.magSize;
         ammoMax = weaponData.ammoMax;
         pellets = weaponData.pelletCount;
         spread = weaponData.pelletSpread;
         ammoType = weaponData.ammoType;
-        currentFireMode = weaponData.availableFireModes[fireModeIndex];
-
         bullet = weaponData.bullet;
         impactSound = weaponData.impactSound;
         impactVolume = weaponData.impactVolume;
@@ -148,6 +152,7 @@ public class Weapon : MonoBehaviour
             {
                 fireModeIndex++;
                 currentFireMode = weaponData.availableFireModes[fireModeIndex];
+                
             } else
             {
                 fireModeIndex = 0;
@@ -155,6 +160,7 @@ public class Weapon : MonoBehaviour
             }
 
             equippedPlayer.updatePlayerUI();
+            
         }
     }
 
@@ -164,7 +170,9 @@ public class Weapon : MonoBehaviour
 
         shootTimer = 0f;
 
-        int shotsToFire = Mathf.Min(3, ammoInMag);
+        int bc = FMData.burstCount;
+
+        int shotsToFire = Mathf.Min(bc, ammoInMag);
 
         for (int i = 0; i < shotsToFire; i++)
         {

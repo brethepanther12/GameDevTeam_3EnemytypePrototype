@@ -61,5 +61,20 @@ public class WeaponSO : ScriptableObject
     public AudioClip reloadSound;
     public AudioClip gunShotSound;
 
+    public FireModeData GetFireModeData(FireMode fm)
+    {
+        foreach (FireModeData fireModeData in fireModeDatas)
+        {
+            if (fireModeData.mode == fm)
+            {
+                
+                return fireModeData;
+            }
+
+            
+        }
+
+        return fireModeDatas[0];
+    }
 
 }
