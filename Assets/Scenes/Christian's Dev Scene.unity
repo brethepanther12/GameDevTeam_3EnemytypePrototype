@@ -4793,7 +4793,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6512005747630891166, guid: a72cbf9860763f048a27e991dceaf985, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4852,6 +4852,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6301592535341447415, guid: eb50e8239e735f54dbd63a2ee7b72509, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: f098d5111c8e6c1438b37e0dadd06bd9, type: 2}
     - target: {fileID: 7084869322077262948, guid: eb50e8239e735f54dbd63a2ee7b72509, type: 3}
       propertyPath: m_Name
       value: Lava
