@@ -19,6 +19,7 @@ public class gamemanager : MonoBehaviour
     public Image playerHPBar;
     public Image playerShieldBar;
     public Image playerArmorBar;
+    public RawImage HurtImage;
     public GameObject playerDamagePanel;
     public GameObject playerShieldDamagePanel;
     public GameObject playerArmorDamagePanel;
