@@ -29,8 +29,8 @@ MonoBehaviour:
     burstRate: 0
     chargeTime: 0
     detonateTime: 0
-    projectileCount: 0
-    projectileSpread: 0
+    projectileCount: 5
+    projectileSpread: 0.8
   savedMode: 0
   wepDmg: 10
   attackRate: 1
@@ -39,8 +39,8 @@ MonoBehaviour:
   ammoMax: 25
   pelletCount: 5
   pelletSpread: 0.8
-  currentAmmoInMag: 3
-  currentAmmoInReserve: 0
+  currentAmmoInMag: 0
+  currentAmmoInReserve: 16
   bullet: {fileID: 7327530778466690349, guid: fc36680bdf45a5849923d47116ebf1de, type: 3}
   impactPrefab: {fileID: 2408714428905375140, guid: ec2cd9d24f8932148ab9480fc3b65b15, type: 3}
   weaponModel: {fileID: 3341220789159317986, guid: 084aec37bc778a34f85cedb16d66c217, type: 3}
