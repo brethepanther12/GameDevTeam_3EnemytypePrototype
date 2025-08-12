@@ -13,7 +13,7 @@ public class JumpPad : MonoBehaviour
         {
             //Player Get methods here
             Vector3 vel = playerReference.GetVerticalVelocity();
-            vel.y = yVelocityJump; 
+            vel.y += yVelocityJump; 
             playerReference.SetVerticalVelocity(vel);
             Debug.Log("Jump pad enabled...");
         }
