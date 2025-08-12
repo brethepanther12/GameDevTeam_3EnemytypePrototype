@@ -199,7 +199,11 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 animator.SetTrigger("Jump");
             }
 
-            playerVel.y = jumpVel;
+            if(playerVel.y < jumpVel)
+            {
+                playerVel.y = jumpVel;
+            }
+
             jumpCount++;
             jumpCur = jumpCount;
             updatePlayerUI();
@@ -505,6 +509,16 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     public bool IsInvisible()
     {
         return isVisible;
+    }
+
+    public Vector3 GetVerticalVelocity()
+    {
+        return playerVel;
+    }
+
+    public void SetVerticalVelocity(Vector3 velocity)
+    {
+        playerVel = velocity;
     }
 
     private void OnTriggerEnter(Collider other)
