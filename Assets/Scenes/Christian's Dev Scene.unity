@@ -2399,6 +2399,30 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 05e3bbd065f3e2142be811eff3e08c31, type: 3}
+--- !u!1 &1226656298 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6512005747630891166, guid: a72cbf9860763f048a27e991dceaf985, type: 3}
+  m_PrefabInstance: {fileID: 6393768447091453269}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1226656306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1226656298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef396377418919e48aff9079808ae744, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentEffectData:
+    statusType: 0
+    statusDamage: 0
+    statusTickRate: 0
+    statusDuration: 0
+    slowDownMagnitude: 0
+  currentStatuses: []
 --- !u!1001 &1227117181
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4659,7 +4683,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2200018932441696591, guid: a72cbf9860763f048a27e991dceaf985, type: 3}
       propertyPath: HP
-      value: 10
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 2200018932441696591, guid: a72cbf9860763f048a27e991dceaf985, type: 3}
       propertyPath: m_Enabled
@@ -4728,7 +4752,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6512005747630891166, guid: a72cbf9860763f048a27e991dceaf985, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 1226656306}
   m_SourcePrefab: {fileID: 100100000, guid: a72cbf9860763f048a27e991dceaf985, type: 3}
 --- !u!1001 &6446738204768427935
 PrefabInstance:

@@ -4,16 +4,27 @@ using System.Diagnostics.Contracts;
 using UnityEngine;
 
 public enum AmmoType { Pistol, AR, Shell, Energy, Fuel, Rocket, Grenade}
-
 public enum FireMode { Semi, Auto, Burst, Charge, Detonate}
+
+[Serializable]
+public class StatusEffectData
+{
+    public DamageStatus statusType;
+    public int statusDamage;
+    public float statusTickRate;
+    public float statusDuration;
+    public float slowDownMagnitude;
+
+}
 
 [Serializable]
 public class FireModeData
 {
     public FireMode mode;
     public AmmoType projectileType;
+    
     public GameObject projectile;
-
+    public StatusEffectData effectData;
     public int damage;
     public int range;
     public float fireRate;
@@ -37,6 +48,7 @@ public class WeaponSO : ScriptableObject
 
     public List<FireMode> availableFireModes = new List<FireMode>();
     public List<FireModeData> fireModeDatas = new List<FireModeData>();
+    
 
     public FireMode savedMode;
 
