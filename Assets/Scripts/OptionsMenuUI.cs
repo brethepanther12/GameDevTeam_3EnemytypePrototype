@@ -23,7 +23,9 @@ public class OptionsMenuUI : MonoBehaviour
 
         masterVolumeSlider.value = AudioListener.volume;
 
-        if (musicSource != null)
+        if(MusicPlayer.instance!= null)
+            musicVolumeSlider.value = MusicPlayer.instance.Volume;
+        else if (musicSource != null)
             musicVolumeSlider.value = musicSource.volume;
 
         setMasterVolume(masterVolumeSlider.value);
@@ -47,7 +49,11 @@ public class OptionsMenuUI : MonoBehaviour
 
     public void setMusicVolume(float volume)
     {
-        if(musicSource != null)
+        if (MusicPlayer.instance != null)
+        {
+            MusicPlayer.instance.Volume = volume;
+        }
+        else if (musicSource != null)
         {
             musicSource.volume = volume;
         }

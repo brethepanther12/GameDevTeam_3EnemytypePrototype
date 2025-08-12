@@ -11,6 +11,8 @@ public class gamemanager : MonoBehaviour
     public static gamemanager instance;
     [SerializeField] GameObject menuActive;
     [SerializeField] GameObject menuPause;
+    [SerializeField] GameObject menuOptions;
+    [SerializeField] OptionsMenuUI optionMenuUI;
     [SerializeField] GameObject menuWin;
     [SerializeField] GameObject menuLose;
     [SerializeField] GameObject menuInventory;
@@ -184,5 +186,23 @@ public class gamemanager : MonoBehaviour
         int yellowKeys = inventory.GetAmmoAmount("Yellow Key");
         yellowKey.text = yellowKeys.ToString();
 
+    }
+
+    public void openOptionsFromPause()
+    {
+        if (menuOptions != null && optionMenuUI != null)
+        {
+            optionMenuUI.InitializeOptions(); 
+            menuPause.SetActive(false);
+            menuOptions.SetActive(true);
+            menuActive = menuOptions;
+        }
+    }
+
+    public void closeOptionsFromPause()
+    {
+        menuOptions.SetActive(false);
+        menuPause.SetActive(true);
+        menuActive = menuPause;
     }
 }
