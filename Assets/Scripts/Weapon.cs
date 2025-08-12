@@ -19,7 +19,8 @@ public class Weapon : MonoBehaviour
 
     public AmmoType ammoType;
     public FireMode currentFireMode;
-    private int fireModeIndex;
+    public int fireModeIndex;
+    public FireModeData FMData;
 
     //Info for shooting
     public Transform leftHandGrip;
@@ -37,6 +38,7 @@ public class Weapon : MonoBehaviour
     PlayerInventory inventory;
 
     float shootTimer;
+    bool isBursting;
     int ammoInMag;
     int ammoInReserve;
     public Animator gunAnim;
@@ -60,18 +62,21 @@ public class Weapon : MonoBehaviour
 
     public void InitializeWeapon(WeaponSO data, bool refillMag = false)
     {
+        
         weaponData = data;
-        wepDmg = weaponData.wepDmg;
-        attackRate = weaponData.attackRate;
-        range = weaponData.range;
-        magSize = weaponData.magSize;
-        ammoMax = weaponData.ammoMax;
-        pellets = weaponData.pelletCount;
-        spread = weaponData.pelletSpread;
-        ammoType = weaponData.ammoType;
-        currentFireMode = weaponData.availableFireModes[fireModeIndex];
-
-        bullet = weaponData.bullet;
+        
+        currentFireMode = weaponData.savedMode;
+        FMData = weaponData.GetFireModeData(currentFireMode);
+        ApplyFireModeStats();
+        //wepDmg = FMData.damage;
+        //attackRate = FMData.fireRate;
+        //range = weaponData.range;
+        //magSize = weaponData.magSize;
+        //ammoMax = weaponData.ammoMax;
+        //pellets = weaponData.pelletCount;
+        //spread = weaponData.pelletSpread;
+        //ammoType = weaponData.ammoType;
+        //bullet = weaponData.bullet;
         impactSound = weaponData.impactSound;
         impactVolume = weaponData.impactVolume;
         reloadSound = weaponData.reloadSound;
@@ -88,6 +93,7 @@ public class Weapon : MonoBehaviour
         ammoInMag = mag;
         ammoInReserve = reserve;
     }
+
     private void Update()
     {
         shootTimer += Time.deltaTime;
@@ -96,8 +102,10 @@ public class Weapon : MonoBehaviour
 
         if (currentFireMode == FireMode.Semi)
         {
+
             if (Input.GetButtonDown("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
             {
+                shootTimer = 0f;
                 if (ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket)
                     Shoot();
                 else if (ammoType == AmmoType.Shell)
@@ -109,6 +117,7 @@ public class Weapon : MonoBehaviour
         {
             if (Input.GetButton("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
             {
+                shootTimer = 0f;
                 if (ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket)
                     Shoot();
                 else if (ammoType == AmmoType.Shell)
@@ -117,7 +126,17 @@ public class Weapon : MonoBehaviour
             }
 
         }
-    
+        else if (currentFireMode == FireMode.Burst)
+        {
+
+            if (Input.GetButtonDown("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
+            {
+                StartCoroutine(BurstFire());
+
+            }
+
+        }
+
 
 
         if (Input.GetKeyDown(KeyCode.R) && ammoInMag < magSize && !equippedPlayer.isReloading)
@@ -132,20 +151,64 @@ public class Weapon : MonoBehaviour
             if (fireModeIndex < weaponData.availableFireModes.Count - 1)
             {
                 fireModeIndex++;
-                currentFireMode = weaponData.availableFireModes[fireModeIndex];
+                
             } else
             {
                 fireModeIndex = 0;
-                currentFireMode = weaponData.availableFireModes[fireModeIndex];
+                
             }
 
+            currentFireMode = weaponData.availableFireModes[fireModeIndex];
+            
             equippedPlayer.updatePlayerUI();
+            ApplyFireModeStats();
         }
+    }
+
+    public void ApplyFireModeStats()
+    {
+
+        FMData = weaponData.GetFireModeData(currentFireMode);
+
+        wepDmg = FMData.damage;
+        attackRate = FMData.fireRate;
+        range = FMData.range;
+        pellets = FMData.projectileCount;
+        spread = FMData.projectileSpread;
+        ammoType = FMData.projectileType;
+        bullet = FMData.projectile;
+    }
+
+    private IEnumerator BurstFire()
+    {
+        isBursting = true;
+
+        shootTimer = 0f;
+
+        int bc = FMData.burstCount;
+        float br = FMData.burstRate;
+
+        int shotsToFire = Mathf.Min(bc, ammoInMag);
+
+        for (int i = 0; i < shotsToFire; i++)
+        {
+            if (ammoType == AmmoType.Shell)
+                ShootMultiple();
+            else
+                Shoot();
+
+            yield return new WaitForSeconds(br);
+
+            if (ammoInMag <= 0)
+                break;
+        }
+
+        isBursting = false;
     }
 
     void Shoot()
     {
-        shootTimer = 0f;
+        
         ammoInMag--;
 
         if (muzzleFlash != null)

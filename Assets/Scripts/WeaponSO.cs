@@ -12,13 +12,17 @@ public class FireModeData
 {
     public FireMode mode;
     public AmmoType projectileType;
+    public GameObject projectile;
 
+    public int damage;
+    public int range;
     public float fireRate;
     public int burstCount;
     public float burstRate;
     public float chargeTime;
     public float detonateTime;
     public int projectileCount;
+    public float projectileSpread;
 
 }
 
@@ -31,15 +35,10 @@ public class WeaponSO : ScriptableObject
     public string weaponName;
     public AmmoType ammoType;
 
-    [SerializeField]
     public List<FireMode> availableFireModes = new List<FireMode>();
-
-    [SerializeField]
     public List<FireModeData> fireModeDatas = new List<FireModeData>();
 
-    
-    
-
+    public FireMode savedMode;
 
     //Weapon Stats
     public int wepDmg;
@@ -63,5 +62,21 @@ public class WeaponSO : ScriptableObject
     public float impactVolume = 1f;
     public AudioClip reloadSound;
     public AudioClip gunShotSound;
+
+    public FireModeData GetFireModeData(FireMode fm)
+    {
+        foreach (FireModeData fireModeData in fireModeDatas)
+        {
+            if (fireModeData.mode == fm)
+            {
+                
+                return fireModeData;
+            }
+
+            
+        }
+
+        return fireModeDatas[0];
+    }
 
 }

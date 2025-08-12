@@ -71,6 +71,8 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     int shieldOrig;
 
     float shootTimer;
+    float sprintTimer;
+    public float sprintCD;
 
     void Start()
     {
@@ -132,6 +134,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     void movement()
     {
         shootTimer += Time.deltaTime;
+        
 
         if (controller.isGrounded)
         {
@@ -207,11 +210,14 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     {
         if (Input.GetButtonDown("Sprint"))
         {
-            speed *= sprintMod;
+         
+         speed *= sprintMod;
+                 
         }
         else if (Input.GetButtonUp("Sprint"))
         {
             speed /= sprintMod;
+            
         }
     }
 
