@@ -199,7 +199,11 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 animator.SetTrigger("Jump");
             }
 
-            playerVel.y = jumpVel;
+            if(playerVel.y < jumpVel)
+            {
+                playerVel.y = jumpVel;
+            }
+
             jumpCount++;
             jumpCur = jumpCount;
             updatePlayerUI();
