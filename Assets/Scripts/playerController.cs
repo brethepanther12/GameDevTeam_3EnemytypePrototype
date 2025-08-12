@@ -264,6 +264,40 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         }
     }
 
+    public void takeDamage(int amount, StatusEffectData effect)
+    {
+        switch (effect.statusType)
+        {
+
+            case DamageStatus.None:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Fire:
+
+                if (shield <= 0 && armor <= 0 && HP > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                break;
+
+            case DamageStatus.Corrosive:
+
+                if (shield <= 0 && armor > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                break;
+
+            default:
+                break;
+        }
+
+
+
+    }
+
     public void Heal(int amount, bool doesIncreaseMax)
     {
         HP += amount;

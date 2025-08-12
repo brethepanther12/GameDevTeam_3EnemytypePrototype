@@ -31,6 +31,13 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
     [SerializeField] float dropChance = 0.5f;
 
     [SerializeField] int HP;
+
+    [SerializeField] public int shield;
+    [SerializeField] public int armor;
+
+    [SerializeField] public GameObject shieldPrefab;
+    [SerializeField] public GameObject armorPrefab;
+
     [SerializeField] int fov;
     [SerializeField] int faceTargetSpeed;
     [SerializeField] int roamDistance;
@@ -231,11 +238,46 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
         {
             return;
         }
-        HP -= amount;
 
-        AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+        if (shield > 0)
+        {
+            shield -= amount;
+            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+            agent.SetDestination(gamemanager.instance.player.transform.position);
 
-        agent.SetDestination(gamemanager.instance.player.transform.position);
+            if (shield <= 0)
+            {
+                shield = 0;
+
+                shieldPrefab.SetActive(false);
+                armor -= amount;
+                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+                agent.SetDestination(gamemanager.instance.player.transform.position);
+
+            }
+
+        }
+
+        else if (armor > 0)
+        {
+            armor -= amount;
+
+            if (armor <= 0 && shield <= 0)
+            {
+
+                armor = 0;
+                shield = 0;
+                armorPrefab.SetActive(false);
+                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+                agent.SetDestination(gamemanager.instance.player.transform.position);
+            }
+        }
+        else
+        {
+            HP -= amount;
+            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+            agent.SetDestination(gamemanager.instance.player.transform.position);
+        }
 
 
         if (HP <= 0)
@@ -257,6 +299,40 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
 
             StartCoroutine(FlashRed());
         }
+    }
+
+    public void takeDamage(int amount, StatusEffectData effect)
+    {
+        switch (effect.statusType)
+        {
+
+            case DamageStatus.None:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Fire:
+
+                if (shield <= 0 && armor <= 0 && HP > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                break;
+
+            case DamageStatus.Corrosive:
+
+                if (shield <= 0 && armor > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                break;
+
+            default:
+                break;
+        }
+
+
+
     }
 
     IEnumerator FlashRed()

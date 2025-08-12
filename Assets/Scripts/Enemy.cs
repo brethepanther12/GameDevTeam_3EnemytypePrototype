@@ -341,6 +341,40 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
         }
     }
 
+    public void takeDamage(int amount, StatusEffectData effect)
+    {
+        switch (effect.statusType)
+        {
+
+            case DamageStatus.None:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Fire:
+
+                if (shield <= 0 && armor <= 0 && HP > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                break;
+
+            case DamageStatus.Corrosive:
+
+                if (shield <= 0 && armor > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                break;
+
+            default:
+                break;
+        }
+        
+
+        
+    }
+
     IEnumerator FlashRed()
     {
         foreach (var part in modelParts)
@@ -466,5 +500,6 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
             part.material.color = state ? Color.gray : colorOrig;
         }
     }
+
    
 }
