@@ -46,6 +46,8 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     public GameObject weaponSocket;
     public int jumpCur;
 
+    private MovingPlatformStick targetPlatform;
+
     float stepTimer = 0f;
     public bool isReloading;
     public bool isVisible;
@@ -145,7 +147,15 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         }
 
         moveDir = (Input.GetAxis("Horizontal") * transform.right) + (Input.GetAxis("Vertical") * transform.forward);
-        controller.Move(moveDir * speed * Time.deltaTime);
+
+        //Getting platform velocity
+        Vector3 movePlatform = Vector3.zero;
+        if (targetPlatform != null)
+        {
+            movePlatform = targetPlatform.GetPlatformVelocity();
+        }
+
+        controller.Move(moveDir * speed * Time.deltaTime + movePlatform * Time.deltaTime);
 
         float horizontalSpeed = new Vector3(controller.velocity.x, 0, controller.velocity.z).magnitude;
         if (animator != null)
