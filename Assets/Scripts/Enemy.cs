@@ -33,6 +33,8 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
     [SerializeField] private float hitVolume = 1f;
 
     [SerializeField] int HP;
+    [SerializeField] int shield;
+    [SerializeField] int armor;
     [SerializeField] int fov;
     [SerializeField] int faceTargetSpeed;
     [SerializeField] int roamDistance;
@@ -40,6 +42,8 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
 
     [SerializeField] GameObject healthPickupPrefab;
     [SerializeField] GameObject ammoPickupPrefab;
+    [SerializeField] GameObject shieldPrefab;
+    [SerializeField] GameObject armorPrefab;
     [SerializeField] float dropChance = 0.5f;
 
     [SerializeField] GameObject bullet;
@@ -265,13 +269,51 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
         {
             return;
         }
-        HP -= amount;
 
-        AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+        if (shield > 0)
+        {
+            shield -= amount;
+            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+            agent.SetDestination(gamemanager.instance.player.transform.position);
 
-        agent.SetDestination(gamemanager.instance.player.transform.position);
+            if (shield <= 0)
+            {
+                shield = 0;
 
+                shieldPrefab.SetActive(false);
+                armor -= amount;
+                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+                agent.SetDestination(gamemanager.instance.player.transform.position);
 
+            }
+
+        }
+
+        else if (armor > 0)
+        {
+            armor -= amount;
+
+            if (armor <= 0 && shield <= 0)
+            {
+
+                armor = 0;
+                shield = 0;
+                armorPrefab.SetActive(false);
+                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+                agent.SetDestination(gamemanager.instance.player.transform.position);
+            }
+        } 
+        else
+        {
+            HP -= amount;
+            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+            agent.SetDestination(gamemanager.instance.player.transform.position);
+        }
+            
+
+        
+
+        
         if (HP <= 0)
         {
             isDead = true;

@@ -92,7 +92,7 @@ public class damage : MonoBehaviour
             if (Physics.Raycast(rayOrigin, rayDirection, out hit, 1f, ~0, QueryTriggerInteraction.Ignore))
             {
                 Instantiate(impactPrefab, hit.point, Quaternion.LookRotation(hit.normal));
-                impactPrefab.transform.SetParent(hit.collider.transform, worldPositionStays: true);
+                impactPrefab.transform.SetParent(hit.collider.transform);
             }
             else
             {

@@ -334,15 +334,36 @@ MonoBehaviour:
   weaponData: {fileID: 0}
   ignoreLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   wepDmg: 0
   attackRate: 0
   range: 0
-  magSize: 0
+  magSize: 5
   ammoMax: 0
   pellets: 0
   spread: 0
   ammoType: 6
+  currentFireMode: 0
+  fireModeIndex: 0
+  FMData:
+    mode: 0
+    projectileType: 0
+    projectile: {fileID: 0}
+    effectData:
+      statusType: 0
+      statusDamage: 0
+      statusTickRate: 0
+      statusDuration: 0
+      slowDownMagnitude: 0
+    damage: 0
+    range: 0
+    fireRate: 0
+    burstCount: 0
+    burstRate: 0
+    chargeTime: 0
+    detonateTime: 0
+    projectileCount: 0
+    projectileSpread: 0
   leftHandGrip: {fileID: 4598664141482793094}
   bullet: {fileID: 3219972179486975252, guid: a9c34932f2cfc72418f04b1eb4970ab2, type: 3}
   shootPos: {fileID: 7574383898984838468}
