@@ -1106,6 +1106,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8223420741560371461}
+  - component: {fileID: -7817358065326202486}
   - component: {fileID: 1343972030976924113}
   - component: {fileID: 1101868098296262399}
   - component: {fileID: 3112784695290392470}
@@ -1137,6 +1138,25 @@ Transform:
   - {fileID: 5082515438880296127}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-7817358065326202486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3242214687390201362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef396377418919e48aff9079808ae744, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentEffectData:
+    statusType: 0
+    statusDamage: 0
+    statusTickRate: 0
+    statusDuration: 0
+    slowDownMagnitude: 0
+  currentStatuses: []
 --- !u!114 &1343972030976924113
 MonoBehaviour:
   m_ObjectHideFlags: 0
