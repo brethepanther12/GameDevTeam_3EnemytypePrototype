@@ -20,6 +20,9 @@ public class BossAI : EnemyAIBase, IGrapplable
     [SerializeField] AudioSource bossRoarSource;
     [SerializeField] AudioClip roarClip;
 
+    
+
+
     public string bossName = "Boss 1";
 
     private float burstTimer = 0f;
@@ -261,10 +264,48 @@ public class BossAI : EnemyAIBase, IGrapplable
 
     public override void takeDamage(int amount)
     {
-        enemyCurrentHealthPoints -= amount;
+    
 
-        if (gamemanager.instance.currentBoss == this)
-            gamemanager.instance.UpdateBossHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+        if (shield > 0)
+        {
+            shield -= amount;
+            if (gamemanager.instance.currentBoss == this)
+                gamemanager.instance.UpdateBossHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+
+            if (shield <= 0)
+            {
+                shield = 0;
+
+                shieldPrefab.SetActive(false);
+                armor -= amount;
+                if (gamemanager.instance.currentBoss == this)
+                    gamemanager.instance.UpdateBossHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+            }
+
+        }
+
+        else if (armor > 0)
+        {
+            armor -= amount;
+            if (gamemanager.instance.currentBoss == this)
+                gamemanager.instance.UpdateBossHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+
+            if (armor <= 0 && shield <= 0)
+            {
+
+                armor = 0;
+                shield = 0;
+                armorPrefab.SetActive(false);
+                if (gamemanager.instance.currentBoss == this)
+                    gamemanager.instance.UpdateBossHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+            }
+        }
+        else
+        {
+            enemyCurrentHealthPoints -= amount;
+            if (gamemanager.instance.currentBoss == this)
+                gamemanager.instance.UpdateBossHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+        }
 
         if (enemyCurrentHealthPoints <= 0)
         {

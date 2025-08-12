@@ -1,13 +1,20 @@
-
 using System.Collections;
+//using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.Rendering.DebugUI;
 
 public class EnemyAIBase : MonoBehaviour, IDamage
 {
     //Enemy health
     [SerializeField] protected int enemyCurrentHealthPoints;
     [SerializeField] public int enemyHealthPointsMax;
+
+    [SerializeField] public int shield;
+    [SerializeField] public int armor;
+
+    [SerializeField] public GameObject shieldPrefab;
+    [SerializeField] public GameObject armorPrefab;
     public int CurrentHealthPoints => enemyCurrentHealthPoints;
     public int MaxHealthPoints => enemyHealthPointsMax;
     //Enemy model
@@ -20,16 +27,18 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     //player detection
     //Navigation Mesh is used instead -v-
     //public [SerializeField] float enemyDetectionMeshRange;
-     [SerializeField] public NavMeshAgent enemyNavAgent;
+    [SerializeField] public NavMeshAgent enemyNavAgent;
     [SerializeField] public Transform enemyPlayerObject;
     protected bool enemyPlayerInSight;
+
+    
 
 
     protected Vector3 enemyPlayerDirection;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Start()
 
-    { 
+    {
         //To save the enemy's max health to currently.
         enemyCurrentHealthPoints = enemyHealthPointsMax;
 
@@ -69,7 +78,7 @@ public class EnemyAIBase : MonoBehaviour, IDamage
 
         //Then it destroy 'this' object after
         Destroy(gameObject);
-        
+
     }
     protected virtual void enemyMoveToPlayer()
     {
@@ -81,7 +90,7 @@ public class EnemyAIBase : MonoBehaviour, IDamage
 
             //This check is for the enemy's position to the target is
             //less than the allowed distance before stopping
-            if(enemyNavAgent.remainingDistance <= enemyNavAgent.stoppingDistance)
+            if (enemyNavAgent.remainingDistance <= enemyNavAgent.stoppingDistance)
             {
                 //This calls for the enemy to face forward to the player
                 enemyFacePlayer();
@@ -118,16 +127,16 @@ public class EnemyAIBase : MonoBehaviour, IDamage
         transform.rotation = Quaternion.Lerp(transform.rotation, rotate, Time.deltaTime * enemySpeed);
     }
 
-    protected virtual bool HasLineOfSightOfPlayer() 
+    protected virtual bool HasLineOfSightOfPlayer()
     {
-    if (enemyPlayerObject == null)return false;
+        if (enemyPlayerObject == null) return false;
 
         Vector3 target = (enemyPlayerObject.position + Vector3.up * 1f);
         Vector3 direction = (transform.position - target).normalized;
 
         float distance = Vector3.Distance(transform.position, target);
 
-        if(Physics.Raycast(transform.position, direction, out RaycastHit hit, distance))
+        if (Physics.Raycast(transform.position, direction, out RaycastHit hit, distance))
         {
             return hit.collider.CompareTag("Player");
         }
@@ -136,9 +145,43 @@ public class EnemyAIBase : MonoBehaviour, IDamage
 
     public virtual void takeDamage(int amount)
     {
-        enemyCurrentHealthPoints -= amount;
 
-        GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+        if (shield > 0)
+        {
+            shield -= amount;
+            GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+
+            if (shield <= 0)
+            {
+                shield = 0;
+
+                shieldPrefab.SetActive(false);
+                armor -= amount;
+                GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+            }
+
+        }
+
+        else if (armor > 0)
+        {
+            armor -= amount;
+            GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+
+            if (armor <= 0 && shield <= 0)
+            {
+
+                armor = 0;
+                shield = 0;
+                armorPrefab.SetActive(false);
+                GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+            }
+        }
+        else
+        {
+            enemyCurrentHealthPoints -= amount;
+            GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+        }
+        //GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
 
         if (enemyCurrentHealthPoints <= 0)
         {
@@ -147,8 +190,42 @@ public class EnemyAIBase : MonoBehaviour, IDamage
         }
         else
         {
-           StartCoroutine(enemyFlashRead());
+            StartCoroutine(enemyFlashRead());
         }
+    }
+
+    public void takeDamage(int amount, StatusEffectData effect)
+    {
+        switch (effect.statusType)
+        {
+
+            case DamageStatus.None:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Fire:
+
+                if (shield <= 0 && armor <= 0 && enemyCurrentHealthPoints > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                break;
+
+            case DamageStatus.Corrosive:
+
+                if (shield <= 0 && armor > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                break;
+
+            default:
+                break;
+        }
+
+
+
     }
 
     protected virtual IEnumerator enemyFlashRead()
@@ -166,3 +243,4 @@ public class EnemyAIBase : MonoBehaviour, IDamage
         }
     }
 }
+

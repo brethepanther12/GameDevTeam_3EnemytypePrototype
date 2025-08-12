@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.LowLevel;
+using static UnityEngine.Rendering.DebugUI;
 public class FlyingAI : MonoBehaviour, IDamage, Visibility
 {
     [SerializeField] private Transform target;
@@ -47,6 +48,12 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     [SerializeField] private int HP;
     private int currentHP;
     private bool Dead;
+
+    [SerializeField] public int shield;
+    [SerializeField] public int armor;
+
+    [SerializeField] public GameObject shieldPrefab;
+    [SerializeField] public GameObject armorPrefab;
 
     //Upon getting hit
     [SerializeField] private AudioClip hitSound;
@@ -331,18 +338,90 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         if (Dead) return;
 
-        currentHP -= amount;
+        if (shield > 0)
+        {
+            shield -= amount;
+            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+            StartCoroutine(FlashRed());
+
+            if (shield <= 0)
+            {
+                shield = 0;
+
+                shieldPrefab.SetActive(false);
+                armor -= amount;
+                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+                StartCoroutine(FlashRed());
+
+            }
+
+        }
+
+        else if (armor > 0)
+        {
+            armor -= amount;
+
+            if (armor <= 0 && shield <= 0)
+            {
+
+                armor = 0;
+                shield = 0;
+                armorPrefab.SetActive(false);
+                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+                StartCoroutine(FlashRed());
+            }
+        }
+        else
+        {
+            currentHP -= amount;
+            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+            StartCoroutine(FlashRed());
+        }
 
         if (currentHP <= 0)
         {
             //Die method
             Die();
         }
-        else
+        //else
+        //{
+        //    AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+        //    StartCoroutine(FlashRed());
+        //}
+
+    }
+
+    public void takeDamage(int amount, StatusEffectData effect)
+    {
+        switch (effect.statusType)
         {
-            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-            StartCoroutine(FlashRed());
+
+            case DamageStatus.None:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Fire:
+
+                if (shield <= 0 && armor <= 0 && HP > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                break;
+
+            case DamageStatus.Corrosive:
+
+                if (shield <= 0 && armor > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                break;
+
+            default:
+                break;
         }
+
+
 
     }
 
