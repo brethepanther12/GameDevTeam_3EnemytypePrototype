@@ -316,6 +316,9 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
         
         if (HP <= 0)
         {
+
+            shieldPrefab.SetActive(false);
+            armorPrefab.SetActive(false);
             isDead = true;
 
             if(reloadingRT != null)
