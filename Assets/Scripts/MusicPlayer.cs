@@ -11,6 +11,15 @@ public class MusicPlayer : MonoBehaviour
     [SerializeField] AudioClip bossFight;
 
     AudioSource audioSource;
+    public float Volume
+    {
+        get => audioSource != null ? audioSource.volume : 1f;
+        set
+        {
+            if (audioSource != null)
+                audioSource.volume = Mathf.Clamp01(value);
+        }
+    }
 
     void Awake()
     {
@@ -25,6 +34,7 @@ public class MusicPlayer : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
+
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
