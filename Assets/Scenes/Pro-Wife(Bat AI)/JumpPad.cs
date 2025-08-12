@@ -21,16 +21,18 @@ public class JumpPad : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-
-        if (playerReference != null)
+        playerController pc = other.GetComponent<playerController>();
+        if (pc != null)
         {
             playerInPad = true;
+            playerReference = pc;
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (playerReference != null)
+        playerController pc = other.GetComponent<playerController>();
+        if (pc != null && pc == playerReference)
         {
             playerInPad = false;
             playerReference = null;
