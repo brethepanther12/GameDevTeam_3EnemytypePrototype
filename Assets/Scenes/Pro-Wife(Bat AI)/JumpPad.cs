@@ -9,7 +9,7 @@ public class JumpPad : MonoBehaviour
 
     private void Update()
     {
-        if (playerInPad && Input.GetKeyDown("Jump"))
+        if (playerInPad && Input.GetButtonDown("Jump"))
         {
             //Player Get methods here
             Vector3 vel = playerReference.GetVerticalVelocity();
