@@ -53,7 +53,8 @@ public class gamemanager : MonoBehaviour
 
     int gameGoalCount;
 
-
+    public enum DifficultyLevels{easy,normal,hard}
+    public DifficultyLevels currentDifficulty;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -64,6 +65,8 @@ public class gamemanager : MonoBehaviour
         playerScript = player.GetComponent<playerController>();
         timescaleOrig = Time.timeScale;
         PlayerSpawnPOS = GameObject.FindWithTag("Player Spawn POS");
+        currentDifficulty = DifficultyLevels.easy;
+        loadDifficulty();
     }
 
     // Update is called once per frame
@@ -123,6 +126,7 @@ public class gamemanager : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
     }
+
     public void openInventory()
     {
         statePause();
@@ -139,6 +143,7 @@ public class gamemanager : MonoBehaviour
 
     public void TriggerWinScreen()
     {
+        unlockNextDifficulty(currentDifficulty);
         statePause();
         menuActive = menuWin;
         menuActive.SetActive(true);
@@ -204,5 +209,55 @@ public class gamemanager : MonoBehaviour
         menuOptions.SetActive(false);
         menuPause.SetActive(true);
         menuActive = menuPause;
+    }
+
+    public bool IsDifficultyLocked(DifficultyLevels difficulty)
+    {
+        if (difficulty == DifficultyLevels.easy)
+        {
+            return false;
+        }
+
+        string key = "DifficultyUnlocked_" + difficulty.ToString();
+        return PlayerPrefs.GetInt(key, 0) == 0;
+    }
+
+    public void unlockDifficultyLevel(DifficultyLevels difficulty)
+    {
+        string key = "DifficultyUnlocked_" + difficulty.ToString();
+        PlayerPrefs.SetInt(key, 1);
+        PlayerPrefs.Save();
+    }
+    private void unlockNextDifficulty(DifficultyLevels completed)
+    {
+        if (completed == DifficultyLevels.easy)
+        {
+            unlockDifficultyLevel(DifficultyLevels.normal);
+        }
+        else if (completed == DifficultyLevels.normal)
+        {
+            unlockDifficultyLevel(DifficultyLevels.hard);
+        }
+    }
+
+    public void SetDifficulty(DifficultyLevels difficulty)
+    {
+        if(!IsDifficultyLocked(difficulty))
+        {
+            currentDifficulty = difficulty;
+            PlayerPrefs.SetInt("CurrentDifficulty", (int)difficulty);
+            PlayerPrefs.Save();
+            Debug.Log($"Difficulty set to {difficulty}");
+        }
+        else
+        {
+            Debug.LogWarning($"{difficulty} is locked");
+        }
+    }
+
+    private void loadDifficulty()
+    {
+        int saved = PlayerPrefs.GetInt("CurrentDifficulty", 0);
+        currentDifficulty = (DifficultyLevels)saved;
     }
 }
