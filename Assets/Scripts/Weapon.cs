@@ -22,6 +22,7 @@ public class Weapon : MonoBehaviour
     public int fireModeIndex;
     public FireModeData FMData;
 
+
     //Info for shooting
     public Transform leftHandGrip;
     public GameObject bullet;
@@ -68,15 +69,7 @@ public class Weapon : MonoBehaviour
         currentFireMode = weaponData.savedMode;
         FMData = weaponData.GetFireModeData(currentFireMode);
         ApplyFireModeStats();
-        //wepDmg = FMData.damage;
-        //attackRate = FMData.fireRate;
-        //range = weaponData.range;
-        //magSize = weaponData.magSize;
-        //ammoMax = weaponData.ammoMax;
-        //pellets = weaponData.pelletCount;
-        //spread = weaponData.pelletSpread;
-        //ammoType = weaponData.ammoType;
-        //bullet = weaponData.bullet;
+
         impactSound = weaponData.impactSound;
         impactVolume = weaponData.impactVolume;
         reloadSound = weaponData.reloadSound;
@@ -169,7 +162,8 @@ public class Weapon : MonoBehaviour
     {
 
         FMData = weaponData.GetFireModeData(currentFireMode);
-
+        
+        
         wepDmg = FMData.damage;
         attackRate = FMData.fireRate;
         range = FMData.range;
@@ -242,6 +236,11 @@ public class Weapon : MonoBehaviour
         GameObject bulletObj = Instantiate(bullet, shootPos.position, Quaternion.LookRotation(direction));
         damage dmgScript = bulletObj.GetComponent<damage>();
         if (dmgScript != null)
+
+            if (FMData.effectData.statusType != DamageStatus.None)
+            {
+                dmgScript.SetStatusData(FMData.effectData);
+            }
             dmgScript.SetWeaponDamage(wepDmg);
 
         equippedPlayer.updatePlayerUI();

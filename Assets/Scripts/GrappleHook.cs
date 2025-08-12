@@ -151,6 +151,10 @@ public class GrappleHook : MonoBehaviour
 
             if (grappledEnemy.TryGetComponent<ItemPickup>(out ItemPickup pickup))
             {
+                if(grappledEnemy.TryGetComponent<PickupMotion>(out PickupMotion motion))
+                {
+                    motion.isBeingPulled = false;
+                }
 
                 grappledEnemy = null;
                 grappledAgent = null;
