@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MovingPlatform : MonoBehaviour
+public class MovingPlatformNonStick : MonoBehaviour
 {
 
     public Transform pointA;
