@@ -48,6 +48,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
 
     [SerializeField] GameObject bullet;
     [SerializeField] float shootRate;
+    [SerializeField] StatusEffectData statusEffectData;
 
     Color colorOrig;
 
@@ -371,6 +372,13 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
         Instantiate(bullet, shootPos.position, transform.rotation);
 
         AudioSource.PlayClipAtPoint(shootSound, shootPos.position);
+
+        damage dmgScript = bullet.GetComponent<damage>();
+
+        if (statusEffectData.statusType != DamageStatus.None)
+        {
+            dmgScript.SetStatusData(statusEffectData);
+        }
     }
 
     IEnumerator Reload()
