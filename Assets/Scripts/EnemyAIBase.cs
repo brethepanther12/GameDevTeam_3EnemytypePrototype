@@ -144,6 +144,7 @@ public class EnemyAIBase : MonoBehaviour, IDamage
         {
             gamemanager.instance.updateGameGoal(-1);
             enemyDeath();
+            ScoreManager.instance.AddPointsForEnemy(gameObject.tag);
         }
         else
         {

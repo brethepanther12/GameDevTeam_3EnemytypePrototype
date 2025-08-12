@@ -120,7 +120,10 @@ public class gamemanager : MonoBehaviour
         EnemiesRemaining.text = gameGoalCount.ToString("F0");
         if (gameGoalCount <= 0)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            int currentIndex = SceneManager.GetActiveScene().buildIndex;
+            int summarySceneIndex = currentIndex + 1; 
+
+            SceneManager.LoadScene(summarySceneIndex);
         }
     }
     public void openInventory()
