@@ -7,11 +7,6 @@ public class JumpPad : MonoBehaviour
     private bool playerInPad;
     private playerController playerReference;
 
-    private void Start()
-    {
-        playerReference = GetComponent<playerController>();
-    }
-
     private void Update()
     {
         if (playerInPad && Input.GetKeyDown("Jump"))
