@@ -19,8 +19,22 @@ public class PickupMotion : MonoBehaviour
     private float bounceFrequency;
     private float timeOffset;
 
-    public bool isBeingPulled = false;
-    
+    //public bool isBeingPulled = false;
+    private bool _isBeingPulled;
+    public bool isBeingPulled
+    {
+        get => _isBeingPulled;
+        set
+        {
+            if (_isBeingPulled && !value)
+            {
+                // was pulling, now stopped >> reset idle spot
+                startLocalPos = transform.localPosition;
+            }
+            _isBeingPulled = value;
+        }
+    }
+
 
     void Start()
     {
@@ -34,16 +48,14 @@ public class PickupMotion : MonoBehaviour
 
     void Update()
     {
-        if (isBeingPulled)
-        {
-            return;
-        }
 
         transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime, Space.World);
 
-        float offsetY = Mathf.Sin(Time.time * bounceFrequency + timeOffset) * bounceAmplitude;
-        transform.localPosition = startLocalPos + Vector3.up * offsetY;
-
+        if (!isBeingPulled)
+        {
+            float offsetY = Mathf.Sin(Time.time * bounceFrequency + timeOffset) * bounceAmplitude;
+            transform.localPosition = startLocalPos + Vector3.up * offsetY;
+        }
 
 
     }

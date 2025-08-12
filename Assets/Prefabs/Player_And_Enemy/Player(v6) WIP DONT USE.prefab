@@ -1163,10 +1163,10 @@ MonoBehaviour:
   gravity: 10
   magazineSize: 15
   reserveAmmo: 90
-  shield: 0
-  maxShield: 10
-  armor: 0
-  maxArmor: 10
+  shield: 25
+  maxShield: 25
+  armor: 25
+  maxArmor: 25
   shootDamage: 1
   meleeDamage: 1
   shootRate: 0.1
@@ -1300,7 +1300,7 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 3
+  m_Height: 2.5
   m_Radius: 0.5
   m_SlopeLimit: 45
   m_StepOffset: 0.3

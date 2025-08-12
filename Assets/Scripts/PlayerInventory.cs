@@ -111,7 +111,7 @@ public class PlayerInventory : MonoBehaviour
             currentWeaponScript.InitializeWeapon(equippedWeapon, refillMag: false);
             currentWeaponScript.SetAmmoState(equippedWeapon.currentAmmoInMag, equippedWeapon.currentAmmoInReserve);
             currentWeaponScript.muzzleFlash = playerRef.playerMuzzleFlash;
-            
+            currentWeaponScript.currentFireMode = equippedWeapon.savedMode;
 
         }
     }
