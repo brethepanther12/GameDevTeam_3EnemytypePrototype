@@ -1,10 +1,12 @@
 using UnityEngine;
 using System.Collections;
+using System;
 
 public class damage : MonoBehaviour
 {
 
     public enum damagetype { moving, stationary, DOT, homing, explosion }
+
     [SerializeField] damagetype type;
     [SerializeField] public Rigidbody rb;
 
@@ -19,6 +21,11 @@ public class damage : MonoBehaviour
 
     bool isDamaging;
     public int weaponDMG;
+    public DamageStatus currentStatus;
+    public StatusEffectData currentStatusData;
+
+    public StatusEffectHandler statusTarget;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -56,10 +63,17 @@ public class damage : MonoBehaviour
 
         IDamage dmg = other.GetComponent<IDamage>();
 
+        if (other.GetComponent<StatusEffectHandler>() != null)
+        {
+            statusTarget = other.GetComponent<StatusEffectHandler>();
+            statusTarget.ApplyStatusEffect(currentStatusData, dmg);
+        }
+
         if (dmg != null && type != damagetype.DOT)
         {
 
             dmg.takeDamage(damageAmount + weaponDMG);
+
 
             if (other.CompareTag("Enemy"))
             {
@@ -78,6 +92,7 @@ public class damage : MonoBehaviour
             if (Physics.Raycast(rayOrigin, rayDirection, out hit, 1f, ~0, QueryTriggerInteraction.Ignore))
             {
                 Instantiate(impactPrefab, hit.point, Quaternion.LookRotation(hit.normal));
+                impactPrefab.transform.SetParent(hit.collider.transform, worldPositionStays: true);
             }
             else
             {
@@ -99,6 +114,7 @@ public class damage : MonoBehaviour
         if (impactPrefab != null && !isDamaging)
         {
             Instantiate(impactPrefab, transform.position, Quaternion.LookRotation(transform.forward));
+
         }
         IDamage dmg = other.GetComponent<IDamage>();
 
@@ -126,5 +142,11 @@ public class damage : MonoBehaviour
 
         yield return new WaitForSeconds(damageRate);
         isDamaging = false;
+    } 
+
+    public void SetStatusData(StatusEffectData statusData)
+    {
+        currentStatusData = statusData;
     }
+
 }
