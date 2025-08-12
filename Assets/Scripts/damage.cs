@@ -91,12 +91,13 @@ public class damage : MonoBehaviour
 
             if (Physics.Raycast(rayOrigin, rayDirection, out hit, 1f, ~0, QueryTriggerInteraction.Ignore))
             {
-                Instantiate(impactPrefab, hit.point, Quaternion.LookRotation(hit.normal));
-                impactPrefab.transform.SetParent(hit.collider.transform);
-            }
-            else
-            {
-                Instantiate(impactPrefab, transform.position, Quaternion.LookRotation(-transform.forward));
+                GameObject splatInstance = Instantiate(
+                    impactPrefab,
+                    hit.point,
+                    Quaternion.LookRotation(-hit.normal)
+                );
+
+                splatInstance.transform.SetParent(hit.collider.transform, worldPositionStays: true);
             }
         }
         if (type == damagetype.moving || type == damagetype.homing)
@@ -111,7 +112,7 @@ public class damage : MonoBehaviour
         if (other.isTrigger)
             return;
 
-        if (impactPrefab != null && !isDamaging)
+        if (type == damagetype.DOT && impactPrefab != null && !isDamaging)
         {
             Instantiate(impactPrefab, transform.position, Quaternion.LookRotation(transform.forward));
 
