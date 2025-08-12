@@ -58,7 +58,7 @@ public class StatusEffectHandler : MonoBehaviour
 
         while (timeElapsed < burnData.statusDuration)
         {
-
+            
             target.takeDamage(burnData.statusDamage);
 
             yield return new WaitForSeconds(burnData.statusTickRate);
