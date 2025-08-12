@@ -173,7 +173,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     {
         if (controller != null) 
         { 
-            if (hit.collider.CompareTag("MovingPlatform"))
+            if (hit.collider.CompareTag("Moving Platform"))
                 targetPlatform = hit.collider.GetComponent<MovingPlatformStick>();
             else
                 targetPlatform = null;
