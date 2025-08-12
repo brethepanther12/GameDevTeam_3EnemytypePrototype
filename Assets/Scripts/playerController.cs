@@ -169,6 +169,17 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         playerVel.y -= gravity * Time.deltaTime;
     }
 
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (controller != null) 
+        { 
+            if (hit.collider.CompareTag("MovingPlatform"))
+                targetPlatform = hit.collider.GetComponent<MovingPlatformStick>();
+            else
+                targetPlatform = null;
+        }
+    }
+
     void HandleFootsteps()
     {
         float velocity = controller.velocity.magnitude;
