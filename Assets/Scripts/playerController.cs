@@ -473,6 +473,16 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         return isVisible;
     }
 
+    public Vector3 GetVerticalVelocity()
+    {
+        return playerVel;
+    }
+
+    public void SetVerticalVelocity(Vector3 velocity)
+    {
+        playerVel = velocity;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Smoke"))
