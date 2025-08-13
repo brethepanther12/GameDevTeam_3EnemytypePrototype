@@ -317,6 +317,10 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
                 {
                     takeDamage(amount + 1);
                 }
+                else
+                {
+                    takeDamage(amount);
+                }
                 break;
 
             case DamageStatus.Corrosive:
@@ -324,6 +328,10 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
                 if (shield <= 0 && armor > 0)
                 {
                     takeDamage(amount + 1);
+                }
+                else
+                {
+                    takeDamage(amount);
                 }
                 break;
 

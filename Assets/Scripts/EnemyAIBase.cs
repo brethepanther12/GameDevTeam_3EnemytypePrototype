@@ -210,6 +210,10 @@ public class EnemyAIBase : MonoBehaviour, IDamage
                 {
                     takeDamage(amount + 1);
                 }
+                else
+                {
+                    takeDamage(amount);
+                }
                 break;
 
             case DamageStatus.Corrosive:
@@ -217,6 +221,10 @@ public class EnemyAIBase : MonoBehaviour, IDamage
                 if (shield <= 0 && armor > 0)
                 {
                     takeDamage(amount + 1);
+                }
+                else
+                {
+                    takeDamage(amount);
                 }
                 break;
 

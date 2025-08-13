@@ -406,8 +406,11 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
                 if (shield <= 0 && armor <= 0 && HP > 0)
                 {
                     takeDamage(amount + 1);
+                } else
+                {
+                    takeDamage(amount);
                 }
-                break;
+                    break;
 
             case DamageStatus.Corrosive:
 
@@ -415,7 +418,11 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
                 {
                     takeDamage(amount + 1);
                 }
-                break;
+                else
+                {
+                    takeDamage(amount);
+                }
+                    break;
 
             default:
                 break;

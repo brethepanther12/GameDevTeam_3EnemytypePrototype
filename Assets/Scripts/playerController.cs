@@ -284,13 +284,21 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 {
                     takeDamage(amount + 1);
                 }
-                break;
+                else
+                {
+                    takeDamage(amount);
+                }
+                    break;
 
             case DamageStatus.Corrosive:
 
                 if (shield <= 0 && armor > 0)
                 {
                     takeDamage(amount + 1);
+                }
+                else
+                {
+                    takeDamage(amount);
                 }
                 break;
 
