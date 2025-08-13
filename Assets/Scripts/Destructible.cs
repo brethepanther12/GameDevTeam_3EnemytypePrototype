@@ -50,6 +50,11 @@ public class Destructible : MonoBehaviour, IDamage
                 takeDamage(amount);
                 break;
 
+            case DamageStatus.Electric:
+
+                takeDamage(amount);
+                break;
+
             default:
                 break;
         }

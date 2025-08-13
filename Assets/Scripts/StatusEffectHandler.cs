@@ -52,6 +52,12 @@ public class StatusEffectHandler : MonoBehaviour
                 target.slowDown(data.slowDownMagnitude, data.statusDuration);
                 break;
 
+            case DamageStatus.Electric:
+
+                Debug.LogWarning("Electric status effect applied");
+                target.slowDown(data.slowDownMagnitude, data.statusDuration);
+                break;
+
             default:
                 Debug.LogWarning($"Unhandled status effect: {data.statusType}");
                 yield break;

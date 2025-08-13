@@ -237,6 +237,18 @@ public class EnemyAIBase : MonoBehaviour, IDamage
                 takeDamage(amount);
                 break;
 
+            case DamageStatus.Electric:
+
+                if (shield > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                else
+                {
+                    takeDamage(amount);
+                }
+                break;
+
             default:
                 break;
         }
