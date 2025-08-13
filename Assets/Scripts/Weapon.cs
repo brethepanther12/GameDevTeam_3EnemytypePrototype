@@ -102,6 +102,11 @@ public class Weapon : MonoBehaviour
 
         CheckReticleTarget();
 
+
+        if (gamemanager.instance.isPaused)
+            return;
+
+
         if (currentFireMode == FireMode.Semi)
         {
 
