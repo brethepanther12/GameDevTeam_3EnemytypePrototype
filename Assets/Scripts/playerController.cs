@@ -1,7 +1,8 @@
-using UnityEngine;
 using System.Collections;
-using Unity.VisualScripting;
 using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class playerController : MonoBehaviour, IDamage, Visibility
 {
@@ -15,7 +16,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     [SerializeField] int HP;
     [SerializeField] int maxHP;
-    [SerializeField] int speed;
+    [SerializeField] float speed;
     [SerializeField] int sprintMod;
     [SerializeField] int jumpVel;
     [SerializeField] int jumpMax;
@@ -327,6 +328,11 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 }
                 break;
 
+            case DamageStatus.Cryo:
+
+                takeDamage(amount);
+                break;
+
             default:
                 break;
         }
@@ -568,6 +574,28 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     public void slowDown(float magnitude, float duration)
     {
-        throw new System.NotImplementedException();
+        if (slowRoutine != null)
+        {
+            StopCoroutine(slowRoutine);
+        }
+
+        slowRoutine = StartCoroutine(SlowRoutine(magnitude, duration));
+    }
+
+    private IEnumerator SlowRoutine(float magnitude, float duration)
+    {
+        
+        if (this == null) yield break;
+
+        if (originalSpeed == 0f)
+            originalSpeed = speed;
+
+        float slowedSpeed = originalSpeed * (1f - magnitude);
+        speed = slowedSpeed;
+
+        yield return new WaitForSeconds(duration);
+
+        speed = originalSpeed;
+        slowRoutine = null;
     }
 }

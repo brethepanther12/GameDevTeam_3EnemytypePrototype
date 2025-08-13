@@ -420,6 +420,11 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
                 }
                     break;
 
+            case DamageStatus.Cryo:
+
+                takeDamage(amount);
+                break;
+
             default:
                 break;
         }

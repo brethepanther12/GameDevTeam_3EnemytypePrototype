@@ -373,6 +373,11 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
                 }
                 break;
 
+            case DamageStatus.Cryo:
+
+                takeDamage(amount);
+                break;
+
             default:
                 break;
         }

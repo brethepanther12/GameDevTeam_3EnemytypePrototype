@@ -232,6 +232,11 @@ public class EnemyAIBase : MonoBehaviour, IDamage
                 }
                 break;
 
+            case DamageStatus.Cryo:
+
+                takeDamage(amount);
+                break;
+
             default:
                 break;
         }

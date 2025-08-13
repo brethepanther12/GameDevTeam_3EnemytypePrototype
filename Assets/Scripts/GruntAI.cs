@@ -342,6 +342,11 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
                 }
                 break;
 
+            case DamageStatus.Cryo:
+
+                takeDamage(amount);
+                break;
+
             default:
                 break;
         }
