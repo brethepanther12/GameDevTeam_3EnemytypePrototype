@@ -380,7 +380,9 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         if (currentHP <= 0)
         {
             //Die method
+
             Die();
+            ScoreManager.instance.AddPointsForEnemy(gameObject.tag);
         }
 
     }

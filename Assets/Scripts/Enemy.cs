@@ -326,7 +326,8 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
             armorPrefab.SetActive(false);
             isDead = true;
 
-            if(reloadingRT != null)
+
+            if (reloadingRT != null)
             {
                 StopCoroutine(reloadingRT);
                 reloadingRT = null;
@@ -336,6 +337,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
             animator.ResetTrigger("Reload");
             animator.CrossFade("Death", 0f);
             StartCoroutine(Die());
+            ScoreManager.instance.AddPointsForEnemy(gameObject.tag);
 
         }
         else

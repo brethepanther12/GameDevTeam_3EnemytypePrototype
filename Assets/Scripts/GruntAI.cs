@@ -289,6 +289,7 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
         {
             isDead = true;
 
+
             if (reloadingRT != null)
             {
                 StopCoroutine(reloadingRT);
@@ -297,6 +298,7 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
 
             animator.SetBool("isdead", true);
             StartCoroutine(Die());
+            ScoreManager.instance.AddPointsForEnemy(gameObject.tag);
 
         }
         else
