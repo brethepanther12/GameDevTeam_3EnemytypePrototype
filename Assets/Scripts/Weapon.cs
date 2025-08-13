@@ -414,6 +414,7 @@ public class Weapon : MonoBehaviour
     }
     IEnumerator Reload()
     {
+
         equippedPlayer.isReloading = true;
 
         if (reloadSound != null)

@@ -108,6 +108,9 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         movement();
         HandleWeaponSwitching();
 
+        if (gamemanager.instance.isPaused)
+            return;
+
         if (Input.GetKeyDown(KeyCode.R))
         {
             if (animator != null)

@@ -126,7 +126,7 @@ public class PlayerInventory : MonoBehaviour
 
     public void SwitchWeapon(int direction)
     {
-        if (weaponInventory.Count == 0)
+        if (weaponInventory.Count == 0 || gamemanager.instance.isPaused)
         {
             return;
         }
