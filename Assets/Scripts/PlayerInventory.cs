@@ -71,6 +71,12 @@ public class PlayerInventory : MonoBehaviour
     }
     public void AddWeapon(WeaponSO newWeapon)
     {
+
+        if (newWeapon == null)
+        {
+            return;
+        }
+
         if (!weaponInventory.Contains(newWeapon))
         {
             weaponInventory.Add(newWeapon);
@@ -87,7 +93,7 @@ public class PlayerInventory : MonoBehaviour
 
     public void EquipWeapon()
     {
-        if (weaponInventory.Count == 0)
+        if (weaponInventory.Count == 0 || weaponInventory[weaponListPos] == null)
         {
             return;
         }
