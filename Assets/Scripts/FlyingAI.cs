@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.LowLevel;
+using static UnityEngine.Rendering.DebugUI;
 public class FlyingAI : MonoBehaviour, IDamage, Visibility
 {
     [SerializeField] private Transform target;
@@ -8,24 +9,25 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     private GameObject playerTarget;
     private float playerLostTimer;
 
+    [Header("\"--- Flying & Rotation ---\"")]
     [SerializeField] private float flyingSpeed;
     [SerializeField] private float rotationSpeed;
     Vector3 playerDirection;
 
     [SerializeField] private Rigidbody rigidBody;
 
-    //Damage
+    [Header("\"--- Damage ---\"")]
     [SerializeField] private float damageRate;
     [SerializeField] private int damageAmount;
     private bool isDamaging;
     damage Damage;
     IDamage iDamage;
 
-    //Hover off floor
+    [Header("\"--- Hover ---\"")]
     [SerializeField] private float hoverHeight;
     [SerializeField] private float hoverClamp;
 
-    //Ceiling variables
+    [Header("\"--- Ceiling ---\"")]
     [SerializeField] private float ceilingInRadius;
     [SerializeField] private float ceilingAttachmentRange;
     //[SerializeField] private float ceilingHeightOff;
@@ -35,7 +37,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     private Vector3 ceilingTarget;
     private Vector3 ceilingPoint;
 
-    //Fov
+    [Header("\"--- Field of View ---\"")]
     [SerializeField] private float fovDistance;
     [SerializeField] private float fovAngle;
     [SerializeField] private LayerMask enviormentMask;
@@ -43,18 +45,24 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     private bool InRange;
     private bool isBlind;
 
-    //Health
+    [Header("\"--- Health ---\"")]
     [SerializeField] private int HP;
     private int currentHP;
     private bool Dead;
 
-    //Upon getting hit
+    [SerializeField] public int shield;
+    [SerializeField] public int armor;
+
+    [SerializeField] public GameObject shieldPrefab;
+    [SerializeField] public GameObject armorPrefab;
+
+    [Header("\"--- Audio ---\"")]
     [SerializeField] private AudioClip hitSound;
     [SerializeField] private AudioClip deathSound;
     [SerializeField] private float hitVolume;
     [SerializeField] private float deathVolume;
 
-    //Render
+    [Header("\"--- Model ---\"")]
     [SerializeField] private Renderer modelRender;
     private Color originColor;
 
@@ -320,18 +328,50 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
     }
 
-    //void faceTarget()
-    //{
-    //    Quaternion rotate = Quaternion.LookRotation(new Vector3(playerDirection.x, 0, playerDirection.z));
-    //    transform.rotation = Quaternion.Lerp(transform.rotation, rotate, Time.deltaTime * faceTargetSpeed);
-    //}
-
     public void takeDamage(int amount)
     {
 
         if (Dead) return;
 
-        currentHP -= amount;
+        if (shield > 0)
+        {
+            shield -= amount;
+            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+            StartCoroutine(FlashRed());
+
+            if (shield <= 0)
+            {
+                shield = 0;
+
+                shieldPrefab.SetActive(false);
+                armor -= amount;
+                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+                StartCoroutine(FlashRed());
+
+            }
+
+        }
+
+        else if (armor > 0)
+        {
+            armor -= amount;
+
+            if (armor <= 0 && shield <= 0)
+            {
+
+                armor = 0;
+                shield = 0;
+                armorPrefab.SetActive(false);
+                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+                StartCoroutine(FlashRed());
+            }
+        }
+        else
+        {
+            currentHP -= amount;
+            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+            StartCoroutine(FlashRed());
+        }
 
         if (currentHP <= 0)
         {
@@ -340,11 +380,47 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             Die();
             ScoreManager.instance.AddPointsForEnemy(gameObject.tag);
         }
-        else
+
+    }
+
+    public void takeDamage(int amount, StatusEffectData effect)
+    {
+        switch (effect.statusType)
         {
-            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-            StartCoroutine(FlashRed());
+
+            case DamageStatus.None:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Fire:
+
+                if (shield <= 0 && armor <= 0 && HP > 0)
+                {
+                    takeDamage(amount + 1);
+                } else
+                {
+                    takeDamage(amount);
+                }
+                    break;
+
+            case DamageStatus.Corrosive:
+
+                if (shield <= 0 && armor > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                else
+                {
+                    takeDamage(amount);
+                }
+                    break;
+
+            default:
+                break;
         }
+
+
 
     }
 

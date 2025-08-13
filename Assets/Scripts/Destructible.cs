@@ -25,6 +25,34 @@ public class Destructible : MonoBehaviour, IDamage
         }
     }
 
+    public void takeDamage(int amount, StatusEffectData effect)
+    {
+        switch (effect.statusType)
+        {
+
+            case DamageStatus.None:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Fire:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Corrosive:
+
+                takeDamage(amount + 1);
+                break;
+
+            default:
+                break;
+        }
+
+
+
+    }
+
     public IEnumerator FlashWhite()
     {
         model.material.color = Color.white;

@@ -46,6 +46,8 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     public GameObject weaponSocket;
     public int jumpCur;
 
+    private MovingPlatformStick targetPlatform;
+
     float stepTimer = 0f;
     public bool isReloading;
     public bool isVisible;
@@ -145,7 +147,15 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         }
 
         moveDir = (Input.GetAxis("Horizontal") * transform.right) + (Input.GetAxis("Vertical") * transform.forward);
-        controller.Move(moveDir * speed * Time.deltaTime);
+
+        //Getting platform velocity
+        Vector3 movePlatform = Vector3.zero;
+        if (targetPlatform != null)
+        {
+            movePlatform = targetPlatform.GetPlatformVelocity();
+        }
+
+        controller.Move(moveDir * speed * Time.deltaTime + movePlatform * Time.deltaTime);
 
         float horizontalSpeed = new Vector3(controller.velocity.x, 0, controller.velocity.z).magnitude;
         if (animator != null)
@@ -157,6 +167,17 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         jump();
         controller.Move(playerVel * Time.deltaTime);
         playerVel.y -= gravity * Time.deltaTime;
+    }
+
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (controller != null) 
+        { 
+            if (hit.collider.CompareTag("Moving Platform"))
+                targetPlatform = hit.collider.GetComponent<MovingPlatformStick>();
+            else
+                targetPlatform = null;
+        }
     }
 
     void HandleFootsteps()
@@ -199,7 +220,11 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 animator.SetTrigger("Jump");
             }
 
-            playerVel.y = jumpVel;
+            if(playerVel.y < jumpVel)
+            {
+                playerVel.y = jumpVel;
+            }
+
             jumpCount++;
             jumpCur = jumpCount;
             updatePlayerUI();
@@ -262,6 +287,48 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         {
             gamemanager.instance.youLose();
         }
+    }
+
+    public void takeDamage(int amount, StatusEffectData effect)
+    {
+        switch (effect.statusType)
+        {
+
+            case DamageStatus.None:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Fire:
+
+                if (shield <= 0 && armor <= 0 && HP > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                else
+                {
+                    takeDamage(amount);
+                }
+                    break;
+
+            case DamageStatus.Corrosive:
+
+                if (shield <= 0 && armor > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                else
+                {
+                    takeDamage(amount);
+                }
+                break;
+
+            default:
+                break;
+        }
+
+
+
     }
 
     public void Heal(int amount, bool doesIncreaseMax)
@@ -471,6 +538,16 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     public bool IsInvisible()
     {
         return isVisible;
+    }
+
+    public Vector3 GetVerticalVelocity()
+    {
+        return playerVel;
+    }
+
+    public void SetVerticalVelocity(Vector3 velocity)
+    {
+        playerVel = velocity;
     }
 
     private void OnTriggerEnter(Collider other)

@@ -8,85 +8,56 @@ using UnityEngine;
 public enum DamageStatus { None, Fire, Corrosive, Cryo, Electric, Explosive, Plasma, AP }
 public class StatusEffectHandler : MonoBehaviour
 {
-    public StatusEffectData currentEffectData;
-    public List<StatusEffectData> currentStatuses = new List<StatusEffectData>();
+    private Dictionary<DamageStatus, Coroutine> activeEffects = new();
 
     public void ApplyStatusEffect(StatusEffectData effectData, IDamage dmgTarget)
     {
-        currentEffectData = effectData;
         DamageStatus type = effectData.statusType;
 
-        if (type == DamageStatus.None || currentStatuses.Contains(effectData))
+        if (type == DamageStatus.None)
         {
-            Debug.Log($"Skipping status {type}, already active or none");
+            Debug.Log($"Skipping status {type}");
             return;
         }
 
-        currentStatuses.Add(effectData);
-
-        switch (type)
+        // Prevent duplicate effect of same type
+        if (activeEffects.ContainsKey(type))
         {
+            Debug.Log($"Refreshing status {type}");
+            StopCoroutine(activeEffects[type]);
+            activeEffects.Remove(type);
+        }
 
-            case DamageStatus.None:
+        Coroutine effectRoutine = StartCoroutine(RunEffect(effectData, dmgTarget));
+        activeEffects[type] = effectRoutine;
+    }
 
-                Debug.LogWarning($"No status effect applied");
-                break;
+    private IEnumerator RunEffect(StatusEffectData data, IDamage target)
+    {
+        float timeElapsed = 0f;
 
+        switch (data.statusType)
+        {
             case DamageStatus.Fire:
-
-                Debug.LogWarning($"Fire status effect applied");
-                StartCoroutine(ApplyBurnDamage(dmgTarget));
+                Debug.LogWarning("Fire status effect applied");
                 break;
 
             case DamageStatus.Corrosive:
-
-                Debug.LogWarning($"Corrosive status effect applied");
-                StartCoroutine(ApplyCorrosiveDamage(dmgTarget));
+                Debug.LogWarning("Corrosive status effect applied");
                 break;
 
             default:
-
-                break;
+                Debug.LogWarning($"Unhandled status effect: {data.statusType}");
+                yield break;
         }
-    }
 
-    public IEnumerator ApplyBurnDamage(IDamage target)
-    {
-
-        float timeElapsed = 0f;
-        StatusEffectData burnData = currentEffectData;
-
-        while (timeElapsed < burnData.statusDuration)
+        while (timeElapsed < data.statusDuration)
         {
-
-            target.takeDamage(burnData.statusDamage);
-
-            yield return new WaitForSeconds(burnData.statusTickRate);
-
-            timeElapsed += burnData.statusTickRate;
+            target.takeDamage(data.statusDamage, data);
+            yield return new WaitForSeconds(data.statusTickRate);
+            timeElapsed += data.statusTickRate;
         }
 
-        currentStatuses.Remove(currentEffectData);
-
-    }
-
-    public IEnumerator ApplyCorrosiveDamage(IDamage target)
-    {
-
-        float timeElapsed = 0f;
-        StatusEffectData burnData = currentEffectData;
-
-        while (timeElapsed < burnData.statusDuration)
-        {
-
-            target.takeDamage(burnData.statusDamage);
-
-            yield return new WaitForSeconds(burnData.statusTickRate);
-
-            timeElapsed += burnData.statusTickRate;
-        }
-
-        currentStatuses.Remove(currentEffectData);
-
+        activeEffects.Remove(data.statusType);
     }
 }

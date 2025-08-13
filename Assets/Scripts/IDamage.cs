@@ -2,5 +2,6 @@ using UnityEngine;
 
 public interface IDamage
 {
-    void takeDamage(int amount);
+    public void takeDamage(int amount);
+    public void takeDamage(int amount, StatusEffectData effect);
 }
