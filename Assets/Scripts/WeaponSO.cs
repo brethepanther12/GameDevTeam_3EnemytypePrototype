@@ -28,6 +28,7 @@ public class FireModeData
     public int damage;
     public int range;
     public float fireRate;
+    //public int magSize;
     public int burstCount;
     public float burstRate;
     public float chargeTime;

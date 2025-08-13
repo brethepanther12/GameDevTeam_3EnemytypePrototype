@@ -22,10 +22,12 @@ public class PlayerInventory : MonoBehaviour
     private Dictionary<AmmoType, string> ammoLookup = new Dictionary<AmmoType, string>
     {
 
+    { AmmoType.Pistol, "Pistol Bullets" },
     { AmmoType.AR, "Rifle Ammo" },
     { AmmoType.Shell, "Shotgun Shells" },
     { AmmoType.Grenade, "Frag Round" },
-    { AmmoType.Rocket, "Rocket(Homing)" }
+    { AmmoType.Rocket, "Rocket(Homing)" },
+    
 
 
 

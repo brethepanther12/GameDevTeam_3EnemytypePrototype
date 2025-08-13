@@ -22,7 +22,13 @@ MonoBehaviour:
   - mode: 0
     projectileType: 2
     projectile: {fileID: 7327530778466690349, guid: fc36680bdf45a5849923d47116ebf1de, type: 3}
-    damage: 10
+    effectData:
+      statusType: 0
+      statusDamage: 0
+      statusTickRate: 0
+      statusDuration: 0
+      slowDownMagnitude: 0
+    damage: 30
     range: 20
     fireRate: 1
     burstCount: 0
@@ -39,8 +45,8 @@ MonoBehaviour:
   ammoMax: 25
   pelletCount: 5
   pelletSpread: 0.8
-  currentAmmoInMag: 0
-  currentAmmoInReserve: 16
+  currentAmmoInMag: 3
+  currentAmmoInReserve: 15
   bullet: {fileID: 7327530778466690349, guid: fc36680bdf45a5849923d47116ebf1de, type: 3}
   impactPrefab: {fileID: 2408714428905375140, guid: ec2cd9d24f8932148ab9480fc3b65b15, type: 3}
   weaponModel: {fileID: 3341220789159317986, guid: 084aec37bc778a34f85cedb16d66c217, type: 3}

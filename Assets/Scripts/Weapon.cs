@@ -99,7 +99,7 @@ public class Weapon : MonoBehaviour
             if (Input.GetButtonDown("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
             {
                 shootTimer = 0f;
-                if (ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket)
+                if (ammoType == AmmoType.Pistol || ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket)
                     Shoot();
                 else if (ammoType == AmmoType.Shell)
                     ShootMultiple();
@@ -111,7 +111,7 @@ public class Weapon : MonoBehaviour
             if (Input.GetButton("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
             {
                 shootTimer = 0f;
-                if (ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket)
+                if (ammoType == AmmoType.Pistol || ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket)
                     Shoot();
                 else if (ammoType == AmmoType.Shell)
                     ShootMultiple();
@@ -162,7 +162,6 @@ public class Weapon : MonoBehaviour
     {
 
         FMData = weaponData.GetFireModeData(currentFireMode);
-        
         
         wepDmg = FMData.damage;
         attackRate = FMData.fireRate;
