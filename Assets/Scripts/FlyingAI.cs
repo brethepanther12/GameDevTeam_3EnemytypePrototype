@@ -9,24 +9,25 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     private GameObject playerTarget;
     private float playerLostTimer;
 
+    [Header("\"--- Flying & Rotation ---\"")]
     [SerializeField] private float flyingSpeed;
     [SerializeField] private float rotationSpeed;
     Vector3 playerDirection;
 
     [SerializeField] private Rigidbody rigidBody;
 
-    //Damage
+    [Header("\"--- Damage ---\"")]
     [SerializeField] private float damageRate;
     [SerializeField] private int damageAmount;
     private bool isDamaging;
     damage Damage;
     IDamage iDamage;
 
-    //Hover off floor
+    [Header("\"--- Hover ---\"")]
     [SerializeField] private float hoverHeight;
     [SerializeField] private float hoverClamp;
 
-    //Ceiling variables
+    [Header("\"--- Ceiling ---\"")]
     [SerializeField] private float ceilingInRadius;
     [SerializeField] private float ceilingAttachmentRange;
     //[SerializeField] private float ceilingHeightOff;
@@ -36,7 +37,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     private Vector3 ceilingTarget;
     private Vector3 ceilingPoint;
 
-    //Fov
+    [Header("\"--- Field of View ---\"")]
     [SerializeField] private float fovDistance;
     [SerializeField] private float fovAngle;
     [SerializeField] private LayerMask enviormentMask;
@@ -44,7 +45,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     private bool InRange;
     private bool isBlind;
 
-    //Health
+    [Header("\"--- Health ---\"")]
     [SerializeField] private int HP;
     private int currentHP;
     private bool Dead;
@@ -55,13 +56,13 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     [SerializeField] public GameObject shieldPrefab;
     [SerializeField] public GameObject armorPrefab;
 
-    //Upon getting hit
+    [Header("\"--- Audio ---\"")]
     [SerializeField] private AudioClip hitSound;
     [SerializeField] private AudioClip deathSound;
     [SerializeField] private float hitVolume;
     [SerializeField] private float deathVolume;
 
-    //Render
+    [Header("\"--- Model ---\"")]
     [SerializeField] private Renderer modelRender;
     private Color originColor;
 
@@ -327,12 +328,6 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
     }
 
-    //void faceTarget()
-    //{
-    //    Quaternion rotate = Quaternion.LookRotation(new Vector3(playerDirection.x, 0, playerDirection.z));
-    //    transform.rotation = Quaternion.Lerp(transform.rotation, rotate, Time.deltaTime * faceTargetSpeed);
-    //}
-
     public void takeDamage(int amount)
     {
 
@@ -383,11 +378,6 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             //Die method
             Die();
         }
-        //else
-        //{
-        //    AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-        //    StartCoroutine(FlashRed());
-        //}
 
     }
 
