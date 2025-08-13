@@ -36,6 +36,7 @@ public class FireModeData
     public int projectileCount;
     public float projectileSpread;
 
+
 }
 
 [CreateAssetMenu(menuName = "Inventory/Weapon")]

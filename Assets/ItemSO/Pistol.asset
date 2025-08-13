@@ -17,7 +17,7 @@ MonoBehaviour:
     m_Bits: 0
   weaponName: Standard-Issue Pistol
   ammoType: 0
-  availableFireModes: 0000000002000000
+  availableFireModes: 000000000200000003000000
   fireModeDatas:
   - mode: 0
     projectileType: 0
@@ -55,7 +55,25 @@ MonoBehaviour:
     detonateTime: 0
     projectileCount: 0
     projectileSpread: 0
-  savedMode: 0
+  - mode: 3
+    projectileType: 2
+    projectile: {fileID: 8398950515579142867, guid: 9eb7cb8b618160748aa572b59411ed69, type: 3}
+    effectData:
+      statusType: 1
+      statusDamage: 0
+      statusTickRate: 0
+      statusDuration: 0
+      slowDownMagnitude: 0
+    damage: 50
+    range: 100
+    fireRate: 0.5
+    burstCount: 0
+    burstRate: 0
+    chargeTime: 4
+    detonateTime: 0
+    projectileCount: 5
+    projectileSpread: 0.5
+  savedMode: 3
   wepDmg: 3
   attackRate: 0.2
   range: 100
@@ -63,8 +81,8 @@ MonoBehaviour:
   ammoMax: 120
   pelletCount: 0
   pelletSpread: 0
-  currentAmmoInMag: 0
-  currentAmmoInReserve: 0
+  currentAmmoInMag: 11
+  currentAmmoInReserve: 47
   bullet: {fileID: 7539981003205437294, guid: 97a4c4b329aa6bc4c8a68940aaff17f4, type: 3}
   impactPrefab: {fileID: 2408714428905375140, guid: ec2cd9d24f8932148ab9480fc3b65b15, type: 3}
   weaponModel: {fileID: 7795237942797243981, guid: 1540c36359a5b014dbe7181db4e42a56, type: 3}

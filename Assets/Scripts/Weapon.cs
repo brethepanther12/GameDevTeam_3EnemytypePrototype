@@ -45,6 +45,14 @@ public class Weapon : MonoBehaviour
     public Animator gunAnim;
     public ParticleSystem muzzleFlash;
 
+    private bool isCharging;
+    private float chargeTimer;
+    public GameObject chargeEffectPrefab;
+    private GameObject activeChargeEffect;
+    public AudioClip chargeSound;
+    public AudioClip chargeFinished;
+    private bool hasPlayedChargeCompleteSound;
+
 
     private void Awake()
     {
@@ -129,6 +137,73 @@ public class Weapon : MonoBehaviour
             }
 
         }
+        else if (currentFireMode == FireMode.Charge)
+        {
+            
+
+            if (Input.GetButtonDown("Fire1") && ammoInMag > 0)
+            {
+                isCharging = true;
+                chargeTimer = 0f;
+                hasPlayedChargeCompleteSound = false;
+
+                if (chargeEffectPrefab != null && shootPos != null)
+                {
+                    activeChargeEffect = Instantiate(chargeEffectPrefab, shootPos.position, shootPos.rotation, shootPos);
+
+                    if (chargeSound != null && gunAudio != null)
+                    {
+                        gunAudio.loop = true;
+                        gunAudio.clip = chargeSound;
+                        gunAudio.Play();
+
+                    }
+                    
+                }
+            }
+
+            if (Input.GetButton("Fire1") && isCharging)
+            {
+                chargeTimer += Time.deltaTime;
+
+                if (chargeTimer >= FMData.chargeTime && !hasPlayedChargeCompleteSound)
+                {
+                    hasPlayedChargeCompleteSound = true;
+
+                    if (chargeFinished != null)
+                    {
+                        gunAudio.Stop();
+                        gunAudio.PlayOneShot(chargeFinished);
+                    }
+                }
+            }
+
+            if (Input.GetButtonUp("Fire1") && isCharging)
+            {
+                isCharging = false;
+
+                if (gunAudio != null && gunAudio.isPlaying)
+                {
+                    gunAudio.Stop();
+                }
+
+                if (activeChargeEffect != null)
+                {
+                    Destroy(activeChargeEffect);
+                    activeChargeEffect = null;
+                }
+                if (chargeTimer >= FMData.chargeTime)
+                {
+                    if (ammoType == AmmoType.Shell)
+                        ShootMultiple();
+                    else
+                        Shoot();
+                }
+
+                chargeTimer = 0f;
+            }
+
+        }
 
 
 
@@ -163,6 +238,7 @@ public class Weapon : MonoBehaviour
 
         FMData = weaponData.GetFireModeData(currentFireMode);
         
+
         wepDmg = FMData.damage;
         attackRate = FMData.fireRate;
         range = FMData.range;
