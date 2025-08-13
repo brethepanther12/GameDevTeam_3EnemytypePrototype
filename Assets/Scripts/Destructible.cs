@@ -60,4 +60,8 @@ public class Destructible : MonoBehaviour, IDamage
         model.material.color = colorOrig;
     }
 
+    public void slowDown(float magnitude, float duration)
+    {
+        return;
+    }
 }

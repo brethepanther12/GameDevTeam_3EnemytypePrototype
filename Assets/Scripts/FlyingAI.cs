@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.LowLevel;
 using static UnityEngine.Rendering.DebugUI;
 public class FlyingAI : MonoBehaviour, IDamage, Visibility
@@ -66,11 +67,14 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     [SerializeField] private Renderer modelRender;
     private Color originColor;
 
+    private float originalSpeed;
+    private Coroutine slowRoutine;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         currentHP = HP;
-
+        originalSpeed = flyingSpeed;
 
 
         // Store original material color
@@ -506,4 +510,28 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         modelRender.material.color = originColor;
     }
 
+    public void slowDown(float magnitude, float duration)
+    {
+        if (slowRoutine != null)
+        {
+            StopCoroutine(slowRoutine);
+        }
+
+        slowRoutine = StartCoroutine(SlowRoutine(magnitude, duration));
+    }
+
+    private IEnumerator SlowRoutine(float magnitude, float duration)
+    {
+
+        if (originalSpeed == 0f)
+            originalSpeed = flyingSpeed;
+
+        float slowedSpeed = originalSpeed * (1f - magnitude);
+        flyingSpeed = slowedSpeed;
+
+        yield return new WaitForSeconds(duration);
+
+        flyingSpeed = originalSpeed;
+        slowRoutine = null;
+    }
 }

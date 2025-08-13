@@ -31,7 +31,8 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     [SerializeField] public Transform enemyPlayerObject;
     protected bool enemyPlayerInSight;
 
-    
+    private float originalSpeed;
+    private Coroutine slowRoutine;
 
 
     protected Vector3 enemyPlayerDirection;
@@ -39,6 +40,8 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     protected virtual void Start()
 
     {
+
+        originalSpeed = enemyNavAgent.speed;
         //To save the enemy's max health to currently.
         enemyCurrentHealthPoints = enemyHealthPointsMax;
 
@@ -249,6 +252,33 @@ public class EnemyAIBase : MonoBehaviour, IDamage
         {
             part.material.color = enemyColorOrigin;
         }
+    }
+
+    public void slowDown(float magnitude, float duration)
+    {
+        if (slowRoutine != null)
+        {
+            StopCoroutine(slowRoutine);
+        }
+
+        slowRoutine = StartCoroutine(SlowRoutine(magnitude, duration));
+    }
+
+    private IEnumerator SlowRoutine(float magnitude, float duration)
+    {
+        //NavMeshAgent agent = GetComponent<NavMeshAgent>();
+        if (enemyNavAgent == null) yield break;
+
+        if (originalSpeed == 0f)
+            originalSpeed = enemyNavAgent.speed;
+
+        float slowedSpeed = originalSpeed * (1f - magnitude);
+        enemyNavAgent.speed = slowedSpeed;
+
+        yield return new WaitForSeconds(duration);
+
+        enemyNavAgent.speed = originalSpeed;
+        slowRoutine = null;
     }
 }
 

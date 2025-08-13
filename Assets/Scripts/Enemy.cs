@@ -65,6 +65,9 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
     float roamTimer;
     float stoppingDistanceOrig;
 
+    private float originalSpeed;
+    private Coroutine slowRoutine;
+
     //private List<Collider> smokeZone = new List<Collider>();
     bool IsBlind;
 
@@ -74,6 +77,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        originalSpeed = agent.speed;
         shootTimer = 0f;
         currentAmmo = maxAmmo;
         colorOrig = modelParts[0].material.color;
@@ -501,5 +505,30 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
         }
     }
 
-   
+    public void slowDown(float magnitude, float duration)
+    {
+        if (slowRoutine != null)
+        {
+            StopCoroutine(slowRoutine);
+        }
+
+        slowRoutine = StartCoroutine(SlowRoutine(magnitude, duration));
+    }
+
+    private IEnumerator SlowRoutine(float magnitude, float duration)
+    {
+        NavMeshAgent agent = GetComponent<NavMeshAgent>();
+        if (agent == null) yield break;
+
+        if (originalSpeed == 0f)
+            originalSpeed = agent.speed;
+
+        float slowedSpeed = originalSpeed * (1f - magnitude);
+        agent.speed = slowedSpeed;
+
+        yield return new WaitForSeconds(duration);
+
+        agent.speed = originalSpeed;
+        slowRoutine = null;
+    }
 }

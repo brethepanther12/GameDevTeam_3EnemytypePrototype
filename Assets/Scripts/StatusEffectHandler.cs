@@ -46,6 +46,12 @@ public class StatusEffectHandler : MonoBehaviour
                 Debug.LogWarning("Corrosive status effect applied");
                 break;
 
+            case DamageStatus.Cryo:
+
+                Debug.LogWarning("Cryo status effect applied");
+                target.slowDown(data.slowDownMagnitude, data.statusDuration);
+                break;
+
             default:
                 Debug.LogWarning($"Unhandled status effect: {data.statusType}");
                 yield break;

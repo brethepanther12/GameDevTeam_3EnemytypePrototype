@@ -68,9 +68,14 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
     Vector3 playerDir;
     Vector3 startingPos;
 
+    private float originalSpeed;
+    private Coroutine slowRoutine;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+
+        originalSpeed = agent.speed;
         currentAmmo = maxAmmo;
         colorOrig = modelParts[0].material.color;
         gamemanager.instance.updateGameGoal(1);
@@ -472,5 +477,31 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
     public void FootStep()
     {
         PlayFootstep();
+    }
+
+    public void slowDown(float magnitude, float duration)
+    {
+        if (slowRoutine != null)
+        {
+            StopCoroutine(slowRoutine);
+        }
+
+        slowRoutine = StartCoroutine(SlowRoutine(magnitude, duration));
+    }
+
+    private IEnumerator SlowRoutine(float magnitude, float duration)
+    {
+        if (agent == null) yield break;
+
+        if (originalSpeed == 0f)
+            originalSpeed = agent.speed;
+
+        float slowedSpeed = originalSpeed * (1f - magnitude);
+        agent.speed = slowedSpeed;
+
+        yield return new WaitForSeconds(duration);
+
+        agent.speed = originalSpeed;
+        slowRoutine = null;
     }
 }

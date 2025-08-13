@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 198000013980960414}
   - component: {fileID: 199000011784288542}
   m_Layer: 0
-  m_Name: AcidGlobs
+  m_Name: CryoGlobs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4558,7 +4558,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: efb58a5a184936944980f6a110facef7, type: 2}
+  - {fileID: 2100000, guid: 8e5ebc9b6c7dc6b4584354c04cef6080, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4623,7 +4623,7 @@ GameObject:
   - component: {fileID: 198000011254678926}
   - component: {fileID: 199000010223498802}
   m_Layer: 0
-  m_Name: AcidSprayEffect
+  m_Name: CryoSprayEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4660,7 +4660,7 @@ ParticleSystem:
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 1
-  looping: 0
+  looping: 1
   prewarm: 0
   playOnAwake: 1
   useUnscaledTime: 0

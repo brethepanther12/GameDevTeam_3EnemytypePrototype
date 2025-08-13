@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6857043535215814019}
   - component: {fileID: 2245642887430340806}
   m_Layer: 11
-  m_Name: Bullet_Corrosive_Player
+  m_Name: Bullet_Cryo_Player
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,7 +34,7 @@ Transform:
   m_LocalScale: {x: 0.05, y: 0.05, z: 0.08}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 486469360886795649}
+  - {fileID: 7288675767314582680}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4358071612589408380
@@ -57,7 +57,7 @@ MonoBehaviour:
   destroyTime: 3
   projectileStraightPrefab: {fileID: 0}
   projectileHomingPrefab: {fileID: 0}
-  impactPrefab: {fileID: 1000012909287652, guid: 3375b6a168c7b864f97a2707c14358c8, type: 3}
+  impactPrefab: {fileID: 1000012909287652, guid: 856ff8a17ed9aab409e2ed170bbc06c8, type: 3}
   weaponDMG: 0
   currentStatus: 0
   currentStatusData:
@@ -168,7 +168,7 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7539981003205437294}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1001 &7109522005263114250
+--- !u!1001 &93663172250804499
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -176,47 +176,55 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3444794184828724089}
     m_Modifications:
-    - target: {fileID: 7235008244123048313, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
+    - target: {fileID: 7235008244123048313, guid: d7f31710fbc1b0944bed6274c2857937, type: 3}
       propertyPath: m_Name
-      value: AcidStreamEffect
+      value: CryoStreamEffect
       objectReference: {fileID: 0}
-    - target: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
+    - target: {fileID: 7235008246438863247, guid: d7f31710fbc1b0944bed6274c2857937, type: 3}
+      propertyPath: m_Name
+      value: CryoSplash
+      objectReference: {fileID: 0}
+    - target: {fileID: 7235008246462979385, guid: d7f31710fbc1b0944bed6274c2857937, type: 3}
+      propertyPath: m_Name
+      value: CryoPool
+      objectReference: {fileID: 0}
+    - target: {fileID: 7235685734768913803, guid: d7f31710fbc1b0944bed6274c2857937, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
+    - target: {fileID: 7235685734768913803, guid: d7f31710fbc1b0944bed6274c2857937, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.040643215
+      value: -0.02
       objectReference: {fileID: 0}
-    - target: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
+    - target: {fileID: 7235685734768913803, guid: d7f31710fbc1b0944bed6274c2857937, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.8601427
+      value: -0.62
       objectReference: {fileID: 0}
-    - target: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
+    - target: {fileID: 7235685734768913803, guid: d7f31710fbc1b0944bed6274c2857937, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
+    - target: {fileID: 7235685734768913803, guid: d7f31710fbc1b0944bed6274c2857937, type: 3}
       propertyPath: m_LocalRotation.x
       value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
+    - target: {fileID: 7235685734768913803, guid: d7f31710fbc1b0944bed6274c2857937, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.016701097
+      value: 0.99786246
       objectReference: {fileID: 0}
-    - target: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
+    - target: {fileID: 7235685734768913803, guid: d7f31710fbc1b0944bed6274c2857937, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.9998605
+      value: 0.06535034
       objectReference: {fileID: 0}
-    - target: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
+    - target: {fileID: 7235685734768913803, guid: d7f31710fbc1b0944bed6274c2857937, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -178.086
+      value: -7.494
       objectReference: {fileID: 0}
-    - target: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
+    - target: {fileID: 7235685734768913803, guid: d7f31710fbc1b0944bed6274c2857937, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 180
       objectReference: {fileID: 0}
-    - target: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
+    - target: {fileID: 7235685734768913803, guid: d7f31710fbc1b0944bed6274c2857937, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
@@ -224,9 +232,9 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
---- !u!4 &486469360886795649 stripped
+  m_SourcePrefab: {fileID: 100100000, guid: d7f31710fbc1b0944bed6274c2857937, type: 3}
+--- !u!4 &7288675767314582680 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
-  m_PrefabInstance: {fileID: 7109522005263114250}
+  m_CorrespondingSourceObject: {fileID: 7235685734768913803, guid: d7f31710fbc1b0944bed6274c2857937, type: 3}
+  m_PrefabInstance: {fileID: 93663172250804499}
   m_PrefabAsset: {fileID: 0}

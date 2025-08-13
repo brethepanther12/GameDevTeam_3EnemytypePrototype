@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 4470100129083163455}
   - component: {fileID: 6857043535215814019}
   - component: {fileID: 2245642887430340806}
-  m_Layer: 11
-  m_Name: Bullet_Corrosive_Player
-  m_TagString: Player
+  m_Layer: 8
+  m_Name: Bullet_Corrosive_Enemy
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -34,7 +34,7 @@ Transform:
   m_LocalScale: {x: 0.05, y: 0.05, z: 0.08}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 486469360886795649}
+  - {fileID: 8775460597698112224}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4358071612589408380
@@ -168,7 +168,7 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7539981003205437294}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1001 &7109522005263114250
+--- !u!1001 &2135519027504121707
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -178,7 +178,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7235008244123048313, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
       propertyPath: m_Name
-      value: AcidStreamEffect
+      value: AcidStreamEffect (1)
       objectReference: {fileID: 0}
     - target: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
       propertyPath: m_LocalPosition.x
@@ -186,11 +186,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.040643215
+      value: -0.03482297
       objectReference: {fileID: 0}
     - target: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.8601427
+      value: 0.71
       objectReference: {fileID: 0}
     - target: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
       propertyPath: m_LocalRotation.w
@@ -202,15 +202,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.016701097
+      value: 0.010887319
       objectReference: {fileID: 0}
     - target: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.9998605
+      value: 0.99994075
       objectReference: {fileID: 0}
     - target: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -178.086
+      value: -178.752
       objectReference: {fileID: 0}
     - target: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -225,8 +225,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
---- !u!4 &486469360886795649 stripped
+--- !u!4 &8775460597698112224 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7235685734768913803, guid: fc4c6dee7d58eb349a69ae7b18e43792, type: 3}
-  m_PrefabInstance: {fileID: 7109522005263114250}
+  m_PrefabInstance: {fileID: 2135519027504121707}
   m_PrefabAsset: {fileID: 0}

@@ -53,6 +53,9 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     public bool isVisible;
     public int currentAmmo;
 
+    private float originalSpeed;
+    private Coroutine slowRoutine;
+
     private enum powerUpType
     {
         health, shield, armor, ammo, speed, jump, damage
@@ -78,6 +81,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     void Start()
     {
+        originalSpeed = this.speed;
         HPOrig = HP;
         armorOrig = armor;
         shieldOrig = shield;
@@ -560,5 +564,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     {
         if (other.CompareTag("Smoke"))
             isVisible = false;
+    }
+
+    public void slowDown(float magnitude, float duration)
+    {
+        throw new System.NotImplementedException();
     }
 }
