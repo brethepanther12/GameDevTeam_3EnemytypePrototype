@@ -52,6 +52,7 @@ public class Weapon : MonoBehaviour
     public AudioClip chargeSound;
     public AudioClip chargeFinished;
     private bool hasPlayedChargeCompleteSound;
+    private Grenade activeGrenade;
 
 
     private void Awake()
@@ -139,7 +140,6 @@ public class Weapon : MonoBehaviour
         }
         else if (currentFireMode == FireMode.Charge)
         {
-            
 
             if (Input.GetButtonDown("Fire1") && ammoInMag > 0)
             {
@@ -205,6 +205,21 @@ public class Weapon : MonoBehaviour
 
         }
 
+        else if (currentFireMode == FireMode.Detonate)
+        {
+
+            if (Input.GetButtonDown("Fire1") && ammoInMag > 0)
+            {
+                LaunchDetonateGrenade();
+            }
+
+            if (Input.GetButtonUp("Fire1") && activeGrenade != null)
+            {
+                DetonateGrenade();
+            }
+
+        }
+
 
 
         if (Input.GetKeyDown(KeyCode.R) && ammoInMag < magSize && !equippedPlayer.isReloading)
@@ -230,6 +245,23 @@ public class Weapon : MonoBehaviour
             
             equippedPlayer.updatePlayerUI();
             ApplyFireModeStats();
+        }
+    }
+
+    private void LaunchDetonateGrenade()
+    {
+        GameObject grenadeObj = Instantiate(FMData.projectile, shootPos.position, shootPos.rotation);
+        activeGrenade = grenadeObj.GetComponent<Grenade>();
+
+        ammoInMag--;
+    }
+
+    private void DetonateGrenade()
+    {
+        if (activeGrenade != null)
+        {
+            activeGrenade.RemoteDetonate();
+            activeGrenade = null;
         }
     }
 
