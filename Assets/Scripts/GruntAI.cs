@@ -83,6 +83,16 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
         startingPos = transform.position;
         stoppingDistanceOrig = agent.stoppingDistance;
 
+        if (shield == 0)
+        {
+            shieldPrefab.SetActive(false);
+        }
+
+        if (armor == 0)
+        {
+            armorPrefab.SetActive(false);
+        }
+
     }
 
     // Update is called once per frame

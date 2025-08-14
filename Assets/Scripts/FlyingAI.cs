@@ -81,7 +81,15 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         currentHP = HP;
         originalSpeed = flyingSpeed;
 
+        if (shield == 0)
+        {
+            shieldPrefab.SetActive(false);
+        }
 
+        if (armor == 0)
+        {
+            armorPrefab.SetActive(false);
+        }
         // Store original material color
         if (modelRender != null)
             originColor = modelRender.material.color;
