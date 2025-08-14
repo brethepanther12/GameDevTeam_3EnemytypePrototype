@@ -379,6 +379,23 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
                 takeDamage(amount);
                 break;
 
+            case DamageStatus.Electric:
+
+                if (shield > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                else
+                {
+                    takeDamage(amount);
+                }
+                break;
+
+            case DamageStatus.Explosive:
+
+                takeDamage(amount);
+                break;
+
             default:
                 break;
         }

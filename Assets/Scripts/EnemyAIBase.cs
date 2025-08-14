@@ -249,6 +249,11 @@ public class EnemyAIBase : MonoBehaviour, IDamage
                 }
                 break;
 
+            case DamageStatus.Explosive:
+
+                takeDamage(amount);
+                break;
+
             default:
                 break;
         }
