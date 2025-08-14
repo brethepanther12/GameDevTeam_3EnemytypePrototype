@@ -7,6 +7,8 @@ public class LevelSummaryController : MonoBehaviour
     [SerializeField] TMP_Text levelScoreText;
     [SerializeField] TMP_Text totalScoreText;
 
+    private string nextLevelToLoad;
+
     void Start()
     {
         Cursor.visible = true;
@@ -17,15 +19,25 @@ public class LevelSummaryController : MonoBehaviour
             levelScoreText.text = "Level Score: " + ScoreManager.instance.GetLevelScore();
             totalScoreText.text = "Total Score: " + ScoreManager.instance.GetTotalScore();
         }
+
+        nextLevelToLoad = PlayerPrefs.GetString("NextLevelToLoad");
     }
 
     public void OnContinuePressed()
     {
-        int summarySceneIndex = SceneManager.GetActiveScene().buildIndex;
-        int nextLevelIndex = summarySceneIndex + 1;
+        if (ScoreManager.instance != null)
+        {
+            ScoreManager.instance.ResetLevelScore();
+        }
 
-        ScoreManager.instance.ResetLevelScore();
-
-        SceneManager.LoadScene(nextLevelIndex);
+        if (!string.IsNullOrEmpty(nextLevelToLoad))
+        {
+            SceneManager.LoadScene(nextLevelToLoad);
+        }
+        else
+        {
+            Debug.Log("Game Complete! Returning to main menu.");
+            SceneManager.LoadScene("Main Menu");
+        }
     }
 }

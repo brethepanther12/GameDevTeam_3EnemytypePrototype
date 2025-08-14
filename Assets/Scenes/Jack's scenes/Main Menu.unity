@@ -399,7 +399,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22f6b40c8536ea740aaf90ae85519e68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPointsList: []
+  enemyPointsList:
+  - enemyTag: Enemy
+    points: 100
 --- !u!4 &1832149569
 Transform:
   m_ObjectHideFlags: 0
