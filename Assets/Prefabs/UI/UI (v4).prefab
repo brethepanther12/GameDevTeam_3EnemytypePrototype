@@ -3299,6 +3299,69 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!1 &2052953295977599820
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8222574640896267148}
+  - component: {fileID: 5890001565680986239}
+  m_Layer: 5
+  m_Name: Upgrade Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &8222574640896267148
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2052953295977599820}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1231905808273165205}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &5890001565680986239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2052953295977599820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8f434b8dd709b74ca8df279e1fcbafa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mutagenCountText: {fileID: 3099775847612302812}
+  upgradeButtonContainer: {fileID: 1287850665944514585}
+  upgradeButtonPrefab: {fileID: 6845190467000099126, guid: 82e7734a118614545ab814f773916024, type: 3}
+  purchaseButton: {fileID: 4212781196109047986}
+  detailNameText: {fileID: 5520072639904404848}
+  detailDescriptionText: {fileID: 8772663024741606032}
+  detailCostText: {fileID: 6241425526924340157}
+  upgradePanel: {fileID: 2606549423553707279}
+  availableUpgrades:
+  - {fileID: 11400000, guid: f30108b119218a64fb2f3fbe90658a2f, type: 2}
+  - {fileID: 11400000, guid: c80df69beeb26e943ac5ea68158e0eac, type: 2}
+  - {fileID: 11400000, guid: 26e47e5d592d98b4f9ae2d2109cf3746, type: 2}
+  - {fileID: 11400000, guid: 49ee7f0dedaae0e46b613b4c928d861f, type: 2}
+  - {fileID: 11400000, guid: d75b486e9ebeb0e4492f67b30c62a40b, type: 2}
+  - {fileID: 11400000, guid: 156b98d3f290cef43ab44367a82bd101, type: 2}
 --- !u!1 &2116022808499261856
 GameObject:
   m_ObjectHideFlags: 0
@@ -3653,7 +3716,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4370992176754979366}
+      - m_Target: {fileID: 5890001565680986239}
         m_TargetAssemblyTypeName: AbilityUIController, Assembly-CSharp
         m_MethodName: CloseMenu
         m_Mode: 1
@@ -3928,7 +3991,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4090667270136997109}
-  - component: {fileID: 4370992176754979366}
   - component: {fileID: 8423906328975952585}
   - component: {fileID: 6666538158322903126}
   m_Layer: 5
@@ -3961,32 +4023,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &4370992176754979366
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2606549423553707279}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8f434b8dd709b74ca8df279e1fcbafa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mutagenCountText: {fileID: 3099775847612302812}
-  upgradeButtonContainer: {fileID: 1287850665944514585}
-  upgradeButtonPrefab: {fileID: 6845190467000099126, guid: 82e7734a118614545ab814f773916024, type: 3}
-  purchaseButton: {fileID: 4212781196109047986}
-  detailNameText: {fileID: 5520072639904404848}
-  detailDescriptionText: {fileID: 8772663024741606032}
-  detailCostText: {fileID: 6241425526924340157}
-  availableUpgrades:
-  - {fileID: 11400000, guid: f30108b119218a64fb2f3fbe90658a2f, type: 2}
-  - {fileID: 11400000, guid: c80df69beeb26e943ac5ea68158e0eac, type: 2}
-  - {fileID: 11400000, guid: 26e47e5d592d98b4f9ae2d2109cf3746, type: 2}
-  - {fileID: 11400000, guid: 49ee7f0dedaae0e46b613b4c928d861f, type: 2}
-  - {fileID: 11400000, guid: d75b486e9ebeb0e4492f67b30c62a40b, type: 2}
-  - {fileID: 11400000, guid: 156b98d3f290cef43ab44367a82bd101, type: 2}
 --- !u!222 &8423906328975952585
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7621,11 +7657,11 @@ GameObject:
   - component: {fileID: 4724050765626546368}
   m_Layer: 5
   m_Name: InteractPrompt
-  m_TagString: Untagged
+  m_TagString: InteractPrompt
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3567268708942854871
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11112,7 +11148,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4370992176754979366}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AbilityUIController, Assembly-CSharp
         m_MethodName: OnPurchaseButtonPressed
         m_Mode: 1
@@ -11766,6 +11802,7 @@ RectTransform:
   - {fileID: 3266312532589136663}
   - {fileID: 7717834152893310300}
   - {fileID: 3567268708942854871}
+  - {fileID: 8222574640896267148}
   - {fileID: 4090667270136997109}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

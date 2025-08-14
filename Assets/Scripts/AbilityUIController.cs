@@ -15,6 +15,7 @@ public class AbilityUIController : MonoBehaviour
     [SerializeField] private TMP_Text detailNameText;
     [SerializeField] private TMP_Text detailDescriptionText;
     [SerializeField] private TMP_Text detailCostText;
+    [SerializeField] private GameObject upgradePanel;
 
     [Header("Data")]
     [SerializeField] private List<AbilityUpgradeSO> availableUpgrades;
@@ -23,11 +24,41 @@ public class AbilityUIController : MonoBehaviour
     private PlayerInventory playerInventory;
     private playerController playerController;
 
-    void Start()
+    public static AbilityUIController instance;
+
+    private bool isInitialized = false;
+
+    private void Awake()
     {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    void Initialize()
+    {
+        if (isInitialized) return;
+
         playerController = gamemanager.instance.playerScript;
         playerInventory = playerController.GetComponent<PlayerInventory>();
         PopulateUpgradeList();
+
+        isInitialized = true;
+    }
+
+    private void Start()
+    {
+        Initialize();
+
+        if (upgradePanel != null)
+        {
+            upgradePanel.SetActive(false);
+        }
     }
 
     void OnEnable()
@@ -127,14 +158,22 @@ public class AbilityUIController : MonoBehaviour
 
     public void OpenMenu()
     {
+        Debug.Log("OpenMenu() was successfully called!");
         gameObject.SetActive(true);
+        if (upgradePanel != null)
+        {
+            upgradePanel.SetActive(true);
+        }
+
 
         if (gamemanager.instance != null)
         {
             gamemanager.instance.statePause();
-            gamemanager.instance.menuActive = this.gameObject;
+            gamemanager.instance.menuActive = this.upgradePanel;
         }
     }
+
+
 
     public void CloseMenu()
     {
