@@ -27,7 +27,7 @@ public class MovingPlatformNonStick : MonoBehaviour
             {
                 target = pointB.position;
             }
-            else
+            else if (target == pointB.position)
             {
                 target = pointA.position;
             }
