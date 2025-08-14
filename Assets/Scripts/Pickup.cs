@@ -5,12 +5,6 @@ using UnityEngine;
 public class Pickup : MonoBehaviour
 {
 
-    private enum pickupType
-    {
-        ammo, health, armor, shield, damage, speed, jump, key, weapon
-    };
-
-
     [SerializeField] int magnitude;
 
     //Quantity is for amount added, magnitude is for multiplying the amount(IE: Damage increase X2 or X3)
@@ -21,7 +15,7 @@ public class Pickup : MonoBehaviour
 
     //make sure to choose the right pickup type in the editor
 
-    [SerializeField] pickupType pickup;
+    [SerializeField] UpgradeType pickup;
 
     bool canUse;
 
@@ -36,7 +30,7 @@ public class Pickup : MonoBehaviour
 
     }
 
-    private void HandlePickup(pickupType type)
+    private void HandlePickup(UpgradeType type)
     {
 
         playerController pc = gamemanager.instance.playerScript;
@@ -51,51 +45,41 @@ public class Pickup : MonoBehaviour
         {
             switch (type)
             {
-                case pickupType.health:
+                case UpgradeType.Health:
 
                     pc.Heal(quantity, increaseMax);
 
                     break;
 
-                case pickupType.shield:
+                case UpgradeType.Shield:
 
                     pc.GainShield(quantity, increaseMax);
 
                     break;
 
-                case pickupType.armor:
+                case UpgradeType.Armor:
 
                     pc.GainArmor(quantity, increaseMax);
 
                     break;
 
-                case pickupType.damage:
+                case UpgradeType.Damage:
 
                     pc.IncreaseDamage(quantity, magnitude);
 
                     break;
 
-                case pickupType.speed:
+                case UpgradeType.Speed:
 
                     pc.IncreaseSpeed(quantity, magnitude);
 
                     break;
 
-                case pickupType.jump:
+                case UpgradeType.Jump:
 
                     pc.IncreaseJumpMaxCount(quantity, magnitude);
 
                     break;
-
-                case pickupType.key:
-
-                    pc.AddKey(quantity);
-
-                    break;
-
-                case pickupType.weapon:
-
-
 
                 default:
 
