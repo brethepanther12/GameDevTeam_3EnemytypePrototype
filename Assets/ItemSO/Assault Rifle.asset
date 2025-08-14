@@ -26,7 +26,7 @@ MonoBehaviour:
       statusType: 3
       statusDamage: 1
       statusTickRate: 0.5
-      statusDuration: 5
+      statusDuration: 10
       slowDownMagnitude: 0.5
     damage: 3
     range: 200
@@ -39,12 +39,12 @@ MonoBehaviour:
     projectileSpread: 0
   - mode: 1
     projectileType: 1
-    projectile: {fileID: 7539981003205437294, guid: 97a4c4b329aa6bc4c8a68940aaff17f4, type: 3}
+    projectile: {fileID: 7539981003205437294, guid: c41dabc6cf1391944983f22da4d66236, type: 3}
     effectData:
-      statusType: 0
-      statusDamage: 0
-      statusTickRate: 0
-      statusDuration: 0
+      statusType: 1
+      statusDamage: 1
+      statusTickRate: 0.2
+      statusDuration: 10
       slowDownMagnitude: 0
     damage: 1
     range: 100
@@ -57,13 +57,13 @@ MonoBehaviour:
     projectileSpread: 0
   - mode: 2
     projectileType: 1
-    projectile: {fileID: 7539981003205437294, guid: 97a4c4b329aa6bc4c8a68940aaff17f4, type: 3}
+    projectile: {fileID: 7539981003205437294, guid: f6b8a90c5c62e004a9b1b4325f5e121e, type: 3}
     effectData:
-      statusType: 0
-      statusDamage: 0
-      statusTickRate: 0
-      statusDuration: 0
-      slowDownMagnitude: 0
+      statusType: 4
+      statusDamage: 2
+      statusTickRate: 0.5
+      statusDuration: 10
+      slowDownMagnitude: 0.75
     damage: 2
     range: 150
     fireRate: 0.3
@@ -73,7 +73,7 @@ MonoBehaviour:
     detonateTime: 0
     projectileCount: 0
     projectileSpread: 0
-  savedMode: 0
+  savedMode: 1
   wepDmg: 1
   attackRate: 0.2
   range: 200
@@ -81,8 +81,8 @@ MonoBehaviour:
   ammoMax: 100
   pelletCount: 0
   pelletSpread: 0
-  currentAmmoInMag: 12
-  currentAmmoInReserve: 29
+  currentAmmoInMag: 18
+  currentAmmoInReserve: 37
   bullet: {fileID: 7539981003205437294, guid: 97a4c4b329aa6bc4c8a68940aaff17f4, type: 3}
   impactPrefab: {fileID: 2408714428905375140, guid: ec2cd9d24f8932148ab9480fc3b65b15, type: 3}
   weaponModel: {fileID: 2441261489494950324, guid: 7aa3bb9e2f359bc4cb22004cc0ddaf3f, type: 3}
