@@ -17,6 +17,7 @@ public class gamemanager : MonoBehaviour
     [SerializeField] GameObject menuLose;
     [SerializeField] GameObject menuInventory;
     [SerializeField] TMP_Text EnemiesRemaining;
+    [SerializeField] private string nextLevelName;
 
     public Image playerHPBar;
     public Image playerShieldBar;
@@ -123,10 +124,10 @@ public class gamemanager : MonoBehaviour
         EnemiesRemaining.text = gameGoalCount.ToString("F0");
         if (gameGoalCount <= 0)
         {
-            int currentIndex = SceneManager.GetActiveScene().buildIndex;
-            int summarySceneIndex = currentIndex + 1; 
+            PlayerPrefs.SetString("NextLevelToLoad", nextLevelName);
+            PlayerPrefs.Save();
 
-            SceneManager.LoadScene(summarySceneIndex);
+            SceneManager.LoadScene("LevelSummary");
         }
     }
 
