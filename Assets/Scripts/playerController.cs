@@ -32,6 +32,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] float shootRate;
     [SerializeField] int shootDist;
 
+    [SerializeField] float dashCooldown;
+    [SerializeField] float dashDistance;
+    [SerializeField] int dashCount;
+
     [Header("--- Audio ---")]
     [SerializeField] private AudioClip hurtSound;
     [SerializeField] private float hurtVol;
