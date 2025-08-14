@@ -1150,13 +1150,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef396377418919e48aff9079808ae744, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentEffectData:
-    statusType: 0
-    statusDamage: 0
-    statusTickRate: 0
-    statusDuration: 0
-    slowDownMagnitude: 0
-  currentStatuses: []
 --- !u!114 &1343972030976924113
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1177,7 +1170,7 @@ MonoBehaviour:
   HP: 50
   maxHP: 50
   speed: 5
-  sprintMod: 2
+  sprintMod: 5
   jumpVel: 6
   jumpMax: 1
   gravity: 10
@@ -1191,6 +1184,10 @@ MonoBehaviour:
   meleeDamage: 1
   shootRate: 0.1
   shootDist: 100
+  dashCooldown: 5
+  dashDuration: 0.25
+  dashCount: 0
+  maxDashCount: 3
   hurtSound: {fileID: 8300000, guid: cf871d1d7eced6740ada2b9843f8a596, type: 3}
   hurtVol: 10
   footstepVol: 0.15
@@ -1209,7 +1206,6 @@ MonoBehaviour:
   isReloading: 0
   isVisible: 0
   currentAmmo: 0
-  sprintCD: 0
 --- !u!114 &1101868098296262399
 MonoBehaviour:
   m_ObjectHideFlags: 0
