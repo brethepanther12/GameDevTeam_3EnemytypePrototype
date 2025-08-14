@@ -411,13 +411,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef396377418919e48aff9079808ae744, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentEffectData:
-    statusType: 0
-    statusDamage: 0
-    statusTickRate: 0
-    statusDuration: 0
-    slowDownMagnitude: 0
-  currentStatuses: []
 --- !u!114 &3106708886149262270
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -437,9 +430,9 @@ MonoBehaviour:
   agent: {fileID: 5612344703545328633}
   shootPos: {fileID: 6625256131101932775}
   headPos: {fileID: 6360116116719051010}
-  shootRange: 15
-  maxAmmo: 3
-  reloadTime: 3
+  shootRange: 20
+  maxAmmo: 4
+  reloadTime: 2
   animator: {fileID: 6345579211403220884}
   reloadSound: {fileID: 8300000, guid: a40641150cd218c49a68a971c7304757, type: 3}
   reloadVolume: 1
@@ -464,7 +457,7 @@ MonoBehaviour:
   footstepClip: {fileID: 8300000, guid: 3387b8e4b2ac870438bca51986d5c7bd, type: 3}
   footstepDelay: 0.5
   bullet: {fileID: 6464396715701181540, guid: f813845d79b94a1478e686084f78b011, type: 3}
-  shootRate: 2
+  shootRate: 1.5
 --- !u!195 &5612344703545328633
 NavMeshAgent:
   m_ObjectHideFlags: 0
