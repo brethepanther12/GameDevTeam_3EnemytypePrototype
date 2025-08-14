@@ -33,8 +33,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] int shootDist;
 
     [SerializeField] float dashCooldown;
-    [SerializeField] float dashDistance;
+    [SerializeField] float dashDuration;
     [SerializeField] int dashCount;
+    [SerializeField] int maxDashCount;
+    private bool isDashing;
 
     [Header("--- Audio ---")]
     [SerializeField] private AudioClip hurtSound;
@@ -81,8 +83,8 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     int shieldOrig;
 
     float shootTimer;
-    float sprintTimer;
-    public float sprintCD;
+    //float sprintTimer;
+    //public float sprintCD;
 
     void Start()
     {
@@ -90,6 +92,8 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         HPOrig = HP;
         armorOrig = armor;
         shieldOrig = shield;
+        dashCount = maxDashCount;
+        StartCoroutine(RechargeDash());
         spawnPlayer();
 
         inventory = GetComponent<PlayerInventory>();
@@ -108,12 +112,18 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     void Update()
     {
-        sprint();
+        //sprint();
         movement();
         HandleWeaponSwitching();
 
         if (gamemanager.instance.isPaused)
             return;
+
+        if (Input.GetButtonDown("Sprint") && dashCount > 0 && !isDashing)
+        {
+            StartCoroutine(Dash());
+            StartCoroutine(UpdateDashCooldown());
+        }
 
         if (Input.GetKeyDown(KeyCode.R))
         {
@@ -148,7 +158,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     void movement()
     {
         shootTimer += Time.deltaTime;
-        
+
 
         if (controller.isGrounded)
         {
@@ -183,8 +193,8 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if (controller != null) 
-        { 
+        if (controller != null)
+        {
             if (hit.collider.CompareTag("Moving Platform"))
                 targetPlatform = hit.collider.GetComponent<MovingPlatformStick>();
             else
@@ -232,7 +242,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 animator.SetTrigger("Jump");
             }
 
-            if(playerVel.y < jumpVel)
+            if (playerVel.y < jumpVel)
             {
                 playerVel.y = jumpVel;
             }
@@ -243,20 +253,20 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         }
     }
 
-    void sprint()
-    {
-        if (Input.GetButtonDown("Sprint"))
-        {
-         
-         speed *= sprintMod;
-                 
-        }
-        else if (Input.GetButtonUp("Sprint"))
-        {
-            speed /= sprintMod;
-            
-        }
-    }
+    //void sprint()
+    //{
+    //    if (Input.GetButtonDown("Sprint"))
+    //    {
+
+    //     speed *= sprintMod;
+
+    //    }
+    //    else if (Input.GetButtonUp("Sprint"))
+    //    {
+    //        speed /= sprintMod;
+
+    //    }
+    //}
 
     public void takeDamage(int amount)
     {
@@ -321,7 +331,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 {
                     takeDamage(amount);
                 }
-                    break;
+                break;
 
             case DamageStatus.Corrosive:
 
@@ -506,7 +516,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
         gamemanager.instance.playerShieldBar.fillAmount = (float)shield / maxShield;
         gamemanager.instance.playerArmorBar.fillAmount = (float)armor / maxArmor;
-        gamemanager.instance.jumpCounter.text = $"{jumpCur.ToString()} / {jumpMax.ToString()}";
+        gamemanager.instance.dashCounter.text = $"{dashCount.ToString()} / {maxDashCount.ToString()}";
         gamemanager.instance.playerHp.text = $"{HP} / {maxHP}";
         gamemanager.instance.playerArmor.text = $"{armor} / {maxArmor}";
         gamemanager.instance.playerShield.text = $"{shield} / {maxShield}";
@@ -608,7 +618,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     private IEnumerator SlowRoutine(float magnitude, float duration)
     {
-        
+
         if (this == null) yield break;
 
         if (originalSpeed == 0f)
@@ -621,5 +631,52 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
         speed = originalSpeed;
         slowRoutine = null;
+    }
+
+    private IEnumerator Dash()
+    {
+        isDashing = true;
+        dashCount--;
+
+        speed = originalSpeed * sprintMod;
+
+        yield return new WaitForSeconds(dashDuration);
+
+        speed = originalSpeed;
+        isDashing = false;
+    }
+
+    private IEnumerator RechargeDash()
+    {
+        while (true)
+        {
+            if (dashCount < maxDashCount)
+            {
+                yield return new WaitForSeconds(dashCooldown);
+                dashCount++;
+            }
+            else
+            {
+                yield return null;
+            }
+        }
+    }
+
+    public IEnumerator UpdateDashCooldown()
+    {
+
+        float timeElapsed = 0f;
+
+        while (timeElapsed < dashCooldown)
+        {
+            timeElapsed += Time.deltaTime;
+
+            float fill = Mathf.Clamp01(timeElapsed / dashCooldown);
+            gamemanager.instance.dashCounterCDImage.fillAmount = fill;
+
+            yield return null;
+        }
+
+        gamemanager.instance.dashCounterCDImage.fillAmount = 1f;
     }
 }

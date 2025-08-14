@@ -33,7 +33,10 @@ public class gamemanager : MonoBehaviour
     public GameObject player;
     public playerController playerScript;
 
-    public TMP_Text jumpCounter;
+    public TMP_Text dashCounter;
+    public TMP_Text dashCounterText;
+    public Image dashCounterCDImage;
+
     public TMP_Text playerHp;
     public TMP_Text playerShield;
     public TMP_Text playerArmor;
