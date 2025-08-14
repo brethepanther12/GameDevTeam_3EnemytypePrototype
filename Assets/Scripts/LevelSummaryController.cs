@@ -36,7 +36,11 @@ public class LevelSummaryController : MonoBehaviour
         }
         else
         {
-            Debug.Log("Game Complete! Returning to main menu.");
+            if(ScoreManager.instance!= null)
+            {
+                ScoreManager.instance.ResetTotalScore();
+            }
+
             SceneManager.LoadScene("Main Menu");
         }
     }

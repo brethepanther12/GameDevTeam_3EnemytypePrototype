@@ -140,6 +140,8 @@ public class gamemanager : MonoBehaviour
     }
     public void youLose()
     {
+        ScoreManager.instance.AddScoreToLeaderboard();
+
         statePause();
         menuActive = menuLose;
         menuActive.SetActive(true);
