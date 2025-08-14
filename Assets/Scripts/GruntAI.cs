@@ -114,7 +114,7 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
 
     void LateUpdate()
     {
-        shootPos.LookAt(gamemanager.instance.player.transform.position);
+       shootPos.LookAt(gamemanager.instance.player.transform.position);
     }
 
     void RoamCheck()
