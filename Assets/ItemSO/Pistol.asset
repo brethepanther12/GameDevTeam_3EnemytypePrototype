@@ -21,12 +21,12 @@ MonoBehaviour:
   fireModeDatas:
   - mode: 0
     projectileType: 0
-    projectile: {fileID: 7539981003205437294, guid: f6b8a90c5c62e004a9b1b4325f5e121e, type: 3}
+    projectile: {fileID: 7539981003205437294, guid: 3d0c0b08f0872d046bd051ea3d3159fd, type: 3}
     effectData:
-      statusType: 4
+      statusType: 5
       statusDamage: 1
-      statusTickRate: 0.2
-      statusDuration: 3
+      statusTickRate: 0
+      statusDuration: 0
       slowDownMagnitude: 0
     damage: 3
     range: 100
@@ -37,6 +37,7 @@ MonoBehaviour:
     detonateTime: 0
     projectileCount: 0
     projectileSpread: 0
+    blastRadius: 10
   - mode: 2
     projectileType: 0
     projectile: {fileID: 7539981003205437294, guid: 97a4c4b329aa6bc4c8a68940aaff17f4, type: 3}
@@ -55,6 +56,7 @@ MonoBehaviour:
     detonateTime: 0
     projectileCount: 0
     projectileSpread: 0
+    blastRadius: 0
   - mode: 3
     projectileType: 2
     projectile: {fileID: 8398950515579142867, guid: 9eb7cb8b618160748aa572b59411ed69, type: 3}
@@ -73,7 +75,8 @@ MonoBehaviour:
     detonateTime: 0
     projectileCount: 5
     projectileSpread: 0.5
-  savedMode: 3
+    blastRadius: 0
+  savedMode: 0
   wepDmg: 3
   attackRate: 0.2
   range: 100
@@ -81,8 +84,8 @@ MonoBehaviour:
   ammoMax: 120
   pelletCount: 0
   pelletSpread: 0
-  currentAmmoInMag: 10
-  currentAmmoInReserve: 47
+  currentAmmoInMag: 11
+  currentAmmoInReserve: 49
   bullet: {fileID: 7539981003205437294, guid: 97a4c4b329aa6bc4c8a68940aaff17f4, type: 3}
   impactPrefab: {fileID: 2408714428905375140, guid: ec2cd9d24f8932148ab9480fc3b65b15, type: 3}
   weaponModel: {fileID: 7795237942797243981, guid: 1540c36359a5b014dbe7181db4e42a56, type: 3}

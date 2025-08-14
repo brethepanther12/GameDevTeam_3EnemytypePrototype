@@ -55,6 +55,11 @@ public class Destructible : MonoBehaviour, IDamage
                 takeDamage(amount);
                 break;
 
+            case DamageStatus.Explosive:
+
+                takeDamage(amount * 2);
+                break;
+
             default:
                 break;
         }
