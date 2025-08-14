@@ -26,6 +26,7 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
     [SerializeField] private AudioClip hitSound;
     [SerializeField] private float hitVolume = 1f;
 
+    public GameObject mutagenPickupPrefab;
     [SerializeField] GameObject healthPickupPrefab;
     [SerializeField] GameObject ammoPickupPrefab;
     [SerializeField] float dropChance = 0.5f;
@@ -451,20 +452,21 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
 
     void TryDropPickup()
     {
-        float roll = Random.value; // 0 to 1
-        if (roll <= dropChance)
-        {
-            int itemType = Random.Range(0, 2); // 0 = health, 1 = ammo
+        int itemType = Random.Range(0, 3); // 0 = health, 1 = ammo, 2 = mutagen
 
-            GameObject drop = null;
-            if (itemType == 0 && healthPickupPrefab != null)
-            {
-                drop = Instantiate(healthPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
-            }
-            else if (itemType == 1 && ammoPickupPrefab != null)
-            {
-                drop = Instantiate(ammoPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
-            }
+        GameObject drop = null;
+        if (itemType == 0 && healthPickupPrefab != null)
+        {
+            drop = Instantiate(healthPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
+        }
+        else if (itemType == 1 && ammoPickupPrefab != null)
+        {
+            drop = Instantiate(ammoPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
+        }
+        else if (itemType == 2 && mutagenPickupPrefab != null)
+        {
+            drop = Instantiate(mutagenPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
+
         }
     }
 

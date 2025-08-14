@@ -43,6 +43,7 @@ public class gamemanager : MonoBehaviour
     public TMP_Text playerShield;
     public TMP_Text playerArmor;
     public TMPro.TextMeshProUGUI ammoText;
+    public TMP_Text mutagenCountText;
     public TMP_Text inventoryAmmo;
     public TMP_Text redKey;
     public TMP_Text blueKey;
@@ -87,6 +88,10 @@ public class gamemanager : MonoBehaviour
                 menuActive.SetActive(true);
             }
             else if (menuActive == menuPause)
+            {
+                stateUnpause();
+            }
+            else if (menuActive == menuInventory)
             {
                 stateUnpause();
             }
@@ -218,6 +223,11 @@ public class gamemanager : MonoBehaviour
 
         int yellowKeys = inventory.GetAmmoAmount("Yellow Key");
         yellowKey.text = yellowKeys.ToString();
+
+        int mutagenCount = inventory.GetMutagenCount();
+
+        if (mutagenCountText != null)
+            mutagenCountText.text = mutagenCount.ToString();
 
     }
 

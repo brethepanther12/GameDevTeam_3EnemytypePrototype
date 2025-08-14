@@ -9,13 +9,14 @@ public class UnlockDoor : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (isUnlocked)
+        if (isUnlocked || !other.CompareTag("Player"))
             return;
 
         PlayerInventory inventory = other.GetComponent<PlayerInventory>();
-        if(inventory != null && inventory.HasAllItems(requiredItems))
+
+        if (inventory != null && inventory.HasAllItems(requiredItems))
         {
-            Unlock();
+            Unlock(inventory);
         }
         else
         {
@@ -23,14 +24,14 @@ public class UnlockDoor : MonoBehaviour
         }
     }
 
-    private void Unlock()
+    private void Unlock(PlayerInventory inventory)
     {
         isUnlocked = true;
-        PlayerInventory inventory = GameObject.FindWithTag("Player").GetComponent<PlayerInventory>();
+
         foreach (ItemSO item in requiredItems)
         {
-            if (inventory.collectedItems.Contains(item))
-                inventory.collectedItems.Remove(item);
+
+            inventory.ConsumeKey(item);
         }
 
         Destroy(doorObject);

@@ -63,6 +63,11 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     [SerializeField] private float hitVolume;
     [SerializeField] private float deathVolume;
 
+    [Header("\"--- Drops ---\"")]
+    public GameObject healthPickupPrefab;
+    public GameObject ammoPickupPrefab;
+    public GameObject mutagenPickupPrefab;
+
     [Header("\"--- Model ---\"")]
     [SerializeField] private Renderer modelRender;
     private Color originColor;
@@ -509,7 +514,29 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         AudioSource.PlayClipAtPoint(deathSound, transform.position, deathVolume);
 
+        TryDropPickup();
+
         Destroy(gameObject);
+    }
+
+    void TryDropPickup()
+    {
+        int itemType = Random.Range(0, 3); // 0 = health, 1 = ammo, 2 = mutagen
+
+        GameObject drop = null;
+        if (itemType == 0 && healthPickupPrefab != null)
+        {
+            drop = Instantiate(healthPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
+        }
+        else if (itemType == 1 && ammoPickupPrefab != null)
+        {
+            drop = Instantiate(ammoPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
+        }
+        else if (itemType == 2 && mutagenPickupPrefab != null)
+        {
+            drop = Instantiate(mutagenPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
+
+        }
     }
 
     IEnumerator DOT(IDamage target)

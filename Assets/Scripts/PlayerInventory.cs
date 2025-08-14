@@ -1,11 +1,38 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using TMPro;
+
+[System.Serializable]
+public class InventorySlot
+{
+    public ItemSO item;
+    public int quantity;
+
+    public InventorySlot(ItemSO item, int quantity)
+    {
+        this.item = item;
+        this.quantity = quantity;
+    }
+
+    public void AddQuantity(int amount)
+    {
+        quantity += amount;
+    }
+
+    public void RemoveQuantity(int amount)
+    {
+        quantity -= amount;
+    }
+}
 
 
 public class PlayerInventory : MonoBehaviour
 {
     [HideInInspector] public playerController playerRef;
+
+    [Header("Item & Currency Inventory")]
+    public List<InventorySlot> items = new List<InventorySlot>();
 
     [Header("Weapon Inventory")]
     public List<ItemSO> collectedItems = new List<ItemSO>();
@@ -17,6 +44,9 @@ public class PlayerInventory : MonoBehaviour
     public GameObject weaponSocket;
     private GameObject currentWeaponInstance;
     private Weapon currentWeaponScript;
+
+    [Header("UI References")]
+    public TMP_Text mutagenCountText;
 
 
     private Dictionary<AmmoType, string> ammoLookup = new Dictionary<AmmoType, string>
@@ -33,42 +63,85 @@ public class PlayerInventory : MonoBehaviour
 
     };
 
-
+    private void Start()
+    {
+        UpdateMutagenDisplay();
+    }
 
     public void AddItem(ItemSO item)
     {
-        if (!collectedItems.Contains(item))
+        InventorySlot slot = items.Find(s => s.item == item);
+
+        if (slot != null)
         {
-            collectedItems.Add(item);
-            item.quantityHeld = item.quantityToPickup;
-            Debug.Log("Picked up: " + item.itemName);
+            int availableSpace = slot.item.stackSize - slot.quantity;
+            int amountToAdd = Mathf.Min(item.quantityToPickup, availableSpace);
+            slot.AddQuantity(amountToAdd);
         }
         else
         {
-            ItemSO existingItem = collectedItems.Find(x => x == item);
-
-            if (existingItem != null && existingItem.quantityHeld < existingItem.stackSize)
-            {
-                int availableSpace = existingItem.stackSize - existingItem.quantityHeld;
-                int amountToAdd = Mathf.Min(item.quantityToPickup, availableSpace);
-                existingItem.quantityHeld += amountToAdd;
-            }
+            int amountToAdd = Mathf.Min(item.quantityToPickup, item.stackSize);
+            items.Add(new InventorySlot(item, amountToAdd));
         }
+        Debug.Log($"Added {item.quantityToPickup} of {item.itemName}.");
+    }
+
+    public void ConsumeKey(ItemSO keyItem)
+    {
+        InventorySlot keySlot = items.Find(slot => slot.item == keyItem);
+
+        if(keySlot != null)
+        {
+            keySlot.RemoveQuantity(1);
+        }
+    }
+
+    public bool HasKey(ItemSO keyItem)
+    {
+        return items.Exists(slot => slot.item == keyItem && slot.quantity > 0);
     }
 
     public bool HasAllItems(List<ItemSO> requiredItems)
     {
         foreach (ItemSO requiredItem in requiredItems)
         {
-            ItemSO ownedItem = collectedItems.Find(item => item == requiredItem);
+            InventorySlot slot = items.Find(s => s.item == requiredItem);
 
-            if (ownedItem == null || ownedItem.quantityHeld < requiredItem.quantityToPickup)
+
+            if (slot == null || slot.quantity < requiredItem.quantityToPickup)
             {
                 return false;
             }
         }
         return true;
     }
+
+    public int GetMutagenCount()
+    {
+        InventorySlot mutagenSlot = items.Find(s => s.item.itemName == "Mutagen Sample");
+        return mutagenSlot != null ? mutagenSlot.quantity : 0;
+    }
+
+    public bool TrySpendMutagens(int amountToSpend)
+    {
+        InventorySlot mutagenSlot = items.Find(s => s.item.itemName == "Mutagen Sample");
+        if (mutagenSlot != null && mutagenSlot.quantity >= amountToSpend)
+        {
+            mutagenSlot.RemoveQuantity(amountToSpend);
+            UpdateMutagenDisplay();
+            return true;
+        }
+        return false;
+    }
+
+    public void UpdateMutagenDisplay()
+    {
+        if (mutagenCountText != null)
+        {
+            mutagenCountText.text = GetMutagenCount().ToString();
+        }
+    }
+
     public void AddWeapon(WeaponSO newWeapon)
     {
 
@@ -150,33 +223,18 @@ public class PlayerInventory : MonoBehaviour
 
     public int GetAmmoAmount(string ammoName)
     {
-        foreach (ItemSO item in collectedItems)
-        {
-            if (item.itemName == ammoName)
-            {
-                return item.quantityHeld;
-            }
-                
-        }
-        return 0;
+        InventorySlot ammoSlot = items.Find(s => s.item.itemName == ammoName);
+        return ammoSlot != null ? ammoSlot.quantity : 0;
     }
 
     public bool TryGetAmmoAmount(AmmoType type, out int amount)
     {
         amount = 0;
-
         if (ammoLookup.TryGetValue(type, out string ammoName))
         {
-            foreach (ItemSO item in collectedItems)
-            {
-                if (item.itemName == ammoName)
-                {
-                    amount = item.quantityHeld;
-                    return true;
-                }
-            }
+            amount = GetAmmoAmount(ammoName);
+            return true;
         }
-
         return false;
     }
 
@@ -199,19 +257,11 @@ public class PlayerInventory : MonoBehaviour
     {
         if (ammoLookup.TryGetValue(type, out string ammoName))
         {
-            foreach (ItemSO item in collectedItems)
+            InventorySlot ammoSlot = items.Find(s => s.item.itemName == ammoName);
+            if (ammoSlot != null)
             {
-                if (item.itemName == ammoName)
-                {
-                    item.quantityHeld -= amount;
-                    item.quantityHeld = Mathf.Max(0, item.quantityHeld);
-                    break;
-                }
+                ammoSlot.RemoveQuantity(amount);
             }
-        }
-        else
-        {
-            Debug.LogWarning("Tried to consume ammo for unknown AmmoType: " + type);
         }
     }
 

@@ -40,6 +40,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
     [SerializeField] int roamDistance;
     [SerializeField] int roamPauseTime;
 
+    public GameObject mutagenPickupPrefab;
     [SerializeField] GameObject healthPickupPrefab;
     [SerializeField] GameObject ammoPickupPrefab;
     [SerializeField] GameObject shieldPrefab;
@@ -478,10 +479,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
 
     void TryDropPickup()
     {
-        float roll = Random.value; // 0 to 1
-        if (roll <= dropChance)
-        {
-            int itemType = Random.Range(0, 2); // 0 = health, 1 = ammo
+            int itemType = Random.Range(0, 3); // 0 = health, 1 = ammo, 2 = mutagen
 
             GameObject drop = null;
             if (itemType == 0 && healthPickupPrefab != null)
@@ -491,7 +489,11 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
             else if (itemType == 1 && ammoPickupPrefab != null)
             {
                 drop = Instantiate(ammoPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
-            }
+            } 
+            else if(itemType == 2 && mutagenPickupPrefab != null)
+            {
+            drop = Instantiate(mutagenPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
+
         }
     }
 
