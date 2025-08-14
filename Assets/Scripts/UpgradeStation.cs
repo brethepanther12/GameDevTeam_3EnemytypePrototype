@@ -21,11 +21,9 @@ public class UpgradeStation : MonoBehaviour
 
     void Update()
     {
-
-        if (playerIsNearby && Input.GetButtonDown("Submit"))
+        if (playerIsNearby && Input.GetButtonDown("Interact"))
         {
             Debug.Log("Opening upgrade menu...");
-
             abilityUIController.OpenMenu();
         }
     }

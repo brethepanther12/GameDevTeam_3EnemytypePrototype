@@ -8,7 +8,7 @@ public class AbilityUIController : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private TMP_Text mutagenCountText;
     [SerializeField] private Transform upgradeButtonContainer;
-    [SerializeField] private GameObject upgradeButtonPrefab; 
+    [SerializeField] private GameObject upgradeButtonPrefab;
     [SerializeField] private Button purchaseButton;
 
     [Header("Details Panel")]
@@ -47,7 +47,9 @@ public class AbilityUIController : MonoBehaviour
         {
             GameObject buttonObj = Instantiate(upgradeButtonPrefab, upgradeButtonContainer);
 
-            buttonObj.GetComponent<Button>().onClick.AddListener(() => SelectUpgrade(upgrade));
+            UpgradeButton buttonScript = buttonObj.GetComponent<UpgradeButton>();
+
+            buttonScript.SetUp(upgrade, this);
         }
     }
 
@@ -126,10 +128,20 @@ public class AbilityUIController : MonoBehaviour
     public void OpenMenu()
     {
         gameObject.SetActive(true);
+
+        if (gamemanager.instance != null)
+        {
+            gamemanager.instance.statePause();
+            gamemanager.instance.menuActive = this.gameObject;
+        }
     }
 
     public void CloseMenu()
     {
         gameObject.SetActive(false);
+
+        {
+            gamemanager.instance.stateUnpause();
+        }
     }
 }

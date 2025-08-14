@@ -9,7 +9,7 @@ using System;
 public class gamemanager : MonoBehaviour
 {
     public static gamemanager instance;
-    [SerializeField] GameObject menuActive;
+    [SerializeField] public GameObject menuActive;
     [SerializeField] GameObject menuPause;
     [SerializeField] GameObject menuOptions;
     [SerializeField] OptionsMenuUI optionMenuUI;
@@ -81,19 +81,16 @@ public class gamemanager : MonoBehaviour
     {
         if (Input.GetButtonDown("Cancel"))
         {
-            if (menuActive == null)
+            if (menuActive != null)
+            {
+                stateUnpause();
+            }
+            else
             {
                 statePause();
                 menuActive = menuPause;
                 menuActive.SetActive(true);
-            }
-            else if (menuActive == menuPause)
-            {
-                stateUnpause();
-            }
-            else if (menuActive == menuInventory)
-            {
-                stateUnpause();
+
             }
         }
         if (Input.GetButtonDown("Inventory"))

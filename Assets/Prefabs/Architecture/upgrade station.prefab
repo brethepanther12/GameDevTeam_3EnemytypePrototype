@@ -9,9 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 534425988075318407}
+  - component: {fileID: 3620058875580903987}
   - component: {fileID: 4864754941665294946}
   - component: {fileID: 1962844483189778460}
   - component: {fileID: 3648571192626438711}
+  - component: {fileID: 7957911995854581111}
   m_Layer: 0
   m_Name: upgrade station
   m_TagString: Untagged
@@ -39,6 +41,20 @@ Transform:
   - {fileID: 6514239637735796466}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3620058875580903987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 108491005009954348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c7174114a5fe9f4f96bd9647fdffc62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  abilityUIController: {fileID: 0}
+  interactPrompt: {fileID: 0}
 --- !u!33 &4864754941665294946
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -112,6 +128,27 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 1.2, y: 4, z: 1.2}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!65 &7957911995854581111
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 108491005009954348}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.8, y: 2, z: 0.8}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4796492982113033458
 GameObject:
