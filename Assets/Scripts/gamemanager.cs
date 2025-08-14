@@ -17,7 +17,9 @@ public class gamemanager : MonoBehaviour
     [SerializeField] GameObject menuLose;
     [SerializeField] GameObject menuInventory;
     [SerializeField] TMP_Text EnemiesRemaining;
+
     [SerializeField] private string nextLevelName;
+    public int levelNumber;
 
     public Image playerHPBar;
     public Image playerShieldBar;
@@ -124,6 +126,14 @@ public class gamemanager : MonoBehaviour
         EnemiesRemaining.text = gameGoalCount.ToString("F0");
         if (gameGoalCount <= 0)
         {
+            int highestLevelUnlocked = PlayerPrefs.GetInt("LevelsUnlocked", 1);
+
+            if (levelNumber + 1 > highestLevelUnlocked)
+            {
+                PlayerPrefs.SetInt("LevelsUnlocked", levelNumber + 1);
+                PlayerPrefs.Save();
+            }
+
             PlayerPrefs.SetString("NextLevelToLoad", nextLevelName);
             PlayerPrefs.Save();
 
@@ -149,6 +159,15 @@ public class gamemanager : MonoBehaviour
 
     public void TriggerWinScreen()
     {
+        int highestLevelUnlocked = PlayerPrefs.GetInt("LevelsUnlocked", 1);
+
+        if (levelNumber + 1 > highestLevelUnlocked)
+        {
+            PlayerPrefs.SetInt("LevelsUnlocked", levelNumber + 1);
+            PlayerPrefs.Save();
+            Debug.Log("Final level complete! Progress saved.");
+        }
+
         unlockNextDifficulty(currentDifficulty);
         statePause();
         menuActive = menuWin;
