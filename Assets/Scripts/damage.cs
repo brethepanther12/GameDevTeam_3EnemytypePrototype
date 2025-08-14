@@ -150,4 +150,20 @@ public class damage : MonoBehaviour
         currentStatusData = statusData;
     }
 
+    public void ApplyDamageTo(Collider other)
+    {
+        IDamage dmg = other.GetComponent<IDamage>();
+
+        if (other.GetComponent<StatusEffectHandler>() != null)
+        {
+            statusTarget = other.GetComponent<StatusEffectHandler>();
+            statusTarget.ApplyStatusEffect(currentStatusData, dmg);
+        }
+
+        if (dmg != null)
+        {
+            dmg.takeDamage(damageAmount + weaponDMG);
+        }
+    }
+
 }
