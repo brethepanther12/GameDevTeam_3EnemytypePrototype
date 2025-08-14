@@ -14,10 +14,10 @@ public class damage : MonoBehaviour
     [SerializeField] public float damageRate;
     [SerializeField] public int speed;
     [SerializeField] public float destroyTime;
-    [SerializeField] GameObject projectileStraightPrefab;
-    [SerializeField] GameObject projectileHomingPrefab;
+    //[SerializeField] GameObject projectileStraightPrefab;
+    //[SerializeField] GameObject projectileHomingPrefab;
 
-    [SerializeField] GameObject impactPrefab;
+    [SerializeField] public GameObject impactPrefab;
 
     bool isDamaging;
     public int weaponDMG;

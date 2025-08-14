@@ -24,8 +24,13 @@ public class StatusEffectHandler : MonoBehaviour
         if (activeEffects.ContainsKey(type))
         {
             Debug.Log($"Refreshing status {type}");
-            StopCoroutine(activeEffects[type]);
-            activeEffects.Remove(type);
+
+            if (activeEffects[type] != null)
+            {
+                StopCoroutine(activeEffects[type]);
+                activeEffects.Remove(type);
+            }
+            
         }
 
         Coroutine effectRoutine = StartCoroutine(RunEffect(effectData, dmgTarget));
@@ -56,6 +61,12 @@ public class StatusEffectHandler : MonoBehaviour
 
                 Debug.LogWarning("Electric status effect applied");
                 target.slowDown(data.slowDownMagnitude, data.statusDuration);
+                break;
+
+            case DamageStatus.Explosive:
+
+                Debug.LogWarning("Explosive status effect applied");
+                
                 break;
 
             default:

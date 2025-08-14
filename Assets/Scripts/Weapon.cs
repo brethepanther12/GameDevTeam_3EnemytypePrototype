@@ -16,6 +16,7 @@ public class Weapon : MonoBehaviour
     public int ammoMax;
     public int pellets;
     public float spread;
+    public float blastRadius;
 
     public AmmoType ammoType;
     public FireMode currentFireMode;
@@ -283,6 +284,7 @@ public class Weapon : MonoBehaviour
         spread = FMData.projectileSpread;
         ammoType = FMData.projectileType;
         bullet = FMData.projectile;
+        blastRadius = FMData.blastRadius;
     }
 
     private IEnumerator BurstFire()
@@ -347,6 +349,14 @@ public class Weapon : MonoBehaviour
 
         GameObject bulletObj = Instantiate(bullet, shootPos.position, Quaternion.LookRotation(direction));
         damage dmgScript = bulletObj.GetComponent<damage>();
+
+        if (dmgScript.impactPrefab != null)
+        {
+            Transform explosionPrefab = dmgScript.impactPrefab.transform;
+
+            explosionPrefab.localScale = Vector3.one * FMData.blastRadius;
+        }
+        
         if (dmgScript != null)
 
             if (FMData.effectData.statusType != DamageStatus.None)

@@ -35,6 +35,7 @@ public class FireModeData
     public float detonateTime;
     public int projectileCount;
     public float projectileSpread;
+    public float blastRadius;
 
 
 }

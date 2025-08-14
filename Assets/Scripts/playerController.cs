@@ -352,6 +352,11 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 }
                 break;
 
+            case DamageStatus.Explosive:
+
+                takeDamage(amount);
+                break;
+
             default:
                 break;
         }

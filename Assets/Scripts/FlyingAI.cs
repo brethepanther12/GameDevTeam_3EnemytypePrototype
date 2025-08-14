@@ -437,6 +437,11 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
                 }
                 break;
 
+            case DamageStatus.Explosive:
+
+                takeDamage(amount);
+                break;
+
             default:
                 break;
         }
