@@ -45,6 +45,16 @@ public class EnemyAIBase : MonoBehaviour, IDamage
         //To save the enemy's max health to currently.
         enemyCurrentHealthPoints = enemyHealthPointsMax;
 
+        if (shield == 0)
+        {
+            shieldPrefab.SetActive(false);
+        }
+
+        if (armor == 0)
+        {
+            armorPrefab.SetActive(false);
+        }
+
         EnemyHealthUI ui = GetComponent<EnemyHealthUI>();
         if (ui != null)
         {

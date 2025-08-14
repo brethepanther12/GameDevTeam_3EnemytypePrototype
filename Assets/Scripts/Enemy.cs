@@ -86,6 +86,16 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
         startingPos = transform.position;
         stoppingDistanceOrig = agent.stoppingDistance;
 
+        if(shield == 0)
+        {
+            shieldPrefab.SetActive(false);
+        }
+
+        if (armor == 0)
+        {
+            armorPrefab.SetActive(false);
+        }
+
     }
 
     // Update is called once per frame
@@ -372,7 +382,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
                 {
                     takeDamage(amount + 1);
                 }
-                break;
+                    break;
 
             case DamageStatus.Cryo:
 
