@@ -494,13 +494,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef396377418919e48aff9079808ae744, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentEffectData:
-    statusType: 0
-    statusDamage: 0
-    statusTickRate: 0
-    statusDuration: 0
-    slowDownMagnitude: 0
-  currentStatuses: []
 --- !u!114 &5081715325498493642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -517,8 +510,8 @@ MonoBehaviour:
   enemyHealthPointsMax: 50
   shield: 0
   armor: 0
-  shieldPrefab: {fileID: 0}
-  armorPrefab: {fileID: 0}
+  shieldPrefab: {fileID: 8692831757225700393}
+  armorPrefab: {fileID: 3521868761151797407}
   enemyModel:
   - {fileID: 8623609034818132609}
   - {fileID: 8623609034818132611}

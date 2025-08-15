@@ -276,8 +276,14 @@ public class Weapon : MonoBehaviour
 
         FMData = weaponData.GetFireModeData(currentFireMode);
         
-
-        wepDmg = FMData.damage;
+        if (equippedPlayer != null)
+        {
+            wepDmg = FMData.damage + equippedPlayer.GetBaseShootDamage();
+        } else
+        {
+            wepDmg = FMData.damage;
+        }
+            
         attackRate = FMData.fireRate;
         range = FMData.range;
         pellets = FMData.projectileCount;
