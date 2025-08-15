@@ -73,14 +73,21 @@ public class AcidPit : MonoBehaviour
 
         while (playerInside)
         {
-            if (player != null)
+            if (player != null && player.gameObject.activeInHierarchy) // only if player is active
             {
                 int dmg = Mathf.RoundToInt(damagePerSecond * tickRate);
                 player.takeDamage(dmg);
-            }
 
-            if (refreshSlowEachTick && slowStatus != null && statusHandler != null)
-                statusHandler.ApplyStatusEffect(slowStatus, idamage);
+                if (refreshSlowEachTick && slowStatus != null && statusHandler != null)
+                    statusHandler.ApplyStatusEffect(slowStatus, idamage);
+            }
+            else
+            {
+                // player is dead or null, stop coroutine
+                playerInside = false;
+                dotRoutine = null;
+                yield break;
+            }
 
             yield return wait;
         }
