@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 3877686443453307147}
   - component: {fileID: 8396412762350705618}
   m_Layer: 6
-  m_Name: Lava
+  m_Name: Acid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -55,6 +55,16 @@ MonoBehaviour:
   damageRate: 0.5
   speed: 0
   destroyTime: 0
+  impactPrefab: {fileID: 0}
+  weaponDMG: 0
+  currentStatus: 0
+  currentStatusData:
+    statusType: 0
+    statusDamage: 0
+    statusTickRate: 0
+    statusDuration: 0
+    slowDownMagnitude: 0
+  statusTarget: {fileID: 0}
 --- !u!33 &4639429034426246481
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -86,7 +96,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f098d5111c8e6c1438b37e0dadd06bd9, type: 2}
+  - {fileID: 2100000, guid: da1a6104fa254a24c81609bf1166b3fb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
