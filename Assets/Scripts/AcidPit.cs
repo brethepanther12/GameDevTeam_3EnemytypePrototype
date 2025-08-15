@@ -41,7 +41,7 @@ public class AcidPit : MonoBehaviour
         playerInside = true;
         player = other.GetComponent<playerController>();
         statusHandler = other.GetComponent<StatusEffectHandler>();
-        idamage = other.GetComponent<IDamage>(); // may be null; that's fine
+        idamage = other.GetComponent<IDamage>(); 
 
         if (acidFX != null) acidFX.Play();
         if (loopAudio != null) loopAudio.Play();
@@ -91,7 +91,6 @@ public class AcidPit : MonoBehaviour
         if (!box) return;
 
         Gizmos.color = Color.green;
-        // Draw correctly in world-space
         var worldCenter = transform.TransformPoint(box.center);
         var worldSize = Vector3.Scale(box.size, transform.lossyScale);
         Gizmos.DrawWireCube(worldCenter, worldSize);
