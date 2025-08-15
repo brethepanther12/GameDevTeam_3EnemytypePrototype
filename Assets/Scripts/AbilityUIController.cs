@@ -63,7 +63,13 @@ public class AbilityUIController : MonoBehaviour
 
     void OnEnable()
     {
-        UpdateMutagenCountDisplay();
+        if (!isInitialized)
+            Initialize();
+
+        // fix? it made it so I can play my game if you could go into a deeper fix it would help
+        if (mutagenCountText != null && playerInventory != null)
+            UpdateMutagenCountDisplay();
+
         Deselect();
     }
 
