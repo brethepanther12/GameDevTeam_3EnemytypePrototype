@@ -40,6 +40,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     [Header("\"--- Retreat ---\"")]
     [SerializeField] private float retreatCooldown;
     [SerializeField] private float retreatSpeed;
+    [SerializeField] private float retreatDistance;
     private bool isRetreating;
     private float retreatTimer;
     private Vector3 retreatDirection;
@@ -108,7 +109,8 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             Quaternion targetRotation = Quaternion.LookRotation(retreatDirection);
             rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRotation, rotationSpeed * Time.deltaTime));
 
-            if (retreatTimer <= 0f) isRetreating = false;
+            if (retreatTimer <= 0f || 
+            Vector3.Distance(transform.position, playerTarget.transform.position) >= retreatDistance) isRetreating = false;
 
             return;
         }
