@@ -47,7 +47,7 @@ public class AbilityUIController : MonoBehaviour
         playerController = gamemanager.instance.playerScript;
         playerInventory = playerController.GetComponent<PlayerInventory>();
         PopulateUpgradeList();
-
+        UpdateMutagenCountDisplay();
         isInitialized = true;
     }
 
@@ -75,6 +75,7 @@ public class AbilityUIController : MonoBehaviour
 
     void PopulateUpgradeList()
     {
+        
         foreach (Transform child in upgradeButtonContainer)
         {
             Destroy(child.gameObject);

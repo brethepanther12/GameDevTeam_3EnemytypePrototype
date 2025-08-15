@@ -155,11 +155,14 @@ public class gamemanager : MonoBehaviour
     }
     public void youLose()
     {
-        ScoreManager.instance.AddScoreToLeaderboard();
 
+        
         statePause();
         menuActive = menuLose;
         menuActive.SetActive(true);
+
+        //You had this line before pause, but I couldn't die
+        ScoreManager.instance.AddScoreToLeaderboard();
     }
 
     public void TriggerWinScreen()

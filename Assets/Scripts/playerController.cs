@@ -119,6 +119,16 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         if (gamemanager.instance.isPaused)
             return;
 
+
+        if (Input.GetButtonDown("Interact"))
+        {
+            Debug.Log("Interact pressed");
+
+            if (AbilityUIController.instance != null)
+            {
+                AbilityUIController.instance.OpenMenu();
+            }
+        }
         if (Input.GetButtonDown("Sprint") && dashCount > 0 && !isDashing)
         {
             StartCoroutine(Dash());
@@ -430,7 +440,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     public void IncreaseDamage(int amount, int magnitude)
     {
-        if (magnitude == 1)
+        if (magnitude >= 1)
         {
             shootDamage += amount;
 
@@ -446,7 +456,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     public void IncreaseSpeed(int amount, int magnitude)
     {
-        if (magnitude == 1)
+        if (magnitude >= 1)
         {
             speed += amount;
 
@@ -462,7 +472,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     public void IncreaseJumpMaxCount(int amount, int magnitude)
     {
-        if (magnitude == 1)
+        if (magnitude >= 1)
         {
             jumpMax += amount;
 
@@ -678,5 +688,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         }
 
         gamemanager.instance.dashCounterCDImage.fillAmount = 1f;
+    }
+
+    public int GetBaseShootDamage()
+    {
+        return shootDamage;
     }
 }

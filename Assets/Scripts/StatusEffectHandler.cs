@@ -49,6 +49,7 @@ public class StatusEffectHandler : MonoBehaviour
 
             case DamageStatus.Corrosive:
                 Debug.LogWarning("Corrosive status effect applied");
+
                 break;
 
             case DamageStatus.Cryo:
