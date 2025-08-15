@@ -15,6 +15,7 @@ public class ElectricPylonTrap : MonoBehaviour
     private bool playerInside = false;
     private float shockTimer = 0f;
     private Transform playerTransform;
+    
 
     private void Start()
     {
@@ -96,4 +97,5 @@ public class ElectricPylonTrap : MonoBehaviour
             Gizmos.DrawWireCube(transform.position + box.center, box.size);
         }
     }
+
 }

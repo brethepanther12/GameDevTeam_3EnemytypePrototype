@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2245642887430340806}
   m_Layer: 11
   m_Name: Bullet_Cryo_Player
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -55,8 +55,6 @@ MonoBehaviour:
   damageRate: 0
   speed: 50
   destroyTime: 3
-  projectileStraightPrefab: {fileID: 0}
-  projectileHomingPrefab: {fileID: 0}
   impactPrefab: {fileID: 1000012909287652, guid: 856ff8a17ed9aab409e2ed170bbc06c8, type: 3}
   weaponDMG: 0
   currentStatus: 0

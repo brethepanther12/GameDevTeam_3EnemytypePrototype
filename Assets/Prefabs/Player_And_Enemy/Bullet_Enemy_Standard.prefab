@@ -4898,7 +4898,7 @@ GameObject:
   - component: {fileID: 2245642887430340806}
   m_Layer: 8
   m_Name: Bullet_Enemy_Standard
-  m_TagString: Enemy
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4937,8 +4937,6 @@ MonoBehaviour:
   damageRate: 0
   speed: 50
   destroyTime: 3
-  projectileStraightPrefab: {fileID: 0}
-  projectileHomingPrefab: {fileID: 0}
   impactPrefab: {fileID: 2408714428905375140, guid: ec2cd9d24f8932148ab9480fc3b65b15, type: 3}
   weaponDMG: 0
   currentStatus: 0

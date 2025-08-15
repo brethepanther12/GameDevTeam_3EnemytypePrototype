@@ -16,7 +16,11 @@ public class Destructible : MonoBehaviour, IDamage
         {
             HP -= amount;
 
-            StartCoroutine(FlashWhite());
+            if (model != null)
+            {
+                StartCoroutine(FlashWhite());
+            }
+            
 
             if (HP <= 0 )
             {
@@ -70,6 +74,7 @@ public class Destructible : MonoBehaviour, IDamage
 
     public IEnumerator FlashWhite()
     {
+
         model.material.color = Color.white;
         yield return new WaitForSeconds(0.2f);
         model.material.color = colorOrig;

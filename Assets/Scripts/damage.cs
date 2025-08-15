@@ -94,7 +94,7 @@ public class damage : MonoBehaviour
                 GameObject splatInstance = Instantiate(
                     impactPrefab,
                     hit.point,
-                    Quaternion.LookRotation(-hit.normal)
+                    Quaternion.LookRotation(hit.normal)
                 );
 
                 splatInstance.transform.SetParent(hit.collider.transform, worldPositionStays: true);

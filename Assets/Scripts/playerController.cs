@@ -139,7 +139,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         {
             if (animator != null)
             {
-                animator.SetTrigger("Reload");
+                animator.SetTrigger("Reloading");
             }
 
             Weapon currentWeapon = inventory.GetActiveWeapon();
