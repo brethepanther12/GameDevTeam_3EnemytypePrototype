@@ -22,10 +22,5 @@ public class MineTrap : MonoBehaviour
             if (destroyAfterTrigger)
                 Destroy(gameObject);
         }
-
-        if (explosionEffect != null)
-        {
-            Destroy(explosionEffect);
-        }
     }
 }
