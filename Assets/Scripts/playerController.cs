@@ -119,6 +119,16 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         if (gamemanager.instance.isPaused)
             return;
 
+
+        if (Input.GetButtonDown("Interact"))
+        {
+            Debug.Log("Interact pressed");
+
+            if (AbilityUIController.instance != null)
+            {
+                AbilityUIController.instance.OpenMenu();
+            }
+        }
         if (Input.GetButtonDown("Sprint") && dashCount > 0 && !isDashing)
         {
             StartCoroutine(Dash());
