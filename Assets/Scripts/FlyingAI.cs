@@ -348,52 +348,48 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     public void takeDamage(int amount)
     {
 
-        if (Dead) return;
+        if (Dead || amount <= 0)
+            return;
+
+        int remainingDamage = amount;
 
         if (shield > 0)
         {
-            shield -= amount;
-            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-            StartCoroutine(FlashRed());
+            int damageToShield = Mathf.Min(remainingDamage, shield);
+            shield -= damageToShield;
+            remainingDamage -= damageToShield;
 
             if (shield <= 0)
             {
                 shield = 0;
-
                 shieldPrefab.SetActive(false);
-                armor -= amount;
-                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-                StartCoroutine(FlashRed());
-
             }
-
         }
 
-        else if (armor > 0)
+        if (remainingDamage > 0 && armor > 0)
         {
-            armor -= amount;
+            int damageToArmor = Mathf.Min(remainingDamage, armor);
+            armor -= damageToArmor;
+            remainingDamage -= damageToArmor;
 
-            if (armor <= 0 && shield <= 0)
+            if (armor <= 0)
             {
-
                 armor = 0;
-                shield = 0;
                 armorPrefab.SetActive(false);
-                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-                StartCoroutine(FlashRed());
             }
         }
-        else
+
+        if (remainingDamage > 0)
         {
-            currentHP -= amount;
-            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-            StartCoroutine(FlashRed());
+            currentHP -= remainingDamage;
+            if (currentHP < 0) currentHP = 0;
         }
+
+        AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+        StartCoroutine(FlashRed());
 
         if (currentHP <= 0)
         {
-            //Die method
-
             Die();
             ScoreManager.instance.AddPointsForEnemy(gameObject.tag);
         }

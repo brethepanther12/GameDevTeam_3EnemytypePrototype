@@ -159,42 +159,45 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     public virtual void takeDamage(int amount)
     {
 
+        if (amount <= 0)
+            return;
+
+        int remainingDamage = amount;
+
         if (shield > 0)
         {
-            shield -= amount;
-            GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+            int damageToShield = Mathf.Min(remainingDamage, shield);
+            shield -= damageToShield;
+            remainingDamage -= damageToShield;
 
             if (shield <= 0)
             {
                 shield = 0;
-
                 shieldPrefab.SetActive(false);
-                armor -= amount;
-                GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
             }
-
         }
 
-        else if (armor > 0)
+        if (remainingDamage > 0 && armor > 0)
         {
-            armor -= amount;
-            GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+            int damageToArmor = Mathf.Min(remainingDamage, armor);
+            armor -= damageToArmor;
+            remainingDamage -= damageToArmor;
 
-            if (armor <= 0 && shield <= 0)
+            if (armor <= 0)
             {
-
                 armor = 0;
-                shield = 0;
                 armorPrefab.SetActive(false);
-                GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
             }
         }
-        else
+
+        if (remainingDamage > 0)
         {
-            enemyCurrentHealthPoints -= amount;
-            GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+            enemyCurrentHealthPoints -= remainingDamage;
+            if (enemyCurrentHealthPoints < 0)
+                enemyCurrentHealthPoints = 0;
         }
-        //GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+
+        GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
 
         if (enemyCurrentHealthPoints <= 0)
         {
