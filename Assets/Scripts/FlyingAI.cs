@@ -37,6 +37,13 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     private Vector3 ceilingTarget;
     private Vector3 ceilingPoint;
 
+    [Header("\"--- Retreat ---\"")]
+    [SerializeField] private float retreatCooldown;
+    [SerializeField] private float retreatSpeed;
+    private bool isRetreating;
+    private float retreatTimer;
+    private Vector3 retreatDirection;
+
     [Header("\"--- Field of View ---\"")]
     [SerializeField] private float fovDistance;
     [SerializeField] private float fovAngle;
@@ -91,6 +98,22 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (isRetreating)
+        {
+            retreatTimer -= Time.deltaTime;
+
+            //Moving to randomized location
+            rigidBody.linearVelocity = retreatDirection * retreatSpeed;
+
+            Quaternion targetRotation = Quaternion.LookRotation(retreatDirection);
+            rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRotation, rotationSpeed * Time.deltaTime));
+
+            if (retreatTimer <= 0f) isRetreating = false;
+
+            return;
+        }
+        
+
         if (isBlind)
         {
             playerVisible = false;
@@ -371,6 +394,13 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             currentHP -= amount;
             AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
             StartCoroutine(FlashRed());
+        }
+        if (!Dead && playerTarget != null) 
+        {
+            isRetreating = true;
+            retreatTimer = retreatCooldown;
+            retreatDirection = (transform.position - playerTarget.transform.position).normalized;
+
         }
 
         if (currentHP <= 0)
