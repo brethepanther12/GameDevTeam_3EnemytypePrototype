@@ -4,7 +4,7 @@ using UnityEngine.AI;
 using UnityEngine.Assertions.Must;
 using UnityEngine.Rendering;
 
-public class GruntAi : MonoBehaviour, IDamage, IGrapplable
+public class GruntAi : MonoBehaviour, IDamage, IGrapplable, IEnemyAI
 {
 
     [SerializeField] SkinnedMeshRenderer[] modelParts;
@@ -51,6 +51,7 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
     [SerializeField] GameObject bullet;
     [SerializeField] float shootRate;
 
+
     Color colorOrig;
 
     public bool isBeingGrappled { get; set; }
@@ -65,6 +66,7 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
     float roamTimer;
     float stoppingDistanceOrig;
     private float footstepTimer;
+    private bool hasBeenAlerted = false;
 
     Vector3 playerDir;
     Vector3 startingPos;
@@ -538,5 +540,23 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable
 
         agent.speed = originalSpeed;
         slowRoutine = null;
+    }
+
+    public void RespondToHelpCall(Transform target)
+    {
+        if (isDead || hasBeenAlerted)
+        {
+            return;
+        }
+
+        Debug.Log(gameObject.name + " is responding to a help call!");
+
+        hasBeenAlerted = true;
+
+        if (agent != null && agent.isActiveAndEnabled)
+        {
+            agent.SetDestination(target.position);
+        }
+
     }
 }

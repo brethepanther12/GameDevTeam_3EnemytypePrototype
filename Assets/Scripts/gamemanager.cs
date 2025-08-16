@@ -21,6 +21,7 @@ public class gamemanager : MonoBehaviour
     [SerializeField] private string nextLevelName;
     public int levelNumber;
 
+    public static int playerDeathCount;
     public Image playerHPBar;
     public Image playerShieldBar;
     public Image playerArmorBar;
@@ -63,10 +64,41 @@ public class gamemanager : MonoBehaviour
     public enum DifficultyLevels{easy,normal,hard}
     public DifficultyLevels currentDifficulty;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log("New scene loaded: " + scene.name + ". Clearing checkpoint data.");
+        ClearCheckpointData();
+
+        player = GameObject.FindWithTag("Player");
+        if (player != null)
+        {
+            playerScript = player.GetComponent<playerController>();
+        }
+    }
     void Awake()
     {
-        instance = this;
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+
+            ClearCheckpointData();
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         player = GameObject.FindWithTag("Player");
         playerScript = player.GetComponent<playerController>();
@@ -76,7 +108,6 @@ public class gamemanager : MonoBehaviour
         loadDifficulty();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetButtonDown("Cancel"))
@@ -163,6 +194,9 @@ public class gamemanager : MonoBehaviour
 
         //You had this line before pause, but I couldn't die
         ScoreManager.instance.AddScoreToLeaderboard();
+
+        playerDeathCount++;
+        Debug.Log("Player death count:" + playerDeathCount);
     }
 
     public void TriggerWinScreen()
@@ -297,5 +331,14 @@ public class gamemanager : MonoBehaviour
     {
         int saved = PlayerPrefs.GetInt("CurrentDifficulty", 0);
         currentDifficulty = (DifficultyLevels)saved;
+    }
+
+    public void ClearCheckpointData()
+    {
+        if (PlayerPrefs.HasKey("CheckpointPlayerData"))
+        {
+            PlayerPrefs.DeleteKey("CheckpointPlayerData");
+            Debug.Log("Checkpoint data cleared for new game.");
+        }
     }
 }

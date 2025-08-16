@@ -14,7 +14,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
 
-    [SerializeField] int HP;
+    [SerializeField] public int HP;
     [SerializeField] int maxHP;
     [SerializeField] float speed;
     [SerializeField] int sprintMod;
@@ -23,9 +23,9 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] int gravity;
     [SerializeField] int magazineSize = 15;
     [SerializeField] int reserveAmmo = 90;
-    [SerializeField] int shield;
+    [SerializeField] public int shield;
     [SerializeField] int maxShield;
-    [SerializeField] int armor;
+    [SerializeField] public int armor;
     [SerializeField] int maxArmor;
     [SerializeField] int shootDamage;
     [SerializeField] int meleeDamage;
@@ -571,6 +571,12 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     public void spawnPlayer()
     {
+        SpawnerTemp[] allSpawners = FindObjectsByType<SpawnerTemp>(FindObjectsSortMode.None);
+        foreach (SpawnerTemp spawner in allSpawners)
+        {
+            spawner.ResetSpawner();
+        }
+
         if (controller != null)
             controller.enabled = false;
 
@@ -580,7 +586,27 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         if (controller != null)
             controller.enabled = true;
 
-        HP = HPOrig;
+        if (PlayerPrefs.HasKey("CheckpointPlayerData"))
+        {
+            string json = PlayerPrefs.GetString("CheckpointPlayerData");
+            PlayerData data = JsonUtility.FromJson<PlayerData>(json);
+            HP = (int)data.health;
+            shield = (int)data.shield;
+            armor = (int)data.armor;
+        }
+        else
+        {
+            HP = HPOrig;
+            shield = shieldOrig;
+            armor = armorOrig;
+        }
+
+        PlayerInventory inventory = GetComponent<PlayerInventory>();
+        if (inventory != null)
+        {
+            inventory.EquipWeapon();
+        }
+
         updatePlayerUI();
     }
 

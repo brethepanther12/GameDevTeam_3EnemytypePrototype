@@ -6,7 +6,7 @@ using UnityEngine.AI;
 using UnityEngine.Assertions.Must;
 using UnityEngine.Rendering;
 
-public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
+public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
 {
 
     [SerializeField] SkinnedMeshRenderer[] modelParts;
@@ -50,6 +50,12 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
     [SerializeField] GameObject bullet;
     [SerializeField] float shootRate;
     [SerializeField] StatusEffectData statusEffectData;
+
+    [Header("AI - Call for Help")]
+    [SerializeField] private float helpRadius = 15f;
+    [SerializeField] private LayerMask enemyLayer;
+    private bool hasCalledForHelp = false;
+    private Transform playerTarget;
 
     Color colorOrig;
 
@@ -284,6 +290,12 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
         if (isDead)
         {
             return;
+        }
+
+        if (!hasCalledForHelp)
+        {
+            playerTarget = gamemanager.instance.player.transform;
+            CallForHelp();
         }
 
         if (shield > 0)
@@ -566,5 +578,53 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
 
         agent.speed = originalSpeed;
         slowRoutine = null;
+    }
+
+    private void CallForHelp()
+    {
+        hasCalledForHelp = true;
+        Debug.Log(gameObject.name + " is calling for help!");
+
+        Collider[] nearbyAllies = Physics.OverlapSphere(transform.position, helpRadius, enemyLayer);
+
+        Debug.Log("Found " + nearbyAllies.Length + " potential allies in range.");
+
+        foreach (Collider allyCollider in nearbyAllies)
+        {
+
+            Debug.Log("Checking ally: " + allyCollider.name + " on layer: " + LayerMask.LayerToName(allyCollider.gameObject.layer));
+
+            if (allyCollider.gameObject == this.gameObject) continue;
+
+            IEnemyAI allyAI = allyCollider.GetComponent<IEnemyAI>();
+            if (allyAI != null)
+            {
+                allyAI.RespondToHelpCall(playerTarget);
+            }
+            else
+            {
+
+                Debug.LogWarning(allyCollider.name + " is on the Enemy layer but is missing the 'Enemy' script!");
+            }
+        }
+    }
+
+    public void RespondToHelpCall(Transform target)
+    {
+
+        if (hasCalledForHelp || isDead)
+        {
+            return;
+        }
+
+        Debug.Log(gameObject.name + " is responding to a help call!");
+
+        playerTarget = target;
+        hasCalledForHelp = true;
+
+        if (agent.isActiveAndEnabled)
+        {
+            agent.SetDestination(playerTarget.position);
+        }
     }
 }
