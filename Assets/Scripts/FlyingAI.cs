@@ -401,7 +401,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         {
             isRetreating = true;
             retreatTimer = retreatCooldown;
-            retreatDirection = (transform.position - playerTarget.transform.position).normalized;
+            SetRetreatPoint();
 
         }
 
@@ -445,6 +445,22 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
 
 
+    }
+
+    private void SetRetreatPoint()
+    {
+        Vector3 retreatPoint = (transform.position - playerTarget.transform.position).normalized;
+
+        Vector3 randomPoint = Vector3.Cross(Vector3.up, retreatPoint).normalized;
+        float retreatRange = Random.Range(-1f, 1f);
+
+        Vector3 direction = (retreatPoint + randomPoint * retreatRange).normalized;
+
+        Vector3 retreatTarget = transform.position + direction * retreatDistance;
+
+        retreatTarget.y = transform.position.y;
+
+        retreatDirection = (retreatTarget - transform.position).normalized;
     }
 
     private void OnCollisionEnter(Collision other)
