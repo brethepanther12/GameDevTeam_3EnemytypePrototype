@@ -117,21 +117,23 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             return;
         }
 
-        if (target != null && playerVisible && InRange)
-        {
-            // Movement logic
-            Hover();
-            Movement();
-        }
-       
-        PlayerLost();
-
         // If returning to ceiling, override all movement
         if (returnToCeiling)
         {
             MoveToCeiling();
             return;
+
         }
+
+        if (target != null && playerVisible && InRange)
+        {
+            // Movement logic
+            Movement();
+        }
+       
+        PlayerLost();
+
+      
 
         Hover();
     }
@@ -186,7 +188,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         Vector3 strafeTarget = target.position + strafeOffset;
         Vector3 moveDirection = (strafeTarget - transform.position).normalized;
 
-        return moveDirection * flyingSpeed;
+        return moveDirection * strafeSpeed;
     }
 
     private void Retreat()
@@ -273,7 +275,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         else
             playerLostTimer = 0f;
 
-        if (playerLostTimer >= lostPlayDelay)
+        if (playerLostTimer >= lostPlayDelay && !InRange && !playerVisible)
         {
             if (!returnToCeiling)
             {
@@ -298,9 +300,12 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     private void AssignTarget()
     {
         // Assign or clear the target based on FOV + trigger
-        if (InRange && playerVisible)
+        if (InRange || playerVisible)
         {
             target = playerTarget.transform;
+        }else
+        {
+            target = null;
         }
     }
     void NearestCeiling()
@@ -353,6 +358,8 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
     void MoveToCeiling()
     {
+        if (isRetreating) return;
+
         if (!returnToCeiling) return;
 
         if (rigidBody.isKinematic) return;
