@@ -268,27 +268,20 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
     private void PlayerLost()
     {
-        // Determine if the player is "lost"
-        bool playerLost = target == null;
-
-        // Handle player loss timer
-        if (playerLost)
-         playerLostTimer += Time.fixedDeltaTime;
+        if (target == null)
+            playerLostTimer += Time.deltaTime;
         else
-         playerLostTimer = 0f;
-        
+            playerLostTimer = 0f;
 
-        // If lost for long enough, go to ceiling
-        if (playerLostTimer >= lostPlayDelay && !returnToCeiling)
+        if (playerLostTimer >= lostPlayDelay)
         {
-            NearestCeiling();
-            ceilingTarget = ceilingPoint;
-            returnToCeiling = true;
+            if (!returnToCeiling)
+            {
+                NearestCeiling();
+                ceilingTarget = ceilingPoint;
+                returnToCeiling = true;
+            }
         }
-
-        if (!playerLost && returnToCeiling)
-            returnToCeiling = false;
-        
     }
 
     public void SetInvisible(bool invisible)
