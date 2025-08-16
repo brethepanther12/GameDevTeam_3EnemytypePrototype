@@ -26,6 +26,8 @@ public class AbilityUIController : MonoBehaviour
 
     public static AbilityUIController instance;
 
+    public WeaponUIController weaponUIController;
+
     private bool isInitialized = false;
 
     private void Awake()
@@ -180,7 +182,12 @@ public class AbilityUIController : MonoBehaviour
         }
     }
 
+    public void ShowWeaponMenu()
+    {
+        gameObject.SetActive(false);
 
+        weaponUIController.OpenWeaponMenu();
+    }
 
     public void CloseMenu()
     {
