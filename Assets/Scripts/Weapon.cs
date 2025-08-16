@@ -75,7 +75,12 @@ public class Weapon : MonoBehaviour
     {
         
         weaponData = data;
-        
+
+        foreach (WeaponUpgradeSO upgrade in weaponData.appliedUpgrades)
+        {
+            weaponData.ApplyUpgrade(upgrade);
+        }
+
         currentFireMode = weaponData.savedMode;
         FMData = weaponData.GetFireModeData(currentFireMode);
         ApplyFireModeStats();

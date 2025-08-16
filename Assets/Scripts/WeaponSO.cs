@@ -123,6 +123,13 @@ public class WeaponSO : ScriptableObject
                 case WeaponStatType.MagSize:
                     magSize += (int)upgrade.upgradeAmount;
                     break;
+                case WeaponStatType.AttackRate:
+                    attackRate -= upgrade.upgradeAmount;
+                    if (attackRate < 0.05f) attackRate = 0.05f;
+                    break;
+                case WeaponStatType.Range:
+                    range += (int)upgrade.upgradeAmount;
+                    break;
             }
         }
     }

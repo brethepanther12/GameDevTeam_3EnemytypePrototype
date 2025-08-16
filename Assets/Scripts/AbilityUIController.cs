@@ -184,12 +184,18 @@ public class AbilityUIController : MonoBehaviour
 
     public void ShowWeaponMenu()
     {
-        gameObject.SetActive(false);
+        if (upgradePanel != null)
+        {
+            upgradePanel.SetActive(false);
+        }
 
-        weaponUIController.OpenWeaponMenu();
+        if (weaponUIController != null)
+        {
+            weaponUIController.OpenWeaponMenu();
+        }
     }
 
-    public void CloseMenu()
+public void CloseMenu()
     {
         gameObject.SetActive(false);
 
