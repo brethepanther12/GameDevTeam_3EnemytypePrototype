@@ -142,6 +142,24 @@ public class PlayerInventory : MonoBehaviour
         }
     }
 
+    public int GetWeaponComponentCount()
+    {
+        InventorySlot componentSlot = items.Find(s => s.item.itemName == "Weapon Component");
+        return componentSlot != null ? componentSlot.quantity : 0;
+    }
+
+    public bool TrySpendWeaponComponents(int amountToSpend)
+    {
+        InventorySlot componentSlot = items.Find(s => s.item.itemName == "Weapon Component");
+        if (componentSlot != null && componentSlot.quantity >= amountToSpend)
+        {
+            componentSlot.RemoveQuantity(amountToSpend);
+
+            return true;
+        }
+        return false;
+    }
+
     public void AddWeapon(WeaponSO newWeapon)
     {
 
