@@ -376,7 +376,6 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             }
 
         }
-
         else if (armor > 0)
         {
             armor -= amount;
@@ -500,7 +499,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
     private void OnCollisionStay(Collision other)
     {
-        if (!isDamaging && other.gameObject.CompareTag("Player"))
+        if (!isRetreating && !isDamaging && other.gameObject.CompareTag("Player"))
         {
             iDamage = other.gameObject.GetComponent<IDamage>();
             if (iDamage != null)
