@@ -143,12 +143,22 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         Vector3 direction = (target.position - transform.position).normalized;
         Debug.DrawRay(transform.position, direction * 1f, Color.red);
 
-        Strafing(direction);
+        Vector3 finalVelocity = Vector3.zero;
+
+        finalVelocity += direction * flyingSpeed;
+
+        Vector3 strafeVelocity = Strafing(direction);
+        finalVelocity += strafeVelocity;
+
+        if (!Physics.Raycast(transform.position, (direction + strafeVelocity).normalized, 1f, enviormentMask))
+            rigidBody.linearVelocity = finalVelocity;
+        else
+            rigidBody.linearVelocity = Vector3.zero;
 
         faceTarget();
     }
 
-    private void Strafing(Vector3 direction)
+    private Vector3 Strafing(Vector3 direction)
     {
         strafeTimer -= Time.deltaTime;
         if (strafeTimer <= 0f)
@@ -168,14 +178,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         Vector3 strafeTarget = target.position + strafeOffset;
         Vector3 moveDirection = (strafeTarget - transform.position).normalized;
 
-        if (!Physics.Raycast(transform.position, moveDirection, 1f, enviormentMask))
-        {
-            rigidBody.linearVelocity = direction * flyingSpeed;
-        }
-        else
-        {
-            rigidBody.linearVelocity = Vector3.zero;
-        }
+        return moveDirection * flyingSpeed;
     }
 
     private void Retreat()
@@ -192,8 +195,8 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
                 strafeDirection = -strafing;
         }
 
-        Vector3 retreatVelocity = (retreatDirection + strafeDirection).normalized;
-        rigidBody.linearVelocity = retreatVelocity;
+        Vector3 finalVelocity = (retreatDirection + strafeDirection).normalized * retreatSpeed; // MODIFIED
+        rigidBody.linearVelocity = finalVelocity;
 
         Quaternion targetRotation = Quaternion.LookRotation(retreatDirection);
         rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRotation, rotationSpeed * Time.deltaTime));
