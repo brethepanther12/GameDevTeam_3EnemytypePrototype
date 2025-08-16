@@ -280,36 +280,36 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     public void takeDamage(int amount)
     {
+        if (amount <= 0)
+            return;
+
+        int remainingDamage = amount;
+
         if (shield > 0)
         {
-            shield -= amount;
+            int damageToShield = Mathf.Min(remainingDamage, shield);
+            shield -= damageToShield;
+            remainingDamage -= damageToShield;
 
-            if (shield < 0)
-            {
-                shield = 0;
-            }
             updatePlayerUI();
             StartCoroutine(ShieldDamageFlashScreen());
         }
-        else if (armor > 0)
-        {
-            armor -= amount;
 
-            if (armor < 0)
-            {
-                armor = 0;
-            }
+        if (remainingDamage > 0 && armor > 0)
+        {
+            int damageToArmor = Mathf.Min(remainingDamage, armor);
+            armor -= damageToArmor;
+            remainingDamage -= damageToArmor;
+
             updatePlayerUI();
             StartCoroutine(ArmorDamageFlashScreen());
         }
-        else
-        {
-            HP -= amount;
 
-            if (HP < 0)
-            {
-                HP = 0;
-            }
+        if (remainingDamage > 0)
+        {
+            HP -= remainingDamage;
+            if (HP < 0) HP = 0;
+
             AudioSource.PlayClipAtPoint(hurtSound, transform.position, hurtVol);
             updatePlayerUI();
             StartCoroutine(damageFlashScreen());

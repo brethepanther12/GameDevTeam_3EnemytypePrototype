@@ -287,10 +287,11 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
 
     public void takeDamage(int amount)
     {
-        if (isDead)
-        {
+
+        if (isDead || amount <= 0)
             return;
-        }
+
+        int remainingDamage = amount;
 
         if (!hasCalledForHelp)
         {
@@ -300,55 +301,48 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
 
         if (shield > 0)
         {
-            shield -= amount;
+            int damageToShield = Mathf.Min(remainingDamage, shield);
+            shield -= damageToShield;
+            remainingDamage -= damageToShield;
+
             AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
             agent.SetDestination(gamemanager.instance.player.transform.position);
 
             if (shield <= 0)
             {
                 shield = 0;
-
                 shieldPrefab.SetActive(false);
-                armor -= amount;
-                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-                agent.SetDestination(gamemanager.instance.player.transform.position);
-
             }
-
         }
 
-        else if (armor > 0)
+        if (remainingDamage > 0 && armor > 0)
         {
-            armor -= amount;
+            int damageToArmor = Mathf.Min(remainingDamage, armor);
+            armor -= damageToArmor;
+            remainingDamage -= damageToArmor;
 
-            if (armor <= 0 && shield <= 0)
+            if (armor <= 0)
             {
-
                 armor = 0;
-                shield = 0;
                 armorPrefab.SetActive(false);
-                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-                agent.SetDestination(gamemanager.instance.player.transform.position);
             }
-        } 
-        else
-        {
-            HP -= amount;
+
             AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
             agent.SetDestination(gamemanager.instance.player.transform.position);
         }
-            
 
-        
+        if (remainingDamage > 0)
+        {
+            HP -= remainingDamage;
+            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+            agent.SetDestination(gamemanager.instance.player.transform.position);
+        }
 
-        
         if (HP <= 0)
         {
-
             shieldPrefab.SetActive(false);
             armorPrefab.SetActive(false);
             isDead = true;
-
 
             if (reloadingRT != null)
             {
@@ -361,11 +355,9 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
             animator.CrossFade("Death", 0f);
             StartCoroutine(Die());
             ScoreManager.instance.AddPointsForEnemy(gameObject.tag);
-
         }
         else
         {
-
             StartCoroutine(FlashRed());
         }
     }

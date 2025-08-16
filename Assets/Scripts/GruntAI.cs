@@ -252,56 +252,49 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable, IEnemyAI
 
     public void takeDamage(int amount)
     {
-        if (isDead)
-        {
+        if (isDead || amount <= 0)
             return;
-        }
+
+        int remainingDamage = amount;
 
         if (shield > 0)
         {
-            shield -= amount;
-            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-            agent.SetDestination(gamemanager.instance.player.transform.position);
+            int damageToShield = Mathf.Min(remainingDamage, shield);
+            shield -= damageToShield;
+            remainingDamage -= damageToShield;
 
             if (shield <= 0)
             {
                 shield = 0;
-
                 shieldPrefab.SetActive(false);
-                armor -= amount;
-                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-                agent.SetDestination(gamemanager.instance.player.transform.position);
-
             }
-
         }
 
-        else if (armor > 0)
+        if (remainingDamage > 0 && armor > 0)
         {
-            armor -= amount;
+            int damageToArmor = Mathf.Min(remainingDamage, armor);
+            armor -= damageToArmor;
+            remainingDamage -= damageToArmor;
 
-            if (armor <= 0 && shield <= 0)
+            if (armor <= 0)
             {
-
                 armor = 0;
-                shield = 0;
                 armorPrefab.SetActive(false);
-                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-                agent.SetDestination(gamemanager.instance.player.transform.position);
             }
         }
-        else
+
+        if (remainingDamage > 0)
         {
-            HP -= amount;
-            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-            agent.SetDestination(gamemanager.instance.player.transform.position);
+            HP -= remainingDamage;
+            if (HP < 0) HP = 0;
         }
 
+        AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+        agent.SetDestination(gamemanager.instance.player.transform.position);
 
         if (HP <= 0)
         {
             isDead = true;
-
 
             if (reloadingRT != null)
             {
@@ -312,11 +305,9 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable, IEnemyAI
             animator.SetBool("isdead", true);
             StartCoroutine(Die());
             ScoreManager.instance.AddPointsForEnemy(gameObject.tag);
-
         }
         else
         {
-
             StartCoroutine(FlashRed());
         }
     }
