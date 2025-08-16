@@ -165,6 +165,7 @@ public class AbilityUIController : MonoBehaviour
 
     public void OpenMenu()
     {
+        UpdateMutagenCountDisplay();
         Debug.Log("OpenMenu() was successfully called!");
         gameObject.SetActive(true);
         if (upgradePanel != null)
