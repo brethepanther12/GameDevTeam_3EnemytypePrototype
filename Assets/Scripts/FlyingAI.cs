@@ -110,7 +110,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         {
             retreatTimer -= Time.deltaTime;
 
-            //Moving to randomized location
+            //Moving to location
             rigidBody.linearVelocity = retreatDirection * retreatSpeed;
 
             Quaternion targetRotation = Quaternion.LookRotation(retreatDirection);
