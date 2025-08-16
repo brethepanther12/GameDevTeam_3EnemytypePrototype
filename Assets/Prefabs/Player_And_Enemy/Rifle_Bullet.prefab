@@ -11,6 +11,9 @@ GameObject:
   - component: {fileID: 4067420479645598098}
   - component: {fileID: 1269060550204652183}
   - component: {fileID: 1637891049226880559}
+  - component: {fileID: -6884966696679133809}
+  - component: {fileID: 2016041564684402707}
+  - component: {fileID: -1577943545038255063}
   m_Layer: 0
   m_Name: Rifle_Bullet
   m_TagString: Untagged
@@ -86,3 +89,79 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!54 &-6884966696679133809
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8679592741837079367}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 0
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 1
+--- !u!135 &2016041564684402707
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8679592741837079367}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.027965428
+  m_Center: {x: -2.3283064e-10, y: -0.0000000093132275, z: -0.000000011408704}
+--- !u!114 &-1577943545038255063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8679592741837079367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a08e3e2a22e8a3249b0a8a55c9a74c1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+  rb: {fileID: -6884966696679133809}
+  damageAmount: 15
+  damageRate: 0
+  speed: 25
+  destroyTime: 5
+  impactPrefab: {fileID: 0}
+  weaponDMG: 0
+  currentStatus: 0
+  currentStatusData:
+    statusType: 0
+    statusDamage: 0
+    statusTickRate: 0
+    statusDuration: 0
+    slowDownMagnitude: 0
+  statusTarget: {fileID: 0}
