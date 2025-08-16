@@ -108,81 +108,13 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     {
         if (isRetreating)
         {
-            retreatTimer -= Time.deltaTime;
-
-            if(strafeDirection == Vector3.zero)
-            {
-                Vector3 strafing = Vector3.Cross(Vector3.up, retreatDirection).normalized;
-
-                if (Random.value > 0.3f)
-                    strafeDirection = strafing;
-                else
-                    strafeDirection = -strafing; 
-            }
-
-            Vector3 retreatVelocity = (retreatDirection + strafeDirection).normalized;
-            rigidBody.linearVelocity = retreatVelocity;
-
-            Quaternion targetRotation = Quaternion.LookRotation(retreatDirection);
-            rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRotation, rotationSpeed * Time.deltaTime));
-
-            if (retreatTimer <= 0f ||
-            Vector3.Distance(transform.position, playerTarget.transform.position) >= retreatDistance)
-            {
-                isRetreating = false;
-                strafeDirection = Vector3.zero;
-            }
+            Retreat();
             return;
         }
-        
 
-        if (isBlind)
-        {
-            playerVisible = false;
-            target = null;
-        }
-        else
-        {
-            //  check if the player is in range and visible
-            playerVisible = PlayerInFieldOfView();
-        }
-
-
-        // Assign or clear the target based on FOV + trigger
-        if (InRange && playerVisible && target == null)
-        {
-            target = playerTarget.transform;
-        }
-        else if ((!InRange || !playerVisible) && target != null)
-        {
-            target = null;
-        }
-
-        // Determine if the player is "lost"
-        bool playerLost = target == null;
-
-        // Handle player loss timer
-        if (playerLost)
-        {
-            playerLostTimer += Time.fixedDeltaTime;
-        }
-        else
-        {
-            playerLostTimer = 0f;
-        }
-
-        // If lost for long enough, go to ceiling
-        if (playerLostTimer >= lostPlayDelay && !returnToCeiling)
-        {
-            NearestCeiling();
-            ceilingTarget = ceilingPoint;
-            returnToCeiling = true;
-        }
-
-        if (!playerLost && returnToCeiling)
-        {
-            returnToCeiling = false;
-        }
+        Visibility();
+        AssignTarget();
+        PlayerLost();
 
         // If returning to ceiling, override all movement
         if (returnToCeiling)
@@ -191,67 +123,88 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             return;
         }
 
-        // Hover logic (always active)
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight))
+        // Movement logic
+        Hover();
+        Movement();
+    }
+
+    private void Movement()
+    {
+        bool playerLost = target == null;
+        if (playerLost || target == null)
         {
-            float hoverError = hoverHeight - hit.distance;
-            float upwardForce = hoverClamp * hoverError;
-
-            if (hit.distance < 0.2f)
-            {
-                upwardForce *= 3f;
-            }
-
-            rigidBody.AddForce(Vector3.up * upwardForce, ForceMode.Acceleration);
+            rigidBody.linearVelocity = Vector3.zero;
+            return;
         }
 
-        // Movement logic
-        if (!playerLost && target != null)
+        if (rigidBody.isKinematic)
+            rigidBody.isKinematic = false;
+
+        Vector3 direction = (target.position - transform.position).normalized;
+        Debug.DrawRay(transform.position, direction * 1f, Color.red);
+
+        Strafing(direction);
+
+        faceTarget();
+    }
+
+    private void Strafing(Vector3 direction)
+    {
+        strafeTimer -= Time.deltaTime;
+        if (strafeTimer <= 0f)
         {
-            if (rigidBody.isKinematic)
-            {
-                rigidBody.isKinematic = false;
-            }
+            strafeTimer = strafeCooldown;
 
-            Vector3 direction = (target.position - transform.position).normalized;
-            Debug.DrawRay(transform.position, direction * 1f, Color.red);
-
-            strafeTimer -= Time.deltaTime;
-            if(strafeTimer <= 0f)
-            {
-                strafeTimer = strafeCooldown;
-
-                Vector3 strafing = Vector3.Cross(Vector3.up, direction).normalized;
-                if (Random.value > 0.5f)
-                    strafeDirection = strafing;
-                else
-                    strafeDirection = -strafing;
-
-                strafeDistance = Random.Range(strafeDistance * 0.5f, strafeDistance * 1.5f);
-            }
-
-            Vector3 strafeOffset = strafeDirection * strafeDistance;
-            Vector3 strafeTarget = target.position + strafeOffset;
-            Vector3 moveDirection = (strafeTarget - transform.position).normalized;
-
-            if (!Physics.Raycast(transform.position, moveDirection, 1f, enviormentMask))
-            {
-                rigidBody.linearVelocity = direction * flyingSpeed;
-            }
+            Vector3 strafing = Vector3.Cross(Vector3.up, direction).normalized;
+            if (Random.value > 0.5f)
+                strafeDirection = strafing;
             else
-            {
-                rigidBody.linearVelocity = Vector3.zero;
-            }
+                strafeDirection = -strafing;
 
-            faceTarget();
+            strafeDistance = Random.Range(strafeDistance * 0.5f, strafeDistance * 1.5f);
+        }
+
+        Vector3 strafeOffset = strafeDirection * strafeDistance;
+        Vector3 strafeTarget = target.position + strafeOffset;
+        Vector3 moveDirection = (strafeTarget - transform.position).normalized;
+
+        if (!Physics.Raycast(transform.position, moveDirection, 1f, enviormentMask))
+        {
+            rigidBody.linearVelocity = direction * flyingSpeed;
         }
         else
         {
             rigidBody.linearVelocity = Vector3.zero;
         }
-
     }
 
+    private void Retreat()
+    {
+        retreatTimer -= Time.deltaTime;
+
+        if (strafeDirection == Vector3.zero)
+        {
+            Vector3 strafing = Vector3.Cross(Vector3.up, retreatDirection).normalized;
+
+            if (Random.value > 0.3f)
+                strafeDirection = strafing;
+            else
+                strafeDirection = -strafing;
+        }
+
+        Vector3 retreatVelocity = (retreatDirection + strafeDirection).normalized;
+        rigidBody.linearVelocity = retreatVelocity;
+
+        Quaternion targetRotation = Quaternion.LookRotation(retreatDirection);
+        rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRotation, rotationSpeed * Time.deltaTime));
+
+        if (retreatTimer <= 0f ||
+        Vector3.Distance(transform.position, playerTarget.transform.position) >= retreatDistance)
+        {
+            isRetreating = false;
+            strafeDirection = Vector3.zero;
+        }
+    }
 
     //Logic if the player is in view or not
     private bool PlayerInFieldOfView()
@@ -288,6 +241,45 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         return false;
     }
 
+    private void Visibility()
+    {
+        if (isBlind)
+        {
+            playerVisible = false;
+            target = null;
+        }
+        else
+        {
+            //  check if the player is in range and visible
+            playerVisible = PlayerInFieldOfView();
+        }
+    }
+
+    private void PlayerLost()
+    {
+        // Determine if the player is "lost"
+        bool playerLost = target == null;
+
+        // Handle player loss timer
+        if (playerLost)
+         playerLostTimer += Time.fixedDeltaTime;
+        else
+         playerLostTimer = 0f;
+        
+
+        // If lost for long enough, go to ceiling
+        if (playerLostTimer >= lostPlayDelay && !returnToCeiling)
+        {
+            NearestCeiling();
+            ceilingTarget = ceilingPoint;
+            returnToCeiling = true;
+        }
+
+        if (!playerLost && returnToCeiling)
+            returnToCeiling = false;
+        
+    }
+
     public void SetInvisible(bool invisible)
     {
         isBlind = invisible;
@@ -296,6 +288,19 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             target = null;
             playerVisible = false;
             InRange = false;
+        }
+    }
+
+    private void AssignTarget()
+    {
+        // Assign or clear the target based on FOV + trigger
+        if (InRange && playerVisible && target == null)
+        {
+            target = playerTarget.transform;
+        }
+        else if ((!InRange || !playerVisible) && target != null)
+        {
+            target = null;
         }
     }
     void NearestCeiling()
@@ -376,6 +381,22 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         }
     }
 
+    private void Hover()
+    {
+        // Hover logic (always active)
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight))
+        {
+            float hoverError = hoverHeight - hit.distance;
+            float upwardForce = hoverClamp * hoverError;
+
+            if (hit.distance < 0.2f)
+            {
+                upwardForce *= 3f;
+            }
+
+            rigidBody.AddForce(Vector3.up * upwardForce, ForceMode.Acceleration);
+        }
+    }
     void faceTarget()
     {
         if (target == null) return;
