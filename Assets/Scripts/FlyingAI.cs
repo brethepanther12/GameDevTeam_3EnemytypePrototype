@@ -211,12 +211,12 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         Quaternion targetRotation = Quaternion.LookRotation(retreatDirection);
         rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRotation, rotationSpeed * Time.deltaTime));
 
-        if (retreatTimer <= 0f ||
-        Vector3.Distance(transform.position, playerTarget.transform.position) >= retreatDistance)
-        {
-            isRetreating = false;
-            strafeDirection = Vector3.zero;
-        }
+        //if (retreatTimer <= 0f ||
+        //Vector3.Distance(transform.position, playerTarget.transform.position) >= retreatDistance)
+        //{
+        //    isRetreating = false;
+        //    strafeDirection = Vector3.zero;
+        //}
     }
 
     //Logic if the player is in view or not
@@ -275,7 +275,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         else
             playerLostTimer = 0f;
 
-        if (playerLostTimer >= lostPlayDelay && !InRange && !playerVisible)
+        if (playerLostTimer >= lostPlayDelay && !InRange && !playerVisible && !isRetreating)
         {
             if (!returnToCeiling)
             {
@@ -303,10 +303,11 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         if (InRange || playerVisible)
         {
             target = playerTarget.transform;
-        }else
-        {
-            target = null;
         }
+        //else
+        //{
+        //    target = null;
+        //}
     }
     void NearestCeiling()
     {
