@@ -110,15 +110,28 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         {
             retreatTimer -= Time.deltaTime;
 
-            //Moving to location
-            rigidBody.linearVelocity = retreatDirection * retreatSpeed;
+            if(strafeDirection == Vector3.zero)
+            {
+                Vector3 strafing = Vector3.Cross(Vector3.up, retreatDirection).normalized;
+
+                if (Random.value > 0.3f)
+                    strafeDirection = strafing;
+                else
+                    strafeDirection = -strafing; 
+            }
+
+            Vector3 retreatVelocity = (retreatDirection + strafeDirection).normalized;
+            rigidBody.linearVelocity = retreatVelocity;
 
             Quaternion targetRotation = Quaternion.LookRotation(retreatDirection);
             rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRotation, rotationSpeed * Time.deltaTime));
 
-            if (retreatTimer <= 0f || 
-            Vector3.Distance(transform.position, playerTarget.transform.position) >= retreatDistance) isRetreating = false;
-
+            if (retreatTimer <= 0f ||
+            Vector3.Distance(transform.position, playerTarget.transform.position) >= retreatDistance)
+            {
+                isRetreating = false;
+                strafeDirection = Vector3.zero;
+            }
             return;
         }
         
@@ -203,28 +216,25 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             Vector3 direction = (target.position - transform.position).normalized;
             Debug.DrawRay(transform.position, direction * 1f, Color.red);
 
-           //Strafe logic
-            if (!isRetreating && target != null)
+            strafeTimer -= Time.deltaTime;
+            if(strafeTimer <= 0f)
             {
-                Vector3 baseStrafe = Vector3.Cross(Vector3.up, direction).normalized;
+                strafeTimer = strafeCooldown;
 
+                Vector3 strafing = Vector3.Cross(Vector3.up, direction).normalized;
                 if (Random.value > 0.5f)
-                {
-                    strafeDirection = baseStrafe;
-                }
+                    strafeDirection = strafing;
                 else
-                {
-                    strafeDirection = -baseStrafe;
-                }
+                    strafeDirection = -strafing;
 
-                Vector3 strafeTarget = target.position + strafeDirection * strafeDistance;
-                Vector3 strafeDirectionToTarget = (strafeTarget - transform.position).normalized;
-
-                rigidBody.linearVelocity = strafeDirectionToTarget * flyingSpeed;
+                strafeDistance = Random.Range(strafeDistance * 0.5f, strafeDistance * 1.5f);
             }
 
+            Vector3 strafeOffset = strafeDirection * strafeDistance;
+            Vector3 strafeTarget = target.position + strafeOffset;
+            Vector3 moveDirection = (strafeTarget - transform.position).normalized;
 
-            if (!Physics.Raycast(transform.position, direction, 1f, enviormentMask))
+            if (!Physics.Raycast(transform.position, moveDirection, 1f, enviormentMask))
             {
                 rigidBody.linearVelocity = direction * flyingSpeed;
             }
