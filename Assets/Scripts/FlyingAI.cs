@@ -106,14 +106,24 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (Dead) return;
+
+        Visibility();
+        AssignTarget();
+
         if (isRetreating)
         {
             Retreat();
             return;
         }
 
-        Visibility();
-        AssignTarget();
+        if (target != null && playerVisible && InRange)
+        {
+            // Movement logic
+            Hover();
+            Movement();
+        }
+       
         PlayerLost();
 
         // If returning to ceiling, override all movement
@@ -123,9 +133,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             return;
         }
 
-        // Movement logic
         Hover();
-        Movement();
     }
 
     private void Movement()
@@ -297,13 +305,9 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     private void AssignTarget()
     {
         // Assign or clear the target based on FOV + trigger
-        if (InRange && playerVisible && target == null)
+        if (InRange && playerVisible)
         {
             target = playerTarget.transform;
-        }
-        else if ((!InRange || !playerVisible) && target != null)
-        {
-            target = null;
         }
     }
     void NearestCeiling()
