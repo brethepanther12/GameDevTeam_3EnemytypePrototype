@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 350503997432229415}
   - component: {fileID: 3557090439824475173}
   - component: {fileID: 5652339493675812717}
+  - component: {fileID: 2903127129689854572}
   m_Layer: 0
   m_Name: Mine
   m_TagString: Untagged
@@ -136,3 +137,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2903127129689854572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2172528555942895788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2a6f5cec1391824ca2b8a2a9e2fb761, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageAmount: 40
+  explosionEffect: {fileID: 8873835544158007701, guid: cc2a4f70987966446a7595a04e4e90df, type: 3}
+  destroyAfterTrigger: 1
