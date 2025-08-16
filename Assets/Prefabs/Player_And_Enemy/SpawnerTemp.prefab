@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 481969000823992881}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.9659259, z: -0, w: 0.2588192}
-  m_LocalPosition: {x: -7.75, y: -1, z: 7.5}
+  m_LocalPosition: {x: 3.553112, y: -1, z: 3.216506}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -79,7 +79,7 @@ Transform:
   m_GameObject: {fileID: 4936043025285726143}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.70710677, z: -0, w: 0.7071069}
-  m_LocalPosition: {x: -13.3097725, y: -1, z: -8.736222}
+  m_LocalPosition: {x: -2.946888, y: -1, z: -3.533494}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -176,15 +176,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectToSpawn:
-  - {fileID: 2445293334335662302, guid: 554e5d68fb6b9b949b7d834fc0ea54a1, type: 3}
+  - {fileID: 6512005747630891166, guid: a72cbf9860763f048a27e991dceaf985, type: 3}
   - {fileID: 675110745737325981, guid: 05e3bbd065f3e2142be811eff3e08c31, type: 3}
-  - {fileID: 4994997792314849709, guid: 3dd50886582244645be87adb42aa8528, type: 3}
+  - {fileID: 382173325151328431, guid: fb9daa16a6d51b14992c4e57f3271cca, type: 3}
   spawnRate: 5
-  spawnAmount: 3
+  baseSpawnAmount: 0
   spawnPoints:
   - {fileID: 6897380410946105059}
   - {fileID: 8398576690876076377}
   - {fileID: 1624479226044339578}
+  enemiesPerDeath: 1
 --- !u!1 &6777741243307973825
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,7 +212,7 @@ Transform:
   m_GameObject: {fileID: 6777741243307973825}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071073, z: -0, w: -0.7071063}
-  m_LocalPosition: {x: 11.25, y: -1, z: -11.75}
+  m_LocalPosition: {x: 8.901558, y: -1, z: -4.033494}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
