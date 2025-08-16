@@ -45,6 +45,13 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     private float retreatTimer;
     private Vector3 retreatDirection;
 
+    [Header("\"--- Strafing ---\"")]
+    [SerializeField] private float strafeSpeed;
+    [SerializeField] private float strafeCooldown;
+    [SerializeField] private float strafeDistance;
+    private float strafeTimer;
+    private Vector3 strafeDirection;
+
     [Header("\"--- Field of View ---\"")]
     [SerializeField] private float fovDistance;
     [SerializeField] private float fovAngle;
@@ -195,6 +202,27 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
             Vector3 direction = (target.position - transform.position).normalized;
             Debug.DrawRay(transform.position, direction * 1f, Color.red);
+
+           //Strafe logic
+            if (!isRetreating && target != null)
+            {
+                Vector3 baseStrafe = Vector3.Cross(Vector3.up, direction).normalized;
+
+                if (Random.value > 0.5f)
+                {
+                    strafeDirection = baseStrafe;
+                }
+                else
+                {
+                    strafeDirection = -baseStrafe;
+                }
+
+                Vector3 strafeTarget = target.position + strafeDirection * strafeDistance;
+                Vector3 strafeDirectionToTarget = (strafeTarget - transform.position).normalized;
+
+                rigidBody.linearVelocity = strafeDirectionToTarget * flyingSpeed;
+            }
+
 
             if (!Physics.Raycast(transform.position, direction, 1f, enviormentMask))
             {
