@@ -45,10 +45,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35e4f114c685fe54eb7e55da287a9cff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainMenuMusic: {fileID: 8300000, guid: 9edf14ee89880a44194676ca46b5976a, type: 3}
-  gameMusic: {fileID: 8300000, guid: ea870bc34749e4a458ebe790803c72ad, type: 3}
-  levelOne: {fileID: 8300000, guid: c03326c805249ec47bcc6647e22e0c63, type: 3}
-  bossFight: {fileID: 8300000, guid: df887252ced262b4db2a5593d26294f4, type: 3}
+  mainMenuTracks:
+  - {fileID: 8300000, guid: df887252ced262b4db2a5593d26294f4, type: 3}
+  - {fileID: 8300000, guid: ea870bc34749e4a458ebe790803c72ad, type: 3}
+  - {fileID: 8300000, guid: 335caafe28fbc1041ad9a3b92b4e52f6, type: 3}
+  gameplayTracks:
+  - {fileID: 8300000, guid: 4c2fad9f6d890574ea82733cffa51a3e, type: 3}
+  - {fileID: 8300000, guid: a7e27febd2aed2546a4a0bc1e72d0d1f, type: 3}
+  - {fileID: 8300000, guid: c03326c805249ec47bcc6647e22e0c63, type: 3}
+  - {fileID: 8300000, guid: 6098dc7fcd99f534594ad1fb596f8a8c, type: 3}
+  bossFightTracks:
+  - {fileID: 8300000, guid: da9fc1216fca62048a2ddfc4b0ca2980, type: 3}
+  - {fileID: 8300000, guid: 1ffea96d0c87add4ea954e55fa649c74, type: 3}
+  - {fileID: 8300000, guid: 4cc61111ed2877c41bd42ed411561336, type: 3}
 --- !u!82 &2419424475744103474
 AudioSource:
   m_ObjectHideFlags: 0
@@ -59,8 +68,8 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 9edf14ee89880a44194676ca46b5976a, type: 3}
-  m_Resource: {fileID: 8300000, guid: 9edf14ee89880a44194676ca46b5976a, type: 3}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
