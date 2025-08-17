@@ -86,8 +86,6 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     {
         currentHP = HP;
 
-
-
         // Store original material color
         if (modelRender != null)
             originColor = modelRender.material.color;
@@ -150,6 +148,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         }
 
         PlayerLost();
+        if(!returnToCeiling)
         Hover();
     }
 
@@ -366,6 +365,12 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         if (closest < Mathf.Infinity)
         {
             //rigidBody.linearVelocity = (ceilingPoint - transform.position).normalized * flyingSpeed;
+            Vector3 direction = (ceilingPoint - transform.position).normalized;
+            rigidBody.linearVelocity = direction * flyingSpeed;
+        }
+        else
+        {
+            Debug.Log("No ceiling found in range!");
         }
     }
 
