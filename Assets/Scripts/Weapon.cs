@@ -13,7 +13,6 @@ public class Weapon : MonoBehaviour
     public float attackRate;
     public int range;
     public int magSize;
-    public int ammoMax;
     public int pellets;
     public float spread;
     public float blastRadius;
@@ -73,13 +72,9 @@ public class Weapon : MonoBehaviour
 
     public void InitializeWeapon(WeaponSO data, bool refillMag = false)
     {
-        
-        weaponData = data;
+        Debug.LogWarning("--- WEAPON INITIALIZED: " + data.weaponName + " at time " + Time.time + " ---");
 
-        foreach (WeaponUpgradeSO upgrade in weaponData.appliedUpgrades)
-        {
-            weaponData.ApplyUpgrade(upgrade);
-        }
+        weaponData = data;
 
         currentFireMode = weaponData.savedMode;
         FMData = weaponData.GetFireModeData(currentFireMode);
@@ -287,6 +282,7 @@ public class Weapon : MonoBehaviour
         } else
         {
             wepDmg = FMData.damage;
+            Debug.Log($"<color=orange>STATS RESET:</color> ApplyFireModeStats ran. wepDmg reset to {wepDmg}");
         }
             
         attackRate = FMData.fireRate;
@@ -327,7 +323,8 @@ public class Weapon : MonoBehaviour
 
     void Shoot()
     {
-        
+        Debug.Log($"<color=cyan>FIRING:</color> Bullet is using {wepDmg} damage.");
+
         ammoInMag--;
 
         if (muzzleFlash != null)
@@ -495,5 +492,38 @@ public class Weapon : MonoBehaviour
     {
         if (ammoInMag < magSize)
             StartCoroutine(Reload());
+    }
+
+    public void ApplyUpgrade(WeaponUpgradeSO upgrade)
+    {
+        if (upgrade.isFireModeUnlock)
+        {
+            if (!weaponData.availableFireModes.Contains(upgrade.fireModeToUnlock))
+            {
+                weaponData.availableFireModes.Add(upgrade.fireModeToUnlock);
+            }
+            return;
+        }
+
+        switch (upgrade.statToUpgrade)
+        {
+            case WeaponStatType.Damage:
+                wepDmg += (int)upgrade.upgradeAmount;
+                Debug.Log($"<color=green>UPGRADE APPLIED:</color> wepDmg is now {wepDmg}");
+                break;
+            case WeaponStatType.MagSize:
+                magSize += (int)upgrade.upgradeAmount;
+                break;
+            case WeaponStatType.AttackRate:
+                attackRate -= upgrade.upgradeAmount;
+                if (attackRate < 0.05f) attackRate = 0.05f;
+                break;
+            case WeaponStatType.Range:
+                range += (int)upgrade.upgradeAmount;
+                break;
+            case WeaponStatType.MaxAmmo:
+                inventory.ApplyMaxAmmoUpgrade(this.ammoType, (int)upgrade.upgradeAmount);
+                break;
+        }
     }
 }

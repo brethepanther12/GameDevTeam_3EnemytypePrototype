@@ -88,7 +88,7 @@ public class WeaponUIController : MonoBehaviour
         // this should make weapon upgrades dynamic. if there is a problem with that for anyone else check this area.
         foreach (WeaponUpgradeSO upgrade in currentWeapon.availableUpgrades)
         {
-            if (!currentWeapon.appliedUpgrades.Contains(upgrade))
+            if (!playerInventory.HasPurchasedUpgrade(currentWeapon, upgrade))
             {
                 GameObject buttonObj = Instantiate(upgradeButtonPrefab, upgradeButtonContainer);
                 buttonObj.GetComponentInChildren<TMP_Text>().text = upgrade.upgradeName;
@@ -117,16 +117,18 @@ public class WeaponUIController : MonoBehaviour
 
     public void OnPurchaseButtonPressed()
     {
-        if (selectedUpgrade == null || currentWeapon == null) return;
+        if (selectedUpgrade == null) return;
+
+        Weapon activeWeapon = playerInventory.GetActiveWeapon();
+        if (activeWeapon == null) return;
 
         if (playerInventory.TrySpendWeaponComponents(selectedUpgrade.componentCost))
         {
+            activeWeapon.ApplyUpgrade(selectedUpgrade);
 
-            currentWeapon.ApplyUpgrade(selectedUpgrade);
+            playerInventory.RecordUpgradeForWeapon(currentWeapon, selectedUpgrade);
 
-            Debug.Log("Purchased '" + selectedUpgrade.upgradeName + "' for " + currentWeapon.weaponName);
-
-            playerInventory.EquipWeapon();
+            Debug.Log($"Purchased '{selectedUpgrade.upgradeName}' for {activeWeapon.weaponData.weaponName}");
 
             PopulateUpgrades();
             UpdateComponentCount();
