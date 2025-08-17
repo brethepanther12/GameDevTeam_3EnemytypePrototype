@@ -8,7 +8,7 @@ public class DroneBoss : MonoBehaviour
     public bool isActive = false; // Boss idle until activated
 
     [Header("Player")]
-    public Transform player; // Assign player in Inspector
+    public Transform player; 
 
     [Header("Movement")]
     public float hoverHeight = 2f;       // Y position
@@ -47,7 +47,6 @@ public class DroneBoss : MonoBehaviour
         FacePlayer();
     }
 
-    // --- Activation ---
     [System.Obsolete]
     public void ActivateBoss()
     {
@@ -64,7 +63,6 @@ public class DroneBoss : MonoBehaviour
         }
     }
 
-    // --- Hover ---
     [System.Obsolete]
     void Hover()
     {
@@ -76,7 +74,6 @@ public class DroneBoss : MonoBehaviour
         transform.position = pos;
     }
 
-    // --- Face Player ---
     [System.Obsolete]
     void FacePlayer()
     {
@@ -90,7 +87,6 @@ public class DroneBoss : MonoBehaviour
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.deltaTime * 360f);
     }
 
-    // --- Shooting ---
     [System.Obsolete]
     IEnumerator AttackRoutine()
     {
@@ -156,7 +152,6 @@ public class DroneBoss : MonoBehaviour
         }
     }
 
-    // --- Health System ---
     [System.Obsolete]
     public void TakeDamage(int dmg)
     {
