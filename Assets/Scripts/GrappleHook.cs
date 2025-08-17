@@ -10,6 +10,7 @@ public class GrappleHook : MonoBehaviour
     public float grappleRange = 15f;
     public float pullSpeed = 15f;
     public LayerMask grappleLayer;
+    public LayerMask wallLayer;
     [SerializeField] private float grappleCD = 5f;
     [SerializeField] private Image grappleCooldownUI;
 
@@ -125,6 +126,14 @@ public class GrappleHook : MonoBehaviour
     void PullEnemy()
     {
         if (grappledEnemy == null) return;
+
+        if (Physics.Linecast(grappleOrigin.position, grappledEnemy.transform.position, wallLayer))
+        {
+            Debug.Log("Line of sight to grappled target was broken!");
+
+            StartCoroutine(ResumeEnemyAI());
+            return;
+        }
 
         Vector3 newPos = Vector3.MoveTowards(
             grappledEnemy.transform.position,

@@ -13,10 +13,10 @@ public class Weapon : MonoBehaviour
     public float attackRate;
     public int range;
     public int magSize;
-    public int ammoMax;
     public int pellets;
     public float spread;
     public float blastRadius;
+    public float energyRecharge;
 
     public AmmoType ammoType;
     public FireMode currentFireMode;
@@ -73,9 +73,10 @@ public class Weapon : MonoBehaviour
 
     public void InitializeWeapon(WeaponSO data, bool refillMag = false)
     {
-        
+        Debug.LogWarning("--- WEAPON INITIALIZED: " + data.weaponName + " at time " + Time.time + " ---");
+
         weaponData = data;
-        
+
         currentFireMode = weaponData.savedMode;
         FMData = weaponData.GetFireModeData(currentFireMode);
         ApplyFireModeStats();
@@ -89,6 +90,11 @@ public class Weapon : MonoBehaviour
             ammoInMag = magSize;
 
         shootTimer = 0f;
+
+        if (FMData.projectileType == AmmoType.Energy && ammoInMag != magSize)
+        {
+            StartCoroutine(RechargeEnergy());
+        }
     }
 
     public void SetAmmoState(int mag, int reserve)
@@ -114,7 +120,7 @@ public class Weapon : MonoBehaviour
             if (Input.GetButtonDown("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
             {
                 shootTimer = 0f;
-                if (ammoType == AmmoType.Pistol || ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket)
+                if (ammoType == AmmoType.Pistol || ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket || ammoType == AmmoType.Energy)
                     Shoot();
                 else if (ammoType == AmmoType.Shell)
                     ShootMultiple();
@@ -126,7 +132,7 @@ public class Weapon : MonoBehaviour
             if (Input.GetButton("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
             {
                 shootTimer = 0f;
-                if (ammoType == AmmoType.Pistol || ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket)
+                if (ammoType == AmmoType.Pistol || ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket || ammoType == AmmoType.Energy)
                     Shoot();
                 else if (ammoType == AmmoType.Shell)
                     ShootMultiple();
@@ -282,6 +288,7 @@ public class Weapon : MonoBehaviour
         } else
         {
             wepDmg = FMData.damage;
+            Debug.Log($"<color=orange>STATS RESET:</color> ApplyFireModeStats ran. wepDmg reset to {wepDmg}");
         }
             
         attackRate = FMData.fireRate;
@@ -291,6 +298,7 @@ public class Weapon : MonoBehaviour
         ammoType = FMData.projectileType;
         bullet = FMData.projectile;
         blastRadius = FMData.blastRadius;
+        energyRecharge = FMData.energyRechargeRate;
     }
 
     private IEnumerator BurstFire()
@@ -322,7 +330,8 @@ public class Weapon : MonoBehaviour
 
     void Shoot()
     {
-        
+        Debug.Log($"<color=cyan>FIRING:</color> Bullet is using {wepDmg} damage.");
+
         ammoInMag--;
 
         if (muzzleFlash != null)
@@ -490,5 +499,58 @@ public class Weapon : MonoBehaviour
     {
         if (ammoInMag < magSize)
             StartCoroutine(Reload());
+    }
+
+    private IEnumerator RechargeEnergy()
+    {
+        while (true)
+        {
+            int magSizeOrig = magSize;
+
+            if (ammoInMag < magSizeOrig)
+            {
+                yield return new WaitForSeconds(energyRecharge);
+
+                ammoInMag++;
+            }
+            else
+            {
+                yield return null;
+            }
+        }
+    }
+
+
+    public void ApplyUpgrade(WeaponUpgradeSO upgrade)
+    {
+        if (upgrade.isFireModeUnlock)
+        {
+            if (!weaponData.availableFireModes.Contains(upgrade.fireModeToUnlock))
+            {
+                weaponData.availableFireModes.Add(upgrade.fireModeToUnlock);
+            }
+            return;
+        }
+
+        switch (upgrade.statToUpgrade)
+        {
+            case WeaponStatType.Damage:
+                wepDmg += (int)upgrade.upgradeAmount;
+                Debug.Log($"<color=green>UPGRADE APPLIED:</color> wepDmg is now {wepDmg}");
+                break;
+            case WeaponStatType.MagSize:
+                magSize += (int)upgrade.upgradeAmount;
+                break;
+            case WeaponStatType.AttackRate:
+                attackRate -= upgrade.upgradeAmount;
+                if (attackRate < 0.05f) attackRate = 0.05f;
+                break;
+            case WeaponStatType.Range:
+                range += (int)upgrade.upgradeAmount;
+                break;
+            case WeaponStatType.MaxAmmo:
+                inventory.ApplyMaxAmmoUpgrade(this.ammoType, (int)upgrade.upgradeAmount);
+                break;
+        }
     }
 }

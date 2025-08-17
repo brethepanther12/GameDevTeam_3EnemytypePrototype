@@ -35,10 +35,8 @@ public class OptionsMenuUI : MonoBehaviour
         fullscreenToggle.isOn = Screen.fullScreen;
         masterVolumeSlider.value = AudioListener.volume;
 
-        if (MusicPlayer.instance != null)
-            musicVolumeSlider.value = MusicPlayer.instance.Volume;
-        else if (musicSource != null)
-            musicVolumeSlider.value = musicSource.volume;
+        float savedMusicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
+        musicVolumeSlider.value = savedMusicVolume;
 
         setMasterVolume(masterVolumeSlider.value);
         setMusicVolume(musicVolumeSlider.value);
@@ -81,6 +79,7 @@ public class OptionsMenuUI : MonoBehaviour
         {
             musicSource.volume = volume;
         }
+        PlayerPrefs.SetFloat("MusicVolume", volume);
     }
 
     public void backToPrevMenu()

@@ -6,6 +6,7 @@ using UnityEngine;
 public enum AmmoType { Pistol, AR, Shell, Energy, Fuel, Rocket, Grenade}
 public enum FireMode { Semi, Auto, Burst, Charge, Detonate}
 
+
 [Serializable]
 public class StatusEffectData
 {
@@ -36,7 +37,7 @@ public class FireModeData
     public int projectileCount;
     public float projectileSpread;
     public float blastRadius;
-
+    public float energyRechargeRate;
 
 }
 
@@ -51,7 +52,8 @@ public class WeaponSO : ScriptableObject
 
     public List<FireMode> availableFireModes = new List<FireMode>();
     public List<FireModeData> fireModeDatas = new List<FireModeData>();
-    
+    public List<WeaponUpgradeSO> availableUpgrades;
+
 
     public FireMode savedMode;
 
@@ -60,10 +62,10 @@ public class WeaponSO : ScriptableObject
     public float attackRate;
     public int range;
     public int magSize;
-    public int ammoMax;
 
     public int pelletCount;
     public float pelletSpread;
+    
 
     [HideInInspector] public int currentAmmoInMag;
     [HideInInspector] public int currentAmmoInReserve;
@@ -93,5 +95,4 @@ public class WeaponSO : ScriptableObject
 
         return fireModeDatas[0];
     }
-
 }

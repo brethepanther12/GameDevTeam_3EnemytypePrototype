@@ -83,8 +83,8 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     int shieldOrig;
 
     float shootTimer;
-    //float sprintTimer;
-    //public float sprintCD;
+    public GameObject meleeTrigger;
+    bool isAttacking;
 
     void Start()
     {
@@ -152,9 +152,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            if (animator != null)
+            if (animator != null && !isAttacking)
             {
                 animator.SetTrigger("Attacking");
+                StartCoroutine(Melee());
             }
         }
     }
@@ -385,6 +386,11 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 takeDamage(amount);
                 break;
 
+            case DamageStatus.Plasma:
+
+                takeDamage(amount + 1);
+                break;
+
             default:
                 break;
         }
@@ -538,9 +544,9 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         gamemanager.instance.playerHp.text = $"{HP} / {maxHP}";
         gamemanager.instance.playerArmor.text = $"{armor} / {maxArmor}";
         gamemanager.instance.playerShield.text = $"{shield} / {maxShield}";
-        if (inventory.weaponInventory.Count > 0)
+        if (inventory.weaponHolster.Count > 0)
         {
-            gamemanager.instance.gunName.text = $"{inventory.weaponInventory[inventory.weaponListPos].weaponName}";
+            gamemanager.instance.gunName.text = $"{inventory.weaponHolster[inventory.weaponListPos].weaponName}";
         }
         Weapon activeWep = weaponSocket.GetComponentInChildren<Weapon>();
 
@@ -728,4 +734,18 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     {
         return shootDamage;
     }
+
+    public IEnumerator Melee()
+    {
+        damage meleeDmg = meleeTrigger.GetComponent<damage>();
+
+        isAttacking = true;
+        yield return new WaitForSeconds(1f);
+        meleeTrigger.SetActive(true);
+        yield return new WaitForSeconds(meleeDmg.damageRate);
+        meleeTrigger.SetActive(false);
+        isAttacking = false;
+    }
+
+    
 }

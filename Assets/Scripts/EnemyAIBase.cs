@@ -267,6 +267,11 @@ public class EnemyAIBase : MonoBehaviour, IDamage
                 takeDamage(amount);
                 break;
 
+            case DamageStatus.Plasma:
+
+                takeDamage(amount + 1);
+                break;
+
             default:
                 break;
         }

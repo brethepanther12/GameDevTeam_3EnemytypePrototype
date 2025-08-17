@@ -67,6 +67,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     public GameObject healthPickupPrefab;
     public GameObject ammoPickupPrefab;
     public GameObject mutagenPickupPrefab;
+    public GameObject componentPrefab;
 
     [Header("\"--- Model ---\"")]
     [SerializeField] private Renderer modelRender;
@@ -451,6 +452,11 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
                 takeDamage(amount);
                 break;
 
+            case DamageStatus.Plasma:
+
+                takeDamage(amount + 1);
+                break;
+
             default:
                 break;
         }
@@ -525,7 +531,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
     void TryDropPickup()
     {
-        int itemType = Random.Range(0, 3); // 0 = health, 1 = ammo, 2 = mutagen
+        int itemType = Random.Range(0, 4); // 0 = health, 1 = ammo, 2 = mutagen, 3 = component
 
         GameObject drop = null;
         if (itemType == 0 && healthPickupPrefab != null)
@@ -540,6 +546,11 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         {
             drop = Instantiate(mutagenPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
 
+        }
+
+        else if (itemType == 3 && componentPrefab != null)
+        {
+            drop = Instantiate(componentPrefab, transform.position + Vector3.up, Quaternion.identity);
         }
     }
 
