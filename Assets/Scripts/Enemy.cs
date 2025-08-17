@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Assertions.Must;
+using UnityEngine.ProBuilder.MeshOperations;
 using UnityEngine.Rendering;
 
 public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
@@ -40,6 +41,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
     [SerializeField] int roamDistance;
     [SerializeField] int roamPauseTime;
 
+    public GameObject componentPrefab;
     public GameObject mutagenPickupPrefab;
     [SerializeField] GameObject healthPickupPrefab;
     [SerializeField] GameObject ammoPickupPrefab;
@@ -510,21 +512,24 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
 
     void TryDropPickup()
     {
-            int itemType = Random.Range(0, 3); // 0 = health, 1 = ammo, 2 = mutagen
+            int itemType = Random.Range(0, 3); // 0 = health, 1 = ammo, 2 = mutagen, 3 = component.
 
             GameObject drop = null;
-            if (itemType == 0 && healthPickupPrefab != null)
-            {
-                drop = Instantiate(healthPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
-            }
-            else if (itemType == 1 && ammoPickupPrefab != null)
-            {
-                drop = Instantiate(ammoPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
-            } 
-            else if(itemType == 2 && mutagenPickupPrefab != null)
-            {
-            drop = Instantiate(mutagenPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
-
+        if (itemType == 0 && healthPickupPrefab != null)
+        {
+            drop = Instantiate(healthPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
+        }
+        else if (itemType == 1 && ammoPickupPrefab != null)
+        {
+            drop = Instantiate(ammoPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
+        }
+        else if (itemType == 2 && mutagenPickupPrefab != null)
+        {
+            drop = Instantiate(mutagenPickupPrefab, transform.position + Vector3.up, Quaternion.identity);        
+        }
+        else if (itemType == 3 && componentPrefab != null)
+        {
+            drop = Instantiate(componentPrefab, transform.position + Vector3.up, Quaternion.identity);
         }
     }
 

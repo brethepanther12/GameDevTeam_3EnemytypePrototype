@@ -69,6 +69,9 @@ public class PlayerInventory : MonoBehaviour
 
     private void Start()
     {
+        if (weaponUIController == null)
+            weaponUIController = FindAnyObjectByType<WeaponUIController>();
+
         UpdateComponentDisplay();
         UpdateMutagenDisplay();
     }
