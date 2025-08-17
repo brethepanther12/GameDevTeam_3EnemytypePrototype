@@ -19,8 +19,7 @@ public class ItemPickup : MonoBehaviour, IGrapplable
     private void OnTriggerEnter(Collider other)
     {
         PlayerInventory inventory = other.GetComponent<PlayerInventory>();
-        if (inventory == null)
-            return;
+        if (inventory == null) return;
 
         playerController pc = gamemanager.instance.playerScript;
 
@@ -30,20 +29,24 @@ public class ItemPickup : MonoBehaviour, IGrapplable
             GlobalInventory.instance.AddWeapon(weaponToGive);
             Debug.Log($"Picked up weapon: {weaponToGive.weaponName}");
         }
-        else if (itemToGive != null)
+
+        if (itemToGive != null)
         {
             inventory.AddItem(itemToGive);
             Debug.Log($"Picked up item: {itemToGive.itemName}");
+
+            if (itemToGive.itemName == "Weapon Component")
+            {
+                inventory.NotifyWeaponComponentsChanged();
+            }
+            else if (itemToGive.itemName == "Mutagen Sample")
+            {
+                inventory.UpdateMutagenDisplay();
+            }
         }
 
-        if (itemToGive.itemName == "Weapon Component")
-        {
-            inventory.NotifyWeaponComponentsChanged();
-        }
-        else if (itemToGive.itemName == "Mutagen Sample")
-        {
-            inventory.UpdateMutagenDisplay();
-        }
+        inventory.UpdateMutagenDisplay();
+        inventory.UpdateComponentDisplay();
 
         Destroy(gameObject);
 
