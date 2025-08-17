@@ -1226,6 +1226,9 @@ MonoBehaviour:
   grappleLayer:
     serializedVersion: 2
     m_Bits: 24704
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 1
   grappleCD: 5
   grappleCooldownUI: {fileID: 0}
 --- !u!114 &3112784695290392470
@@ -1245,8 +1248,8 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: 4475b5a9bc7c010459dba4417e4cd620, type: 2}
     quantity: 20
   collectedItems: []
-  weaponInventory: []
   equippedWeapon: {fileID: 0}
+  weaponHolster: []
   weaponListPos: 0
   weaponSocket: {fileID: 0}
   mutagenCountText: {fileID: 0}
