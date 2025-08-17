@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7725787783921440744}
   - component: {fileID: 850754587957614609}
   - component: {fileID: 1821579794072622652}
+  - component: {fileID: 6298012379485543401}
   m_Layer: 0
   m_Name: Jump Pad
   m_TagString: Untagged
@@ -107,8 +108,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 3, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 5, z: 1}
+  m_Center: {x: 0, y: 1.8, z: 0}
 --- !u!114 &1821579794072622652
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,4 +122,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1095537039adc864485d9364fd7a6c86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  yVelocityJump: 10
+  yVelocityJump: 15
+--- !u!208 &6298012379485543401
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2588878174745128593}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
