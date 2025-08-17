@@ -386,13 +386,16 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
     private void Hover()
     {
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight))
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight * 2f))
         {
-            float hoverError = hoverHeight - hit.distance;
-            float upwardForce = hoverClamp * hoverError;
+            float heightError = hoverHeight - hit.distance;
 
-            if (hit.distance < 0.2f)
-                upwardForce *= 3f;
+           
+            float proportionalLift = heightError * hoverClamp;
+
+            float damping = -rigidBody.linearVelocity.y * 0.5f;
+
+            float upwardForce = proportionalLift + damping;
 
             rigidBody.AddForce(Vector3.up * upwardForce, ForceMode.Acceleration);
         }
