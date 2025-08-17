@@ -111,11 +111,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         Visibility();
         AssignTarget();
 
-        if (isRetreating)
-        {
-            Retreat();
-            return;
-        }
+        Vector3 velocity = Vector3.zero;
 
         // If returning to ceiling, override all movement
         if (returnToCeiling)
@@ -125,6 +121,13 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         }
 
+        if (isRetreating)
+        {
+            Retreat();
+            return;
+        }
+        
+
         if (target != null && playerVisible && InRange)
         {
             // Movement logic
@@ -132,9 +135,6 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         }
        
         PlayerLost();
-
-      
-
         Hover();
     }
 
@@ -181,14 +181,10 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             else
                 strafeDirection = -strafing;
 
-            strafeDistance = Random.Range(strafeDistance * 0.5f, strafeDistance * 1.5f);
+            strafeDistance = Random.Range(1f, 3f);
         }
-
-        Vector3 strafeOffset = strafeDirection * strafeDistance;
-        Vector3 strafeTarget = target.position + strafeOffset;
-        Vector3 moveDirection = (strafeTarget - transform.position).normalized;
-
-        return moveDirection * strafeSpeed;
+        
+        return strafeDirection * strafeSpeed;
     }
 
     private void Retreat()
@@ -363,10 +359,11 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         if (!returnToCeiling) return;
 
-        if (rigidBody.isKinematic) return;
+        if (rigidBody.isKinematic) rigidBody.isKinematic = false;
 
         Vector3 direction = (ceilingTarget - transform.position).normalized;
-        float distance = Vector3.Distance(transform.position, ceilingTarget);
+        float distance = direction.magnitude;
+        direction.Normalize();
 
         if (distance > ceilingAttachmentRange)
         {
