@@ -340,6 +340,8 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
     void MoveToCeiling()
     {
+        if (returnToCeiling == false) return;
+
         if (rigidBody.isKinematic) rigidBody.isKinematic = false;
 
         Vector3 toCeiling = ceilingTarget - transform.position;
@@ -347,7 +349,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         if (distance < ceilingAttachmentRange)
         {
-            // Snap to ceiling
+            // Snap to ceiling (attach to bottom)
             float ceilingHeightOff = bodyCollider.bounds.extents.y;
             transform.position = ceilingTarget - new Vector3(0, ceilingHeightOff, 0);
 
@@ -360,9 +362,9 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         {
             // Move toward ceiling
             Vector3 direction = toCeiling.normalized;
-            float speed = Mathf.Min(flyingSpeed, distance);
-            rigidBody.linearVelocity = direction * speed;
+            rigidBody.linearVelocity = direction * flyingSpeed;
 
+            // Rotate toward ceiling
             Quaternion targetRot = Quaternion.LookRotation(direction);
             rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime));
         }
