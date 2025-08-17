@@ -113,6 +113,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         Vector3 velocity = Vector3.zero;
 
+
         // If returning to ceiling, override all movement
         if (returnToCeiling)
         {
@@ -121,7 +122,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         }
 
-        if (target != null && playerVisible || InRange)
+        if (target != null && (playerVisible || InRange))
         {
             Vector3 directionToPlayer = (target.position - transform.position).normalized;
 
@@ -134,8 +135,9 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
             if (isRetreating)
             {
-                Vector3 retreatVel = retreatDirection * retreatSpeed;
-                velocity = Vector3.Lerp(velocity, -retreatVel, 0.7f);
+                Retreat();
+                Hover();
+                return;
             }
 
             // Collision check
@@ -220,12 +222,13 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         Quaternion targetRotation = Quaternion.LookRotation(retreatDirection);
         rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRotation, rotationSpeed * Time.deltaTime));
 
-        //if (retreatTimer <= 0f ||
-        //Vector3.Distance(transform.position, playerTarget.transform.position) >= retreatDistance)
-        //{
-        //    isRetreating = false;
-        //    strafeDirection = Vector3.zero;
-        //}
+        if (retreatTimer <= 0f ||
+        Vector3.Distance(transform.position, playerTarget.transform.position) >= retreatDistance)
+        {
+            isRetreating = false;
+            strafeDirection = Vector3.zero;
+            rigidBody.linearVelocity = Vector3.zero;
+        }
     }
 
     //Logic if the player is in view or not
