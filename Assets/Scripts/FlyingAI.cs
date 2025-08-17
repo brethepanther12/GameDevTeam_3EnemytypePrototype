@@ -109,77 +109,61 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         Visibility();
         AssignTarget();
 
-        Vector3 velocity = Vector3.zero;
-
-
-        // If returning to ceiling, override all movement
-        if (returnToCeiling)
-        {
-            MoveToCeiling();
-            return;
-
-        }
-
-        if (target != null && (playerVisible || InRange))
-        {
-            Vector3 directionToPlayer = (target.position - transform.position).normalized;
-
-            Vector3 approach = directionToPlayer * flyingSpeed;
-
-            // Strafing
-            Vector3 strafeVel = Strafing(directionToPlayer);
-
-            velocity = approach + strafeVel;
-
-            if (isRetreating)
-            {
-                Retreat();
-                Hover();
-                return;
-            }
-
-            // Collision check
-            if (!Physics.Raycast(transform.position, velocity.normalized, 1f, enviormentMask))
-                rigidBody.linearVelocity = velocity;
-            else
-                rigidBody.linearVelocity = Vector3.zero;
-
-            faceTarget();
-        }
-
-        PlayerLost();
-        if(!returnToCeiling)
-        Hover();
+        Movement(); 
     }
 
     private void Movement()
     {
-        bool playerLost = target == null;
-        if (playerLost || target == null)
+        // Ceiling
+        if (returnToCeiling)
         {
-            rigidBody.linearVelocity = Vector3.zero;
+            MoveToCeiling();
+            Hover();
             return;
         }
 
-        if (rigidBody.isKinematic)
-            rigidBody.isKinematic = false;
-
-        Vector3 direction = (target.position - transform.position).normalized;
-        Debug.DrawRay(transform.position, direction * 1f, Color.red);
-
         Vector3 finalVelocity = Vector3.zero;
 
-        finalVelocity += direction * flyingSpeed;
+        if (target != null && (playerVisible || InRange))
+        {
+            // Direction to player
+            Vector3 directionToPlayer = (target.position - transform.position).normalized;
 
-        Vector3 strafeVelocity = Strafing(direction);
-        finalVelocity += strafeVelocity;
+            finalVelocity = directionToPlayer * flyingSpeed;
 
-        if (!Physics.Raycast(transform.position, (direction + strafeVelocity).normalized, 1f, enviormentMask))
-            rigidBody.linearVelocity = finalVelocity;
+            // Add strafing
+            finalVelocity += Strafing(directionToPlayer);
+
+            // Retreat
+            if (isRetreating)
+            {
+                Retreat();
+                Hover();
+                return; 
+            }
+
+            // Collision check
+            if (!Physics.Raycast(transform.position, finalVelocity.normalized, 1f, enviormentMask))
+            {
+                rigidBody.linearVelocity = finalVelocity;
+            }
+            else
+            {
+                rigidBody.linearVelocity = Vector3.zero;
+            }
+
+            faceTarget();
+        }
         else
+        {
+            // Player lost
             rigidBody.linearVelocity = Vector3.zero;
+            PlayerLost(); 
+        }
 
-        faceTarget();
+        // Hover
+        if (!returnToCeiling)
+            Hover();
     }
 
     private Vector3 Strafing(Vector3 direction)
@@ -215,14 +199,14 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
                 strafeDirection = -strafing;
         }
 
-        Vector3 finalVelocity = (retreatDirection + strafeDirection).normalized * retreatSpeed; // MODIFIED
-        rigidBody.linearVelocity = finalVelocity;
+        Vector3 velocity = (retreatDirection + strafeDirection).normalized * retreatSpeed;
+        rigidBody.linearVelocity = velocity;
 
         Quaternion targetRotation = Quaternion.LookRotation(retreatDirection);
-        rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRotation, rotationSpeed * Time.deltaTime));
+        rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime));
 
         if (retreatTimer <= 0f ||
-        Vector3.Distance(transform.position, playerTarget.transform.position) >= retreatDistance)
+            Vector3.Distance(transform.position, playerTarget.transform.position) >= retreatDistance)
         {
             isRetreating = false;
             strafeDirection = Vector3.zero;
@@ -376,55 +360,48 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
     void MoveToCeiling()
     {
-        if (isRetreating) return;
-
-        if (!returnToCeiling) return;
-
         if (rigidBody.isKinematic) rigidBody.isKinematic = false;
 
-        Vector3 direction = (ceilingTarget - transform.position).normalized;
-        float distance = direction.magnitude;
-        direction.Normalize();
+        Vector3 toCeiling = ceilingTarget - transform.position;
+        float distance = toCeiling.magnitude;
 
-        if (distance > ceilingAttachmentRange)
+        if (distance < ceilingAttachmentRange)
         {
-            rigidBody.linearVelocity = direction * flyingSpeed;
-
-            Quaternion targetRot = Quaternion.LookRotation(direction);
-            rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime));
-        }
-        else
-        {
-            // snap to point
+            // Snap to ceiling
+            float ceilingHeightOff = bodyCollider.bounds.extents.y;
+            transform.position = ceilingTarget - new Vector3(0, ceilingHeightOff, 0);
 
             rigidBody.linearVelocity = Vector3.zero;
             rigidBody.angularVelocity = Vector3.zero;
-
             rigidBody.isKinematic = true;
-
-            float ceilingHeightOff = bodyCollider.bounds.extents.y; //bodyCollider.radius * transform.localScale.y;
-            transform.position = ceilingTarget - new Vector3(0, ceilingHeightOff, 0);
-
             returnToCeiling = false;
+        }
+        else
+        {
+            // Move toward ceiling
+            Vector3 direction = toCeiling.normalized;
+            float speed = Mathf.Min(flyingSpeed, distance);
+            rigidBody.linearVelocity = direction * speed;
+
+            Quaternion targetRot = Quaternion.LookRotation(direction);
+            rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime));
         }
     }
 
     private void Hover()
     {
-        // Hover logic (always active)
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight))
         {
             float hoverError = hoverHeight - hit.distance;
             float upwardForce = hoverClamp * hoverError;
 
             if (hit.distance < 0.2f)
-            {
                 upwardForce *= 3f;
-            }
 
             rigidBody.AddForce(Vector3.up * upwardForce, ForceMode.Acceleration);
         }
     }
+    
     void faceTarget()
     {
         if (target == null) return;
