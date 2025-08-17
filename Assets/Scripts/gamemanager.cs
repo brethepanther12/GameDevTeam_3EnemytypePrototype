@@ -45,6 +45,7 @@ public class gamemanager : MonoBehaviour
     public TMP_Text playerArmor;
     public TMPro.TextMeshProUGUI ammoText;
     public TMP_Text mutagenCountText;
+    public TMP_Text componentCountText;
     public TMP_Text inventoryAmmo;
     public TMP_Text redKey;
     public TMP_Text blueKey;
@@ -54,6 +55,7 @@ public class gamemanager : MonoBehaviour
     public GameObject BossHealthBarUI;
     public Image BossHealthBarFill;
     public TMPro.TextMeshProUGUI BossNameText;
+    public static event Action<DifficultyLevels> OnDifficultyChanged;
 
     public BossAI currentBoss;
 
@@ -114,7 +116,7 @@ public class gamemanager : MonoBehaviour
         {
             if (menuActive != null)
             {
-                stateUnpause();
+                CloseActiveMenu();
             }
             else
             {
@@ -152,7 +154,17 @@ public class gamemanager : MonoBehaviour
         Time.timeScale = timescaleOrig;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        menuActive.SetActive(false);
+
+        if (menuActive.GetComponent<WeaponUIController>() != null)
+        {
+            
+            menuActive.GetComponent<WeaponUIController>().CloseMenu();
+        }
+        else
+        {
+            menuActive.SetActive(false);
+        }
+
         menuActive = null;
     }
 
@@ -263,6 +275,27 @@ public class gamemanager : MonoBehaviour
         if (mutagenCountText != null)
             mutagenCountText.text = mutagenCount.ToString();
 
+        int componentCount = inventory.GetWeaponComponentCount();
+
+        if (componentCountText != null)
+        {
+            componentCountText.text = componentCount.ToString();
+        }
+
+    }
+
+
+    public void OpenOptionsFromMainMenu()
+    {
+        if (menuOptions != null && optionMenuUI != null)
+        {
+            optionMenuUI.InitializeOptions();
+            menuOptions.SetActive(true);
+            menuActive = menuOptions;
+
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
     }
 
     public void openOptionsFromPause()
@@ -314,12 +347,15 @@ public class gamemanager : MonoBehaviour
 
     public void SetDifficulty(DifficultyLevels difficulty)
     {
-        if(!IsDifficultyLocked(difficulty))
+        if (!IsDifficultyLocked(difficulty))
         {
             currentDifficulty = difficulty;
             PlayerPrefs.SetInt("CurrentDifficulty", (int)difficulty);
             PlayerPrefs.Save();
             Debug.Log($"Difficulty set to {difficulty}");
+
+            // NOTIFY listeners (spawners, UI, etc.)
+            OnDifficultyChanged?.Invoke(currentDifficulty);
         }
         else
         {
@@ -331,6 +367,9 @@ public class gamemanager : MonoBehaviour
     {
         int saved = PlayerPrefs.GetInt("CurrentDifficulty", 0);
         currentDifficulty = (DifficultyLevels)saved;
+
+        // Notify about the loaded difficulty
+        OnDifficultyChanged?.Invoke(currentDifficulty);
     }
 
     public void ClearCheckpointData()
@@ -340,5 +379,34 @@ public class gamemanager : MonoBehaviour
             PlayerPrefs.DeleteKey("CheckpointPlayerData");
             Debug.Log("Checkpoint data cleared for new game.");
         }
+    }
+
+    public void OpenMenu(GameObject menuToOpen)
+    {
+        if (menuActive != null)
+        {
+            menuActive.SetActive(false);
+        }
+
+        statePause();
+        menuActive = menuToOpen;
+        menuActive.SetActive(true);
+    }
+
+    public void CloseActiveMenu()
+    {
+        if (menuActive == null) return;
+
+        menuActive.SetActive(false);
+
+        isPaused = false;
+        Time.timeScale = timescaleOrig;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        menuActive = null;
+    }
+    public void SetDifficultyByIndex(int index)
+    {
+        SetDifficulty((DifficultyLevels)index);
     }
 }

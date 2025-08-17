@@ -29,6 +29,7 @@ public class InventorySlot
 
 public class PlayerInventory : MonoBehaviour
 {
+    public event System.Action<int> OnWeaponComponentsChanged;
     [HideInInspector] public playerController playerRef;
 
     [Header("Item & Currency Inventory")]
@@ -47,7 +48,10 @@ public class PlayerInventory : MonoBehaviour
 
     [Header("UI References")]
     public TMP_Text mutagenCountText;
+    public TMP_Text componentCountText;
 
+    [Header("UI Controllers")]
+    public WeaponUIController weaponUIController;
 
     private Dictionary<AmmoType, string> ammoLookup = new Dictionary<AmmoType, string>
     {
@@ -65,6 +69,7 @@ public class PlayerInventory : MonoBehaviour
 
     private void Start()
     {
+        UpdateComponentDisplay();
         UpdateMutagenDisplay();
     }
 
@@ -84,6 +89,7 @@ public class PlayerInventory : MonoBehaviour
             items.Add(new InventorySlot(item, amountToAdd));
         }
         Debug.Log($"Added {item.quantityToPickup} of {item.itemName}.");
+
     }
 
     public void ConsumeKey(ItemSO keyItem)
@@ -142,6 +148,38 @@ public class PlayerInventory : MonoBehaviour
         }
     }
 
+    public int GetWeaponComponentCount()
+    {
+        InventorySlot componentSlot = items.Find(s => s.item.itemName == "Weapon Component");
+        return componentSlot != null ? componentSlot.quantity : 0;
+    }
+
+    public bool TrySpendWeaponComponents(int amountToSpend)
+    {
+        InventorySlot componentSlot = items.Find(s => s.item.itemName == "Weapon Component");
+        if (componentSlot != null && componentSlot.quantity >= amountToSpend)
+        {
+            componentSlot.RemoveQuantity(amountToSpend);
+
+            OnWeaponComponentsChanged?.Invoke(componentSlot.quantity);
+
+            return true;
+        }
+        return false;
+    }
+
+    public void UpdateComponentDisplay()
+    {
+        int count = GetWeaponComponentCount();
+
+        if (componentCountText != null)
+        {
+            componentCountText.text = count.ToString();
+        }
+
+        OnWeaponComponentsChanged?.Invoke(count);
+    }
+
     public void AddWeapon(WeaponSO newWeapon)
     {
 
@@ -194,6 +232,11 @@ public class PlayerInventory : MonoBehaviour
             currentWeaponScript.muzzleFlash = playerRef.playerMuzzleFlash;
             currentWeaponScript.currentFireMode = equippedWeapon.savedMode;
 
+        }
+
+        if (weaponUIController != null)
+        {
+            weaponUIController.UpdateForNewWeapon(equippedWeapon);
         }
     }
 
@@ -277,5 +320,10 @@ public class PlayerInventory : MonoBehaviour
     public Weapon GetActiveWeapon()
     {
         return currentWeaponScript;
+    }
+
+    public void NotifyWeaponComponentsChanged()
+    {
+        OnWeaponComponentsChanged?.Invoke(GetWeaponComponentCount());
     }
 }
