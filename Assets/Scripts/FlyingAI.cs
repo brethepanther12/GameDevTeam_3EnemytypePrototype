@@ -306,32 +306,25 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         for (int i = 0; i < hits.Length; i++)
         {
-            /*
-             Collider hit = hits[i];
-
-            Vector3 ceilingBottom = hit.bounds.center - new Vector3(0, hit.bounds.extents.y,0);
-            float distance = Vector3.Distance(transform.position, ceilingBottom);
-             */
-
             Bounds bounds = hits[i].bounds;
 
-            //Y of the ceiling
+            // Bottom Y of the ceiling
             float ceilingY = bounds.center.y - bounds.extents.y;
 
             float margin = 0.5f;
-
             float minX = bounds.min.x + margin;
             float maxX = bounds.max.x - margin;
             float minZ = bounds.min.z + margin;
             float maxZ = bounds.max.z - margin;
 
             if (minX >= maxX || minZ >= maxZ) continue;
-            ////Random z and x points
-            float ceilingX = Random.Range(minX, maxX);
-            float ceilngZ = Random.Range(minZ, maxZ);
 
-            Vector3 ceilingBottom = new Vector3(ceilingX, ceilingY, ceilngZ);
+            float ceilingX = Random.Range(minX, maxX);
+            float ceilingZ = Random.Range(minZ, maxZ);
+
+            Vector3 ceilingBottom = new Vector3(ceilingX, ceilingY, ceilingZ);
             float distance = Vector3.Distance(transform.position, ceilingBottom);
+
             if (distance < closest)
             {
                 closest = distance;
@@ -339,13 +332,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             }
         }
 
-        if (closest < Mathf.Infinity)
-        {
-            //rigidBody.linearVelocity = (ceilingPoint - transform.position).normalized * flyingSpeed;
-            Vector3 direction = (ceilingPoint - transform.position).normalized;
-            rigidBody.linearVelocity = direction * flyingSpeed;
-        }
-        else
+        if (closest == Mathf.Infinity)
         {
             Debug.Log("No ceiling found in range!");
         }
