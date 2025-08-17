@@ -531,7 +531,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
     void TryDropPickup()
     {
-        int itemType = Random.Range(0, 3); // 0 = health, 1 = ammo, 2 = mutagen, 3 = component
+        int itemType = Random.Range(0, 4); // 0 = health, 1 = ammo, 2 = mutagen, 3 = component
 
         GameObject drop = null;
         if (itemType == 0 && healthPickupPrefab != null)
