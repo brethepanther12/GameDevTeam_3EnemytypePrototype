@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; // <- added
+using TMPro; // For TMP_Dropdown
 
 public class OptionsMenuUI : MonoBehaviour
 {
@@ -13,7 +13,7 @@ public class OptionsMenuUI : MonoBehaviour
 
     [SerializeField] AudioSource musicSource;
 
-    // NEW: difficulty dropdown (TextMeshPro)
+    // Difficulty dropdown (TextMeshPro)
     [SerializeField] TMP_Dropdown difficultyDropdown;
 
     public void InitializeOptions()
@@ -22,13 +22,12 @@ public class OptionsMenuUI : MonoBehaviour
         masterVolumeSlider.onValueChanged.RemoveAllListeners();
         musicVolumeSlider.onValueChanged.RemoveAllListeners();
 
-        // NEW: remove listeners for dropdown and set current value without triggering the callback
         if (difficultyDropdown != null)
         {
             difficultyDropdown.onValueChanged.RemoveAllListeners();
             if (gamemanager.instance != null)
             {
-                // try to set without sending change event
+                // Set dropdown value without triggering callback
                 difficultyDropdown.SetValueWithoutNotify((int)gamemanager.instance.currentDifficulty);
             }
         }
@@ -48,12 +47,12 @@ public class OptionsMenuUI : MonoBehaviour
         masterVolumeSlider.onValueChanged.AddListener(setMasterVolume);
         musicVolumeSlider.onValueChanged.AddListener(setMusicVolume);
 
-        // NEW: add dropdown listener (after initial SetValueWithoutNotify)
+        // Add dropdown listener after initial value set
         if (difficultyDropdown != null)
             difficultyDropdown.onValueChanged.AddListener(OnDifficultyDropdownChanged);
     }
 
-    // NEW: callback for difficulty dropdown
+    // Callback for difficulty dropdown
     private void OnDifficultyDropdownChanged(int index)
     {
         if (gamemanager.instance != null)
