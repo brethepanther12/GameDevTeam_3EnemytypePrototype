@@ -16,6 +16,7 @@ public class Weapon : MonoBehaviour
     public int pellets;
     public float spread;
     public float blastRadius;
+    public float energyRecharge;
 
     public AmmoType ammoType;
     public FireMode currentFireMode;
@@ -89,6 +90,11 @@ public class Weapon : MonoBehaviour
             ammoInMag = magSize;
 
         shootTimer = 0f;
+
+        if (FMData.projectileType == AmmoType.Energy && ammoInMag != magSize)
+        {
+            StartCoroutine(RechargeEnergy());
+        }
     }
 
     public void SetAmmoState(int mag, int reserve)
@@ -114,7 +120,7 @@ public class Weapon : MonoBehaviour
             if (Input.GetButtonDown("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
             {
                 shootTimer = 0f;
-                if (ammoType == AmmoType.Pistol || ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket)
+                if (ammoType == AmmoType.Pistol || ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket || ammoType == AmmoType.Energy)
                     Shoot();
                 else if (ammoType == AmmoType.Shell)
                     ShootMultiple();
@@ -126,7 +132,7 @@ public class Weapon : MonoBehaviour
             if (Input.GetButton("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
             {
                 shootTimer = 0f;
-                if (ammoType == AmmoType.Pistol || ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket)
+                if (ammoType == AmmoType.Pistol || ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket || ammoType == AmmoType.Energy)
                     Shoot();
                 else if (ammoType == AmmoType.Shell)
                     ShootMultiple();
@@ -292,6 +298,7 @@ public class Weapon : MonoBehaviour
         ammoType = FMData.projectileType;
         bullet = FMData.projectile;
         blastRadius = FMData.blastRadius;
+        energyRecharge = FMData.energyRechargeRate;
     }
 
     private IEnumerator BurstFire()
@@ -493,6 +500,26 @@ public class Weapon : MonoBehaviour
         if (ammoInMag < magSize)
             StartCoroutine(Reload());
     }
+
+    private IEnumerator RechargeEnergy()
+    {
+        while (true)
+        {
+            int magSizeOrig = magSize;
+
+            if (ammoInMag < magSizeOrig)
+            {
+                yield return new WaitForSeconds(energyRecharge);
+
+                ammoInMag++;
+            }
+            else
+            {
+                yield return null;
+            }
+        }
+    }
+
 
     public void ApplyUpgrade(WeaponUpgradeSO upgrade)
     {

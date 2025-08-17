@@ -64,6 +64,11 @@ public class Destructible : MonoBehaviour, IDamage
                 takeDamage(amount * 2);
                 break;
 
+            case DamageStatus.Plasma:
+
+                takeDamage(amount + 2);
+                break;
+
             default:
                 break;
         }

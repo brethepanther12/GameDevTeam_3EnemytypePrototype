@@ -368,6 +368,11 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable, IEnemyAI
                 takeDamage(amount);
                 break;
 
+            case DamageStatus.Plasma:
+
+                takeDamage(amount + 1);
+                break;
+
             default:
                 break;
         }
