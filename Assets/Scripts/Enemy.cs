@@ -412,6 +412,11 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
                 takeDamage(amount);
                 break;
 
+            case DamageStatus.Plasma:
+
+                takeDamage(amount + 1);
+                break;
+
             default:
                 break;
         }

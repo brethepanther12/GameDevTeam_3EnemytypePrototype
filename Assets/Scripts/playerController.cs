@@ -386,6 +386,11 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 takeDamage(amount);
                 break;
 
+            case DamageStatus.Plasma:
+
+                takeDamage(amount + 1);
+                break;
+
             default:
                 break;
         }
@@ -741,4 +746,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         meleeTrigger.SetActive(false);
         isAttacking = false;
     }
+
+    
 }

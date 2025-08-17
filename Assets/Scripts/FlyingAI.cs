@@ -452,6 +452,11 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
                 takeDamage(amount);
                 break;
 
+            case DamageStatus.Plasma:
+
+                takeDamage(amount + 1);
+                break;
+
             default:
                 break;
         }

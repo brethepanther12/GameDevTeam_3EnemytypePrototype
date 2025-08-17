@@ -45,11 +45,12 @@ public class StatusEffectHandler : MonoBehaviour
         {
             case DamageStatus.Fire:
                 Debug.LogWarning("Fire status effect applied");
+                
                 break;
 
             case DamageStatus.Corrosive:
                 Debug.LogWarning("Corrosive status effect applied");
-
+                
                 break;
 
             case DamageStatus.Cryo:
@@ -68,6 +69,11 @@ public class StatusEffectHandler : MonoBehaviour
 
                 Debug.LogWarning("Explosive status effect applied");
                 
+                break;
+
+            case DamageStatus.Plasma:
+
+                Debug.LogWarning("Plasma burn status effect applied");
                 break;
 
             default:

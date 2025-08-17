@@ -61,7 +61,8 @@ public class PlayerInventory : MonoBehaviour
     { AmmoType.Shell, "Shotgun Shells" },
     { AmmoType.Grenade, "Frag Round" },
     { AmmoType.Rocket, "Rocket(Homing)" },
-    
+    { AmmoType.Energy, "Plasma Battery" },
+
 
 
 

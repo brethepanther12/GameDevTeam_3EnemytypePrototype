@@ -37,7 +37,7 @@ public class FireModeData
     public int projectileCount;
     public float projectileSpread;
     public float blastRadius;
-
+    public float energyRechargeRate;
 
 }
 
@@ -64,9 +64,9 @@ public class WeaponSO : ScriptableObject
     public int range;
     public int magSize;
     public int ammoMax;
-
     public int pelletCount;
     public float pelletSpread;
+    
 
     [HideInInspector] public int currentAmmoInMag;
     [HideInInspector] public int currentAmmoInReserve;
