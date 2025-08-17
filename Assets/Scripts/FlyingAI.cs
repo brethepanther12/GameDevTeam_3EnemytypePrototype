@@ -34,8 +34,11 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     [SerializeField] private LayerMask ceilingMask;
     [SerializeField] private SphereCollider bodyCollider;
     private bool returnToCeiling;
+    private bool attachedToCeiling;
     private Vector3 ceilingTarget;
     private Vector3 ceilingPoint;
+    private Vector3 attachedCeilingPoint;
+
 
     [Header("\"--- Retreat ---\"")]
     [SerializeField] private float retreatCooldown;
@@ -214,31 +217,30 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         if (playerTarget == null || isBlind) return false;
 
-        //Locate player
         Vector3 direction = playerTarget.transform.position - transform.position;
+        float distanceToPlayer = direction.magnitude;
         float angle = Vector3.Angle(direction, transform.forward);
 
-        Debug.DrawRay(transform.position, direction.normalized * fovDistance, Color.red);
+        // Check FOV angle and distance first
+        if (distanceToPlayer > fovDistance || angle > fovAngle) return false;
 
-        //check if the player is far from the object
-        if (direction.magnitude > fovDistance || angle > fovAngle) return false;
-
+        // Raycast to check occlusion
         if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, fovDistance))
         {
+            // Only visible if the first thing hit is the player
             if (hit.collider.CompareTag("Player"))
-            {
                 return true;
-            }
-            else if (hit.collider.CompareTag("Smoke"))
-            {
-                return false;
-            }
-            else if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
-            {
-                return false;
-            }
 
+            // Check if hit something like smoke, walls, or environment
+            if (hit.collider.CompareTag("Smoke"))
+                return false;
+
+            if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
+                return false;
+
+            return false;
         }
+
         return false;
     }
 
@@ -291,11 +293,8 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         if (InRange || playerVisible)
         {
             target = playerTarget.transform;
+            attachedToCeiling = false;
         }
-        //else
-        //{
-        //    target = null;
-        //}
     }
     void NearestCeiling()
     {
@@ -311,6 +310,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             // Bottom Y of the ceiling
             float ceilingY = bounds.center.y - bounds.extents.y;
 
+            // Margin to stay inside the collider
             float margin = 0.5f;
             float minX = bounds.min.x + margin;
             float maxX = bounds.max.x - margin;
@@ -319,6 +319,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
             if (minX >= maxX || minZ >= maxZ) continue;
 
+            // Pick a random point fully inside the bounds
             float ceilingX = Random.Range(minX, maxX);
             float ceilingZ = Random.Range(minZ, maxZ);
 
@@ -336,37 +337,50 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         {
             Debug.Log("No ceiling found in range!");
         }
+
+        // Reset the attached flag so the drone will pick a new local offset
+        attachedToCeiling = false;
     }
 
     void MoveToCeiling()
     {
-        if (returnToCeiling == false) return;
+        if (!returnToCeiling) return;
 
         if (rigidBody.isKinematic) rigidBody.isKinematic = false;
 
         Vector3 toCeiling = ceilingTarget - transform.position;
         float distance = toCeiling.magnitude;
 
+        float ceilingHeightOff = bodyCollider.bounds.extents.y;
+
+        // Pick a random point on the ceiling once
+        if (!attachedToCeiling)
+        {
+            float offsetX = Random.Range(-1f, 1f);
+            float offsetZ = Random.Range(-1f, 1f);
+            attachedCeilingPoint = ceilingTarget - new Vector3(0, ceilingHeightOff, 0) + new Vector3(offsetX, 0, offsetZ);
+
+            attachedToCeiling = true;
+        }
+
+        // Smoothly move toward the attached ceiling point
+        Vector3 desiredPosition = attachedCeilingPoint;
+        rigidBody.position = Vector3.MoveTowards(rigidBody.position, desiredPosition, Time.fixedDeltaTime * flyingSpeed);
+
+        // Smoothly rotate toward ceiling
+        Vector3 direction = (attachedCeilingPoint - transform.position).normalized;
+        Quaternion targetRot = Quaternion.LookRotation(direction);
+        rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime));
+
+        // If close enough, attach
         if (distance < ceilingAttachmentRange)
         {
-            // Snap to ceiling (attach to bottom)
-            float ceilingHeightOff = bodyCollider.bounds.extents.y;
-            transform.position = ceilingTarget - new Vector3(0, ceilingHeightOff, 0);
-
+            rigidBody.position = attachedCeilingPoint;
             rigidBody.linearVelocity = Vector3.zero;
             rigidBody.angularVelocity = Vector3.zero;
             rigidBody.isKinematic = true;
             returnToCeiling = false;
-        }
-        else
-        {
-            // Move toward ceiling
-            Vector3 direction = toCeiling.normalized;
-            rigidBody.linearVelocity = direction * flyingSpeed;
-
-            // Rotate toward ceiling
-            Quaternion targetRot = Quaternion.LookRotation(direction);
-            rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime));
+            attachedToCeiling = true;
         }
     }
 
