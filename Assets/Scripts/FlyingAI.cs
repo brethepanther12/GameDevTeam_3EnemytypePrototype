@@ -114,56 +114,49 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
     private void Movement()
     {
-        // Ceiling
-        if (returnToCeiling)
-        {
-            MoveToCeiling();
-            Hover();
-            return;
-        }
-
-        Vector3 finalVelocity = Vector3.zero;
-
+        // If player visible or in range
         if (target != null && (playerVisible || InRange))
         {
-            // Direction to player
-            Vector3 directionToPlayer = (target.position - transform.position).normalized;
-
-            finalVelocity = directionToPlayer * flyingSpeed;
-
-            // Add strafing
-            finalVelocity += Strafing(directionToPlayer);
-
-            // Retreat
-            if (isRetreating)
-            {
-                Retreat();
-                Hover();
-                return; 
-            }
-
-            // Collision check
-            if (!Physics.Raycast(transform.position, finalVelocity.normalized, 1f, enviormentMask))
-            {
-                rigidBody.linearVelocity = finalVelocity;
-            }
-            else
-            {
-                rigidBody.linearVelocity = Vector3.zero;
-            }
-
-            faceTarget();
+            MoveTowardsPlayer();
         }
         else
         {
-            // Player lost
-            rigidBody.linearVelocity = Vector3.zero;
-            PlayerLost(); 
+            // Player not found, move toward nearest ceiling
+            if (!returnToCeiling)
+            {
+                NearestCeiling();
+                ceilingTarget = ceilingPoint;
+                returnToCeiling = true;
+            }
+            else
+            {
+                MoveToCeiling();
+            }
         }
 
         // Hover
         if (!returnToCeiling)
             Hover();
+    }
+
+    private void MoveTowardsPlayer()
+    {
+        Vector3 directionToPlayer = (target.position - transform.position).normalized;
+        Vector3 finalVelocity = directionToPlayer * flyingSpeed + Strafing(directionToPlayer);
+
+        if (isRetreating)
+        {
+            Retreat();
+            return;
+        }
+
+        // Collision check
+        if (!Physics.Raycast(transform.position, finalVelocity.normalized, 1f, enviormentMask))
+            rigidBody.linearVelocity = finalVelocity;
+        else
+            rigidBody.linearVelocity = Vector3.zero;
+
+        faceTarget();
     }
 
     private Vector3 Strafing(Vector3 direction)
