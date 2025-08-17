@@ -26,6 +26,7 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable, IEnemyAI
     [SerializeField] private AudioClip hitSound;
     [SerializeField] private float hitVolume = 1f;
 
+    public GameObject componentPrefab;
     public GameObject mutagenPickupPrefab;
     [SerializeField] GameObject healthPickupPrefab;
     [SerializeField] GameObject ammoPickupPrefab;
@@ -455,7 +456,7 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable, IEnemyAI
 
     void TryDropPickup()
     {
-        int itemType = Random.Range(0, 3); // 0 = health, 1 = ammo, 2 = mutagen
+        int itemType = Random.Range(0, 3); // 0 = health, 1 = ammo, 2 = mutagen, 3 = component
 
         GameObject drop = null;
         if (itemType == 0 && healthPickupPrefab != null)
@@ -470,6 +471,10 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable, IEnemyAI
         {
             drop = Instantiate(mutagenPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
 
+        }
+        else if (itemType == 3 && componentPrefab != null)
+        {
+            drop = Instantiate(componentPrefab, transform.position + Vector3.up, Quaternion.identity);
         }
     }
 
