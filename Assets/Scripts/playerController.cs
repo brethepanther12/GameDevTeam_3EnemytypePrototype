@@ -83,8 +83,8 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     int shieldOrig;
 
     float shootTimer;
-    //float sprintTimer;
-    //public float sprintCD;
+    public GameObject meleeTrigger;
+    bool isAttacking;
 
     void Start()
     {
@@ -152,9 +152,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            if (animator != null)
+            if (animator != null && !isAttacking)
             {
                 animator.SetTrigger("Attacking");
+                StartCoroutine(Melee());
             }
         }
     }
@@ -727,5 +728,17 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     public int GetBaseShootDamage()
     {
         return shootDamage;
+    }
+
+    public IEnumerator Melee()
+    {
+        damage meleeDmg = meleeTrigger.GetComponent<damage>();
+
+        isAttacking = true;
+        yield return new WaitForSeconds(1f);
+        meleeTrigger.SetActive(true);
+        yield return new WaitForSeconds(meleeDmg.damageRate);
+        meleeTrigger.SetActive(false);
+        isAttacking = false;
     }
 }
