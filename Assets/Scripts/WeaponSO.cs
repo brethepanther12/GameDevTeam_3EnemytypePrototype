@@ -52,7 +52,6 @@ public class WeaponSO : ScriptableObject
 
     public List<FireMode> availableFireModes = new List<FireMode>();
     public List<FireModeData> fireModeDatas = new List<FireModeData>();
-    public List<WeaponUpgradeSO> appliedUpgrades = new List<WeaponUpgradeSO>();
     public List<WeaponUpgradeSO> availableUpgrades;
 
 
@@ -63,7 +62,7 @@ public class WeaponSO : ScriptableObject
     public float attackRate;
     public int range;
     public int magSize;
-    public int ammoMax;
+
     public int pelletCount;
     public float pelletSpread;
     
@@ -95,46 +94,5 @@ public class WeaponSO : ScriptableObject
         }
 
         return fireModeDatas[0];
-    }
-
-    public void ApplyUpgrade(WeaponUpgradeSO upgrade)
-    {
-        if (appliedUpgrades.Contains(upgrade))
-        {
-            Debug.LogWarning("Attempted to apply an upgrade that is already applied!");
-            return;
-        }
-
-        appliedUpgrades.Add(upgrade);
-
-        if (upgrade.isFireModeUnlock)
-        {
-            if (!availableFireModes.Contains(upgrade.fireModeToUnlock))
-            {
-                availableFireModes.Add(upgrade.fireModeToUnlock);
-            }
-        }
-        else
-        {
-            switch (upgrade.statToUpgrade)
-            {
-                case WeaponStatType.Damage:
-                    wepDmg += (int)upgrade.upgradeAmount;
-                    break;
-                case WeaponStatType.MagSize:
-                    magSize += (int)upgrade.upgradeAmount;
-                    break;
-                case WeaponStatType.AttackRate:
-                    attackRate -= upgrade.upgradeAmount;
-                    if (attackRate < 0.05f) attackRate = 0.05f;
-                    break;
-                case WeaponStatType.Range:
-                    range += (int)upgrade.upgradeAmount;
-                    break;
-                case WeaponStatType.MaxAmmo:
-                    ammoMax += (int)upgrade.upgradeAmount;
-                    break;
-            }
-        }
     }
 }

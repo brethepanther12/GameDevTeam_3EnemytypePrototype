@@ -544,9 +544,9 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         gamemanager.instance.playerHp.text = $"{HP} / {maxHP}";
         gamemanager.instance.playerArmor.text = $"{armor} / {maxArmor}";
         gamemanager.instance.playerShield.text = $"{shield} / {maxShield}";
-        if (inventory.weaponInventory.Count > 0)
+        if (inventory.weaponHolster.Count > 0)
         {
-            gamemanager.instance.gunName.text = $"{inventory.weaponInventory[inventory.weaponListPos].weaponName}";
+            gamemanager.instance.gunName.text = $"{inventory.weaponHolster[inventory.weaponListPos].weaponName}";
         }
         Weapon activeWep = weaponSocket.GetComponentInChildren<Weapon>();
 

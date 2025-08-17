@@ -37,8 +37,10 @@ public class PlayerInventory : MonoBehaviour
 
     [Header("Weapon Inventory")]
     public List<ItemSO> collectedItems = new List<ItemSO>();
-    public List<WeaponSO> weaponInventory = new List<WeaponSO>();
+    private Dictionary<AmmoType, int> bonusAmmoCapacity = new Dictionary<AmmoType, int>();
+    public Dictionary<WeaponSO, WeaponRuntimeData> weaponData = new Dictionary<WeaponSO, WeaponRuntimeData>();
     public WeaponSO equippedWeapon;
+    public List<WeaponSO> weaponHolster = new List<WeaponSO>();
     public int weaponListPos = 0;
 
     [Header("Runtime References")]
@@ -77,23 +79,45 @@ public class PlayerInventory : MonoBehaviour
         UpdateMutagenDisplay();
     }
 
+    public void RecordUpgradeForWeapon(WeaponSO weaponType, WeaponUpgradeSO upgrade)
+    {
+        if (weaponData.ContainsKey(weaponType))
+        {
+            weaponData[weaponType].purchasedUpgrades.Add(upgrade);
+        }
+    }
+
+    public bool HasPurchasedUpgrade(WeaponSO weaponType, WeaponUpgradeSO upgrade)
+    {
+        return weaponData.ContainsKey(weaponType) && weaponData[weaponType].purchasedUpgrades.Contains(upgrade);
+    }
     public void AddItem(ItemSO item)
     {
+        bool isAmmo = ammoLookup.ContainsValue(item.itemName);
+        AmmoType ammoType = default;
+        if (isAmmo)
+        {
+            ammoType = ammoLookup.FirstOrDefault(x => x.Value == item.itemName).Key;
+        }
+
         InventorySlot slot = items.Find(s => s.item == item);
 
         if (slot != null)
         {
-            int availableSpace = slot.item.stackSize - slot.quantity;
+            int maxCapacity = isAmmo ? GetMaxAmmoForType(ammoType) : slot.item.stackSize;
+
+            int availableSpace = maxCapacity - slot.quantity;
+            if (availableSpace <= 0) return;
+
             int amountToAdd = Mathf.Min(item.quantityToPickup, availableSpace);
             slot.AddQuantity(amountToAdd);
         }
         else
         {
-            int amountToAdd = Mathf.Min(item.quantityToPickup, item.stackSize);
+            int maxCapacity = isAmmo ? GetMaxAmmoForType(ammoType) : item.stackSize;
+            int amountToAdd = Mathf.Min(item.quantityToPickup, maxCapacity);
             items.Add(new InventorySlot(item, amountToAdd));
         }
-        Debug.Log($"Added {item.quantityToPickup} of {item.itemName}.");
-
     }
 
     public void ConsumeKey(ItemSO keyItem)
@@ -186,56 +210,63 @@ public class PlayerInventory : MonoBehaviour
 
     public void AddWeapon(WeaponSO newWeapon)
     {
-
-        if (newWeapon == null)
+        if (newWeapon == null || weaponData.ContainsKey(newWeapon))
         {
             return;
         }
 
-        if (!weaponInventory.Contains(newWeapon))
-        {
-            weaponInventory.Add(newWeapon);
-            weaponListPos = weaponInventory.Count - 1;
-            EquipWeapon();
-            Debug.Log("Picked up: " + newWeapon.name);
-        }
+        weaponHolster.Add(newWeapon);
+
+        weaponData.Add(newWeapon, new WeaponRuntimeData(newWeapon.magSize));
+
+        weaponListPos = weaponHolster.Count - 1;
+        EquipWeapon();
+        Debug.Log("Picked up: " + newWeapon.name);
     }
 
     public bool HasWeapon(WeaponSO weapon)
     {
-        return weaponInventory.Contains(weapon);
+        return weaponHolster.Contains(weapon);
     }
 
     public void EquipWeapon()
     {
-        if (weaponInventory.Count == 0 || weaponInventory[weaponListPos] == null)
-        {
-            return;
-        }
+        if (weaponHolster.Count == 0) return;
 
         if (currentWeaponScript != null)
         {
-            equippedWeapon.currentAmmoInMag = currentWeaponScript.GetAmmoInMag();
-            equippedWeapon.currentAmmoInReserve = currentWeaponScript.GetAmmoInReserve();
-            equippedWeapon.savedMode = currentWeaponScript.currentFireMode;
 
+            if (weaponData.TryGetValue(equippedWeapon, out WeaponRuntimeData oldData))
+            {
+                oldData.currentAmmoInMag = currentWeaponScript.GetAmmoInMag();
+                oldData.savedMode = currentWeaponScript.currentFireMode;
+            }
             Destroy(currentWeaponInstance);
         }
 
-        equippedWeapon = weaponInventory[weaponListPos];
+        equippedWeapon = weaponHolster[weaponListPos];
+        WeaponRuntimeData newData = weaponData[equippedWeapon];
 
         currentWeaponInstance = Instantiate(equippedWeapon.weaponModel, weaponSocket.transform);
+        currentWeaponScript = currentWeaponInstance.GetComponent<Weapon>();
+
         currentWeaponInstance.transform.localPosition = Vector3.zero;
         currentWeaponInstance.transform.localRotation = Quaternion.identity;
 
-        currentWeaponScript = currentWeaponInstance.GetComponent<Weapon>();
         if (currentWeaponScript != null)
         {
-            currentWeaponScript.InitializeWeapon(equippedWeapon, refillMag: false);
-            currentWeaponScript.SetAmmoState(equippedWeapon.currentAmmoInMag, equippedWeapon.currentAmmoInReserve);
-            currentWeaponScript.muzzleFlash = playerRef.playerMuzzleFlash;
-            currentWeaponScript.currentFireMode = equippedWeapon.savedMode;
+            currentWeaponScript.InitializeWeapon(equippedWeapon);
 
+            currentWeaponScript.SetAmmoState(newData.currentAmmoInMag, GetAmmoAmount(GetAmmoNameByType(equippedWeapon.ammoType)));
+            currentWeaponScript.currentFireMode = newData.savedMode;
+            currentWeaponScript.ApplyFireModeStats();
+
+            foreach (WeaponUpgradeSO upgrade in newData.purchasedUpgrades)
+            {
+                currentWeaponScript.ApplyUpgrade(upgrade);
+            }
+
+            currentWeaponScript.muzzleFlash = playerRef.playerMuzzleFlash;
         }
 
         if (weaponUIController != null)
@@ -246,7 +277,7 @@ public class PlayerInventory : MonoBehaviour
 
     public void SwitchWeapon(int direction)
     {
-        if (weaponInventory.Count == 0 || gamemanager.instance.isPaused)
+        if (weaponHolster.Count == 0 || gamemanager.instance.isPaused)
         {
             return;
         }
@@ -255,10 +286,10 @@ public class PlayerInventory : MonoBehaviour
 
         if (weaponListPos < 0)
         {
-            weaponListPos = weaponInventory.Count - 1;
+            weaponListPos = weaponHolster.Count - 1;
 
         } 
-        else if (weaponListPos > weaponInventory.Count - 1)
+        else if (weaponListPos > weaponHolster.Count - 1)
         {
             weaponListPos = 0;
         }
@@ -329,5 +360,36 @@ public class PlayerInventory : MonoBehaviour
     public void NotifyWeaponComponentsChanged()
     {
         OnWeaponComponentsChanged?.Invoke(GetWeaponComponentCount());
+    }
+
+    public void ApplyMaxAmmoUpgrade(AmmoType ammoType, int amount)
+    {
+        if (!bonusAmmoCapacity.ContainsKey(ammoType))
+        {
+            bonusAmmoCapacity[ammoType] = 0;
+        }
+
+        bonusAmmoCapacity[ammoType] += amount;
+        Debug.Log($"Max ammo for {ammoType} increased by {amount}. New bonus is {bonusAmmoCapacity[ammoType]}.");
+    }
+
+    public int GetMaxAmmoForType(AmmoType ammoType)
+    {
+        string ammoName = GetAmmoNameByType(ammoType);
+        InventorySlot ammoSlot = items.Find(s => s.item.itemName == ammoName);
+
+        int baseStackSize = 100;
+        if (ammoSlot != null)
+        {
+            baseStackSize = ammoSlot.item.stackSize;
+        }
+
+        int bonus = 0;
+        if (bonusAmmoCapacity.ContainsKey(ammoType))
+        {
+            bonus = bonusAmmoCapacity[ammoType];
+        }
+
+        return baseStackSize + bonus;
     }
 }
