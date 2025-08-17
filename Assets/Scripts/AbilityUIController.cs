@@ -15,7 +15,7 @@ public class AbilityUIController : MonoBehaviour
     [SerializeField] private TMP_Text detailNameText;
     [SerializeField] private TMP_Text detailDescriptionText;
     [SerializeField] private TMP_Text detailCostText;
-    [SerializeField] private GameObject upgradePanel;
+    [SerializeField] public GameObject upgradePanel;
 
     [Header("Data")]
     [SerializeField] private List<AbilityUpgradeSO> availableUpgrades;
@@ -55,7 +55,6 @@ public class AbilityUIController : MonoBehaviour
 
     private void Start()
     {
-        Initialize();
 
         if (upgradePanel != null)
         {
@@ -167,40 +166,38 @@ public class AbilityUIController : MonoBehaviour
 
     public void OpenMenu()
     {
-        Debug.Log("OpenMenu() was successfully called!");
-        gameObject.SetActive(true);
-        if (upgradePanel != null)
+        if (playerController == null)
+            playerController = gamemanager.instance.playerScript;
+        if (playerInventory == null)
+            playerInventory = playerController.GetComponent<PlayerInventory>();
+
+        if (playerInventory == null)
         {
-            upgradePanel.SetActive(true);
+            Debug.LogError("AbilityUIController could not find PlayerInventory!");
+            return;
         }
 
+        PopulateUpgradeList();
+        UpdateMutagenCountDisplay();
+        Deselect();
 
-        if (gamemanager.instance != null)
-        {
-            gamemanager.instance.statePause();
-            gamemanager.instance.menuActive = this.upgradePanel;
-        }
+        upgradePanel.SetActive(true);
+        gamemanager.instance.statePause();
+        gamemanager.instance.menuActive = this.upgradePanel;
     }
 
     public void ShowWeaponMenu()
     {
-        if (upgradePanel != null)
+        WeaponUIController weaponUI = FindAnyObjectByType<WeaponUIController>();
+        if (weaponUI != null)
         {
-            upgradePanel.SetActive(false);
-        }
 
-        if (weaponUIController != null)
-        {
-            weaponUIController.OpenWeaponMenu();
+            gamemanager.instance.OpenMenu(weaponUI.weaponUpgradePanel);
         }
     }
 
-public void CloseMenu()
+    public void CloseMenu()
     {
-        gameObject.SetActive(false);
-
-        {
-            gamemanager.instance.stateUnpause();
-        }
+        gamemanager.instance.CloseActiveMenu();
     }
 }

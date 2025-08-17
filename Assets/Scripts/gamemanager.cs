@@ -45,6 +45,7 @@ public class gamemanager : MonoBehaviour
     public TMP_Text playerArmor;
     public TMPro.TextMeshProUGUI ammoText;
     public TMP_Text mutagenCountText;
+    public TMP_Text componentCountText;
     public TMP_Text inventoryAmmo;
     public TMP_Text redKey;
     public TMP_Text blueKey;
@@ -114,7 +115,7 @@ public class gamemanager : MonoBehaviour
         {
             if (menuActive != null)
             {
-                stateUnpause();
+                CloseActiveMenu();
             }
             else
             {
@@ -152,7 +153,17 @@ public class gamemanager : MonoBehaviour
         Time.timeScale = timescaleOrig;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        menuActive.SetActive(false);
+
+        if (menuActive.GetComponent<WeaponUIController>() != null)
+        {
+            
+            menuActive.GetComponent<WeaponUIController>().CloseMenu();
+        }
+        else
+        {
+            menuActive.SetActive(false);
+        }
+
         menuActive = null;
     }
 
@@ -263,6 +274,13 @@ public class gamemanager : MonoBehaviour
         if (mutagenCountText != null)
             mutagenCountText.text = mutagenCount.ToString();
 
+        int componentCount = inventory.GetWeaponComponentCount();
+
+        if (componentCountText != null)
+        {
+            componentCountText.text = componentCount.ToString();
+        }
+
     }
 
     public void openOptionsFromPause()
@@ -340,5 +358,30 @@ public class gamemanager : MonoBehaviour
             PlayerPrefs.DeleteKey("CheckpointPlayerData");
             Debug.Log("Checkpoint data cleared for new game.");
         }
+    }
+
+    public void OpenMenu(GameObject menuToOpen)
+    {
+        if (menuActive != null)
+        {
+            menuActive.SetActive(false);
+        }
+
+        statePause();
+        menuActive = menuToOpen;
+        menuActive.SetActive(true);
+    }
+
+    public void CloseActiveMenu()
+    {
+        if (menuActive == null) return;
+
+        menuActive.SetActive(false);
+
+        isPaused = false;
+        Time.timeScale = timescaleOrig;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        menuActive = null;
     }
 }

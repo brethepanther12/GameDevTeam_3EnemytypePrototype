@@ -53,6 +53,7 @@ public class WeaponSO : ScriptableObject
     public List<FireMode> availableFireModes = new List<FireMode>();
     public List<FireModeData> fireModeDatas = new List<FireModeData>();
     public List<WeaponUpgradeSO> appliedUpgrades = new List<WeaponUpgradeSO>();
+    public List<WeaponUpgradeSO> availableUpgrades;
 
 
     public FireMode savedMode;
@@ -129,6 +130,9 @@ public class WeaponSO : ScriptableObject
                     break;
                 case WeaponStatType.Range:
                     range += (int)upgrade.upgradeAmount;
+                    break;
+                case WeaponStatType.MaxAmmo:
+                    ammoMax += (int)upgrade.upgradeAmount;
                     break;
             }
         }

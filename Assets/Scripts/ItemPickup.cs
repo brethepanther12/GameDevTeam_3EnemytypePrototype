@@ -36,6 +36,15 @@ public class ItemPickup : MonoBehaviour, IGrapplable
             Debug.Log($"Picked up item: {itemToGive.itemName}");
         }
 
+        if (itemToGive.itemName == "Weapon Component")
+        {
+            inventory.NotifyWeaponComponentsChanged();
+        }
+        else if (itemToGive.itemName == "Mutagen Sample")
+        {
+            inventory.UpdateMutagenDisplay();
+        }
+
         Destroy(gameObject);
 
         if (pc != null)

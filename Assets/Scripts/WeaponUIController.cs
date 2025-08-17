@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class WeaponUIController : MonoBehaviour
 {
     [Header("Menu Navigation")]
-    [SerializeField] private GameObject weaponUpgradePanel;
+    [SerializeField] public GameObject weaponUpgradePanel;
     [SerializeField] private AbilityUIController abilityUIController;
 
     [Header("UI References")]
@@ -20,10 +20,6 @@ public class WeaponUIController : MonoBehaviour
     [SerializeField] private TMP_Text detailDescriptionText;
     [SerializeField] private TMP_Text detailCostText;
 
-    [Header("Data")]
-    [Tooltip("A list of ALL possible weapon upgrades in the game.")]
-    [SerializeField] private List<WeaponUpgradeSO> allPossibleUpgrades;
-
     private WeaponUpgradeSO selectedUpgrade;
     private PlayerInventory playerInventory;
     private WeaponSO currentWeapon;
@@ -31,24 +27,46 @@ public class WeaponUIController : MonoBehaviour
     void Start()
     {
         playerInventory = gamemanager.instance.playerScript.GetComponent<PlayerInventory>();
+
+        if (playerInventory != null)
+        {
+            playerInventory.OnWeaponComponentsChanged += HandleComponentChanged;
+
+            HandleComponentChanged(playerInventory.GetWeaponComponentCount());
+        }
     }
 
     public void OpenWeaponMenu()
     {
-        abilityUIController.gameObject.SetActive(false);
-        weaponUpgradePanel.SetActive(true);
+        playerInventory = gamemanager.instance.playerScript.GetComponent<PlayerInventory>();
 
-        currentWeapon = playerInventory.equippedWeapon;
+        if (playerInventory == null)
+        {
+            Debug.LogError("WeaponUIController could not find PlayerInventory!");
+            return;
+        }
 
-        PopulateUpgrades();
         UpdateComponentCount();
-        Deselect();
+
+        gamemanager.instance.OpenMenu(weaponUpgradePanel);
+
+
+        UpdateForNewWeapon(playerInventory.equippedWeapon);
     }
 
     public void ShowAbilityMenu()
     {
-        weaponUpgradePanel.SetActive(false);
-        abilityUIController.gameObject.SetActive(true);
+
+        AbilityUIController abilityUI = FindAnyObjectByType<AbilityUIController>();
+        if (abilityUI != null)
+        {
+            gamemanager.instance.OpenMenu(abilityUI.upgradePanel);
+        }
+    }
+
+    public void CloseMenu()
+    {
+        gamemanager.instance.CloseActiveMenu();
     }
 
     void PopulateUpgrades()
@@ -58,13 +76,21 @@ public class WeaponUIController : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        foreach (WeaponUpgradeSO upgrade in allPossibleUpgrades)
+        if (currentWeapon == null)
+        {
+            Debug.LogWarning("No weapon equipped. Cannot show upgrades.");
+
+            detailNameText.text = "No Weapon Equipped";
+            detailDescriptionText.text = "Equip a weapon to see its available upgrades.";
+            return; 
+        }
+
+        // this should make weapon upgrades dynamic. if there is a problem with that for anyone else check this area.
+        foreach (WeaponUpgradeSO upgrade in currentWeapon.availableUpgrades)
         {
             if (!currentWeapon.appliedUpgrades.Contains(upgrade))
             {
                 GameObject buttonObj = Instantiate(upgradeButtonPrefab, upgradeButtonContainer);
-                UpgradeButton buttonScript = buttonObj.GetComponent<UpgradeButton>();
-
                 buttonObj.GetComponentInChildren<TMP_Text>().text = upgrade.upgradeName;
                 buttonObj.GetComponent<Button>().onClick.AddListener(() => SelectUpgrade(upgrade));
             }
@@ -114,9 +140,43 @@ public class WeaponUIController : MonoBehaviour
 
     void UpdateComponentCount()
     {
+        if (playerInventory == null)
+        {
+            playerInventory = gamemanager.instance.playerScript.GetComponent<PlayerInventory>();
+        }
+
+        int count = playerInventory.GetWeaponComponentCount();
+        Debug.Log("UpdateComponentCount called. Player has " + count + " components.");
+
         if (componentCountText != null)
         {
-            componentCountText.text = "Components: " + playerInventory.GetWeaponComponentCount();
+            componentCountText.text = "Components: " + count;
+        }
+        else
+        {
+            Debug.LogWarning("componentCountText is not assigned in the inspector!");
+        }
+    }
+
+    public void UpdateForNewWeapon(WeaponSO newWeapon)
+    {
+        if (playerInventory == null)
+        {
+            playerInventory = gamemanager.instance.playerScript.GetComponent<PlayerInventory>();
+        }
+
+        currentWeapon = newWeapon;
+
+        UpdateComponentCount();
+        PopulateUpgrades();
+        Deselect();
+    }
+
+    private void HandleComponentChanged(int newCount)
+    {
+        if (componentCountText != null)
+        {
+            componentCountText.text = "Components: " + newCount;
         }
     }
 }

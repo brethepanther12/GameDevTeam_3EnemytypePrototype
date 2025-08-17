@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum WeaponStatType { Damage, MagSize, AttackRate, Range, ReloadSpeed }
+public enum WeaponStatType { Damage, MagSize, AttackRate, Range, MaxAmmo }
 
 [CreateAssetMenu(menuName = "Upgrades/Weapon Upgrade")]
 public class WeaponUpgradeSO : ScriptableObject
