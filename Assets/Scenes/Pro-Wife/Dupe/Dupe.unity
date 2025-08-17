@@ -520,28 +520,64 @@ PrefabInstance:
       value: Drone
       objectReference: {fileID: 0}
     - target: {fileID: 4389261893341757577, guid: 554e5d68fb6b9b949b7d834fc0ea54a1, type: 3}
+      propertyPath: HP
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 4389261893341757577, guid: 554e5d68fb6b9b949b7d834fc0ea54a1, type: 3}
+      propertyPath: fovAngle
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 4389261893341757577, guid: 554e5d68fb6b9b949b7d834fc0ea54a1, type: 3}
       propertyPath: damageRate
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4389261893341757577, guid: 554e5d68fb6b9b949b7d834fc0ea54a1, type: 3}
-      propertyPath: strafeSpeed
+      propertyPath: hoverClamp
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4389261893341757577, guid: 554e5d68fb6b9b949b7d834fc0ea54a1, type: 3}
+      propertyPath: flyingSpeed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4389261893341757577, guid: 554e5d68fb6b9b949b7d834fc0ea54a1, type: 3}
+      propertyPath: fovDistance
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4389261893341757577, guid: 554e5d68fb6b9b949b7d834fc0ea54a1, type: 3}
+      propertyPath: hoverHeight
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4389261893341757577, guid: 554e5d68fb6b9b949b7d834fc0ea54a1, type: 3}
+      propertyPath: strafeSpeed
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4389261893341757577, guid: 554e5d68fb6b9b949b7d834fc0ea54a1, type: 3}
       propertyPath: retreatSpeed
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4389261893341757577, guid: 554e5d68fb6b9b949b7d834fc0ea54a1, type: 3}
+      propertyPath: lostPlayDelay
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4389261893341757577, guid: 554e5d68fb6b9b949b7d834fc0ea54a1, type: 3}
+      propertyPath: rotationSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4389261893341757577, guid: 554e5d68fb6b9b949b7d834fc0ea54a1, type: 3}
       propertyPath: strafeCooldown
-      value: 1
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 4389261893341757577, guid: 554e5d68fb6b9b949b7d834fc0ea54a1, type: 3}
       propertyPath: strafeDistance
-      value: 3
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4389261893341757577, guid: 554e5d68fb6b9b949b7d834fc0ea54a1, type: 3}
+      propertyPath: ceilingInRadius
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 4389261893341757577, guid: 554e5d68fb6b9b949b7d834fc0ea54a1, type: 3}
       propertyPath: retreatCooldown
-      value: 2
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 4389261893341757577, guid: 554e5d68fb6b9b949b7d834fc0ea54a1, type: 3}
       propertyPath: retreatDistance
