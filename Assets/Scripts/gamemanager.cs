@@ -55,6 +55,7 @@ public class gamemanager : MonoBehaviour
     public GameObject BossHealthBarUI;
     public Image BossHealthBarFill;
     public TMPro.TextMeshProUGUI BossNameText;
+    public static event Action<DifficultyLevels> OnDifficultyChanged;
 
     public BossAI currentBoss;
 
@@ -283,6 +284,20 @@ public class gamemanager : MonoBehaviour
 
     }
 
+
+    public void OpenOptionsFromMainMenu()
+    {
+        if (menuOptions != null && optionMenuUI != null)
+        {
+            optionMenuUI.InitializeOptions();
+            menuOptions.SetActive(true);
+            menuActive = menuOptions;
+
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+    }
+
     public void openOptionsFromPause()
     {
         if (menuOptions != null && optionMenuUI != null)
@@ -332,12 +347,15 @@ public class gamemanager : MonoBehaviour
 
     public void SetDifficulty(DifficultyLevels difficulty)
     {
-        if(!IsDifficultyLocked(difficulty))
+        if (!IsDifficultyLocked(difficulty))
         {
             currentDifficulty = difficulty;
             PlayerPrefs.SetInt("CurrentDifficulty", (int)difficulty);
             PlayerPrefs.Save();
             Debug.Log($"Difficulty set to {difficulty}");
+
+            // NOTIFY listeners (spawners, UI, etc.)
+            OnDifficultyChanged?.Invoke(currentDifficulty);
         }
         else
         {
@@ -349,6 +367,9 @@ public class gamemanager : MonoBehaviour
     {
         int saved = PlayerPrefs.GetInt("CurrentDifficulty", 0);
         currentDifficulty = (DifficultyLevels)saved;
+
+        // Notify about the loaded difficulty
+        OnDifficultyChanged?.Invoke(currentDifficulty);
     }
 
     public void ClearCheckpointData()
@@ -383,5 +404,9 @@ public class gamemanager : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         menuActive = null;
+    }
+    public void SetDifficultyByIndex(int index)
+    {
+        SetDifficulty((DifficultyLevels)index);
     }
 }
