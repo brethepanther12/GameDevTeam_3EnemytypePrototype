@@ -149,6 +149,14 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 currentWeapon.StartReload();
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            if (animator != null)
+            {
+                animator.SetTrigger("Attacking");
+            }
+        }
     }
 
     void Awake()

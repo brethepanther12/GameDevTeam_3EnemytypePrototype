@@ -177,13 +177,20 @@ public class AbilityUIController : MonoBehaviour
             return;
         }
 
-        PopulateUpgradeList();
         UpdateMutagenCountDisplay();
-        Deselect();
+        Debug.Log("OpenMenu() was successfully called!");
+        gameObject.SetActive(true);
 
-        upgradePanel.SetActive(true);
-        gamemanager.instance.statePause();
-        gamemanager.instance.menuActive = this.upgradePanel;
+        if (upgradePanel != null)
+        {
+            PopulateUpgradeList();
+            UpdateMutagenCountDisplay();
+            Deselect();
+
+            upgradePanel.SetActive(true);
+            gamemanager.instance.statePause();
+            gamemanager.instance.menuActive = this.upgradePanel;
+        }
     }
 
     public void ShowWeaponMenu()
