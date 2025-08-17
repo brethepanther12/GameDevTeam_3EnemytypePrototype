@@ -121,19 +121,32 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         }
 
-        if (isRetreating)
+        if (target != null && playerVisible || InRange)
         {
-            Retreat();
-            return;
-        }
-        
+            Vector3 directionToPlayer = (target.position - transform.position).normalized;
 
-        if (target != null && playerVisible && InRange)
-        {
-            // Movement logic
-            Movement();
+            Vector3 approach = directionToPlayer * flyingSpeed;
+
+            // Strafing
+            Vector3 strafeVel = Strafing(directionToPlayer);
+
+            velocity = approach + strafeVel;
+
+            if (isRetreating)
+            {
+                Vector3 retreatVel = retreatDirection * retreatSpeed;
+                velocity = Vector3.Lerp(velocity, -retreatVel, 0.7f);
+            }
+
+            // Collision check
+            if (!Physics.Raycast(transform.position, velocity.normalized, 1f, enviormentMask))
+                rigidBody.linearVelocity = velocity;
+            else
+                rigidBody.linearVelocity = Vector3.zero;
+
+            faceTarget();
         }
-       
+
         PlayerLost();
         Hover();
     }
