@@ -32,6 +32,7 @@ public class DroneBoss : MonoBehaviour
     [System.Obsolete]
     void Start()
     {
+        gamemanager.instance.updateGameGoal(1);
         currentHealth = maxHealth;
         if (healthBar != null)
             healthBar.value = 1f;
