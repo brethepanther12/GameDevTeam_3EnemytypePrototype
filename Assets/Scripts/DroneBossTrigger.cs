@@ -6,6 +6,7 @@ public class DroneBossTrigger : MonoBehaviour
 
     private bool hasActivated = false;
 
+    [System.Obsolete]
     private void OnTriggerEnter(Collider other)
     {
         if (hasActivated) return;
