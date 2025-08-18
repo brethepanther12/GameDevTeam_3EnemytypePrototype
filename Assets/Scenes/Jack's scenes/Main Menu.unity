@@ -119,11 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &128225528 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1534245166786595079, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
-  m_PrefabInstance: {fileID: 7773660180209451559}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &533770475
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -278,6 +273,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &1047143453 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1663543364928428666, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+  m_PrefabInstance: {fileID: 7773660180209451559}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1355907319 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6218375317122356938, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+  m_PrefabInstance: {fileID: 7773660180209451559}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1414796215
 GameObject:
   m_ObjectHideFlags: 0
@@ -370,6 +387,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1832149567
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1832149569}
+  - component: {fileID: 1832149568}
+  m_Layer: 0
+  m_Name: ScoreTracker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1832149568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1832149567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22f6b40c8536ea740aaf90ae85519e68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyPointsList:
+  - enemyTag: Enemy
+    points: 100
+--- !u!4 &1832149569
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1832149567}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 946.218, y: 591.1683, z: -501.45645}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &339332163583305559
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -384,15 +448,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6872000416531349147, guid: 2d8b0764e0765764fb8b1f014f06daa1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 917.18835
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6872000416531349147, guid: 2d8b0764e0765764fb8b1f014f06daa1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 684.12146
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6872000416531349147, guid: 2d8b0764e0765764fb8b1f014f06daa1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -268.54434
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6872000416531349147, guid: 2d8b0764e0765764fb8b1f014f06daa1, type: 3}
       propertyPath: m_LocalRotation.w
@@ -435,10 +499,50 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3523678058597279807, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
-      propertyPath: creditsPanel
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[3].lockIcon
       value: 
-      objectReference: {fileID: 128225528}
+      objectReference: {fileID: 7773660180209451561}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[3].sceneName
+      value: Travis-(Boss enemy)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[4].sceneName
+      value: ShowCase Level
+      objectReference: {fileID: 0}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[3].levelButton
+      value: 
+      objectReference: {fileID: 1047143453}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[4].levelButton
+      value: 
+      objectReference: {fileID: 1355907319}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[0].levelNumberToUnlock
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[1].levelNumberToUnlock
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[2].levelNumberToUnlock
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[3].levelNumberToUnlock
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[4].levelNumberToUnlock
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5970844855040321860, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 877.4075
@@ -479,10 +583,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8262245018948502663, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
-      propertyPath: musicSource
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 8902188183571111870, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
       propertyPath: m_Name
       value: MainMenuUI
@@ -492,6 +592,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+--- !u!1 &7773660180209451561 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6491718780837543818, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+  m_PrefabInstance: {fileID: 7773660180209451559}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -499,5 +604,6 @@ SceneRoots:
   - {fileID: 1414796218}
   - {fileID: 970418959}
   - {fileID: 7773660180209451559}
-  - {fileID: 339332163583305559}
   - {fileID: 533770475}
+  - {fileID: 1832149569}
+  - {fileID: 339332163583305559}

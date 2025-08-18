@@ -16,7 +16,11 @@ public class Destructible : MonoBehaviour, IDamage
         {
             HP -= amount;
 
-            StartCoroutine(FlashWhite());
+            if (model != null)
+            {
+                StartCoroutine(FlashWhite());
+            }
+            
 
             if (HP <= 0 )
             {
@@ -45,6 +49,26 @@ public class Destructible : MonoBehaviour, IDamage
                 takeDamage(amount + 1);
                 break;
 
+            case DamageStatus.Cryo:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Electric:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Explosive:
+
+                takeDamage(amount * 2);
+                break;
+
+            case DamageStatus.Plasma:
+
+                takeDamage(amount + 2);
+                break;
+
             default:
                 break;
         }
@@ -55,9 +79,14 @@ public class Destructible : MonoBehaviour, IDamage
 
     public IEnumerator FlashWhite()
     {
+
         model.material.color = Color.white;
         yield return new WaitForSeconds(0.2f);
         model.material.color = colorOrig;
     }
 
+    public void slowDown(float magnitude, float duration)
+    {
+        return;
+    }
 }

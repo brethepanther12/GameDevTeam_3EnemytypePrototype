@@ -9,7 +9,7 @@ using System;
 public class gamemanager : MonoBehaviour
 {
     public static gamemanager instance;
-    [SerializeField] GameObject menuActive;
+    [SerializeField] public GameObject menuActive;
     [SerializeField] GameObject menuPause;
     [SerializeField] GameObject menuOptions;
     [SerializeField] OptionsMenuUI optionMenuUI;
@@ -18,6 +18,10 @@ public class gamemanager : MonoBehaviour
     [SerializeField] GameObject menuInventory;
     [SerializeField] TMP_Text EnemiesRemaining;
 
+    [SerializeField] private string nextLevelName;
+    public int levelNumber;
+
+    public static int playerDeathCount;
     public Image playerHPBar;
     public Image playerShieldBar;
     public Image playerArmorBar;
@@ -32,11 +36,16 @@ public class gamemanager : MonoBehaviour
     public GameObject player;
     public playerController playerScript;
 
-    public TMP_Text jumpCounter;
+    public TMP_Text dashCounter;
+    public TMP_Text dashCounterText;
+    public Image dashCounterCDImage;
+
     public TMP_Text playerHp;
     public TMP_Text playerShield;
     public TMP_Text playerArmor;
     public TMPro.TextMeshProUGUI ammoText;
+    public TMP_Text mutagenCountText;
+    public TMP_Text componentCountText;
     public TMP_Text inventoryAmmo;
     public TMP_Text redKey;
     public TMP_Text blueKey;
@@ -46,6 +55,7 @@ public class gamemanager : MonoBehaviour
     public GameObject BossHealthBarUI;
     public Image BossHealthBarFill;
     public TMPro.TextMeshProUGUI BossNameText;
+    public static event Action<DifficultyLevels> OnDifficultyChanged;
 
     public BossAI currentBoss;
 
@@ -56,10 +66,41 @@ public class gamemanager : MonoBehaviour
     public enum DifficultyLevels{easy,normal,hard}
     public DifficultyLevels currentDifficulty;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log("New scene loaded: " + scene.name + ". Clearing checkpoint data.");
+        ClearCheckpointData();
+
+        player = GameObject.FindWithTag("Player");
+        if (player != null)
+        {
+            playerScript = player.GetComponent<playerController>();
+        }
+    }
     void Awake()
     {
-        instance = this;
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+
+            ClearCheckpointData();
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         player = GameObject.FindWithTag("Player");
         playerScript = player.GetComponent<playerController>();
@@ -69,20 +110,20 @@ public class gamemanager : MonoBehaviour
         loadDifficulty();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetButtonDown("Cancel"))
         {
-            if (menuActive == null)
+            if (menuActive != null)
+            {
+                CloseActiveMenu();
+            }
+            else
             {
                 statePause();
                 menuActive = menuPause;
                 menuActive.SetActive(true);
-            }
-            else if (menuActive == menuPause)
-            {
-                stateUnpause();
+
             }
         }
         if (Input.GetButtonDown("Inventory"))
@@ -113,7 +154,17 @@ public class gamemanager : MonoBehaviour
         Time.timeScale = timescaleOrig;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        menuActive.SetActive(false);
+
+        if (menuActive.GetComponent<WeaponUIController>() != null)
+        {
+            
+            menuActive.GetComponent<WeaponUIController>().CloseMenu();
+        }
+        else
+        {
+            menuActive.SetActive(false);
+        }
+
         menuActive = null;
     }
 
@@ -123,7 +174,18 @@ public class gamemanager : MonoBehaviour
         EnemiesRemaining.text = gameGoalCount.ToString("F0");
         if (gameGoalCount <= 0)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            int highestLevelUnlocked = PlayerPrefs.GetInt("LevelsUnlocked", 1);
+
+            if (levelNumber + 1 > highestLevelUnlocked)
+            {
+                PlayerPrefs.SetInt("LevelsUnlocked", levelNumber + 1);
+                PlayerPrefs.Save();
+            }
+
+            PlayerPrefs.SetString("NextLevelToLoad", nextLevelName);
+            PlayerPrefs.Save();
+
+            SceneManager.LoadScene("LevelSummary");
         }
     }
 
@@ -136,13 +198,30 @@ public class gamemanager : MonoBehaviour
     }
     public void youLose()
     {
+
+        
         statePause();
         menuActive = menuLose;
         menuActive.SetActive(true);
+
+        //You had this line before pause, but I couldn't die
+        ScoreManager.instance.AddScoreToLeaderboard();
+
+        playerDeathCount++;
+        Debug.Log("Player death count:" + playerDeathCount);
     }
 
     public void TriggerWinScreen()
     {
+        int highestLevelUnlocked = PlayerPrefs.GetInt("LevelsUnlocked", 1);
+
+        if (levelNumber + 1 > highestLevelUnlocked)
+        {
+            PlayerPrefs.SetInt("LevelsUnlocked", levelNumber + 1);
+            PlayerPrefs.Save();
+            Debug.Log("Final level complete! Progress saved.");
+        }
+
         unlockNextDifficulty(currentDifficulty);
         statePause();
         menuActive = menuWin;
@@ -191,6 +270,32 @@ public class gamemanager : MonoBehaviour
         int yellowKeys = inventory.GetAmmoAmount("Yellow Key");
         yellowKey.text = yellowKeys.ToString();
 
+        int mutagenCount = inventory.GetMutagenCount();
+
+        if (mutagenCountText != null)
+            mutagenCountText.text = mutagenCount.ToString();
+
+        int componentCount = inventory.GetWeaponComponentCount();
+
+        if (componentCountText != null)
+        {
+            componentCountText.text = componentCount.ToString();
+        }
+
+    }
+
+
+    public void OpenOptionsFromMainMenu()
+    {
+        if (menuOptions != null && optionMenuUI != null)
+        {
+            optionMenuUI.InitializeOptions();
+            menuOptions.SetActive(true);
+            menuActive = menuOptions;
+
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
     }
 
     public void openOptionsFromPause()
@@ -242,12 +347,15 @@ public class gamemanager : MonoBehaviour
 
     public void SetDifficulty(DifficultyLevels difficulty)
     {
-        if(!IsDifficultyLocked(difficulty))
+        if (!IsDifficultyLocked(difficulty))
         {
             currentDifficulty = difficulty;
             PlayerPrefs.SetInt("CurrentDifficulty", (int)difficulty);
             PlayerPrefs.Save();
             Debug.Log($"Difficulty set to {difficulty}");
+
+            // NOTIFY listeners (spawners, UI, etc.)
+            OnDifficultyChanged?.Invoke(currentDifficulty);
         }
         else
         {
@@ -259,5 +367,46 @@ public class gamemanager : MonoBehaviour
     {
         int saved = PlayerPrefs.GetInt("CurrentDifficulty", 0);
         currentDifficulty = (DifficultyLevels)saved;
+
+        // Notify about the loaded difficulty
+        OnDifficultyChanged?.Invoke(currentDifficulty);
+    }
+
+    public void ClearCheckpointData()
+    {
+        if (PlayerPrefs.HasKey("CheckpointPlayerData"))
+        {
+            PlayerPrefs.DeleteKey("CheckpointPlayerData");
+            Debug.Log("Checkpoint data cleared for new game.");
+        }
+    }
+
+    public void OpenMenu(GameObject menuToOpen)
+    {
+        if (menuActive != null)
+        {
+            menuActive.SetActive(false);
+        }
+
+        statePause();
+        menuActive = menuToOpen;
+        menuActive.SetActive(true);
+    }
+
+    public void CloseActiveMenu()
+    {
+        if (menuActive == null) return;
+
+        menuActive.SetActive(false);
+
+        isPaused = false;
+        Time.timeScale = timescaleOrig;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        menuActive = null;
+    }
+    public void SetDifficultyByIndex(int index)
+    {
+        SetDifficulty((DifficultyLevels)index);
     }
 }

@@ -17,26 +17,54 @@ MonoBehaviour:
     m_Bits: 8
   weaponName: Standard GL
   ammoType: 6
-  availableFireModes: 00000000
+  availableFireModes: 0000000004000000
   fireModeDatas:
   - mode: 0
     projectileType: 6
     projectile: {fileID: 3219972179486975252, guid: a9c34932f2cfc72418f04b1eb4970ab2, type: 3}
-    damage: 0
+    effectData:
+      statusType: 5
+      statusDamage: 0
+      statusTickRate: 0
+      statusDuration: 0
+      slowDownMagnitude: 0
+    damage: 25
     range: 100
-    fireRate: 0.8
+    fireRate: 0.6
     burstCount: 0
     burstRate: 0
     chargeTime: 0
     detonateTime: 0
     projectileCount: 0
     projectileSpread: 0
+    blastRadius: 10
+    energyRechargeRate: 0
+  - mode: 4
+    projectileType: 6
+    projectile: {fileID: 3219972179486975252, guid: a9c34932f2cfc72418f04b1eb4970ab2, type: 3}
+    effectData:
+      statusType: 5
+      statusDamage: 0
+      statusTickRate: 0
+      statusDuration: 0
+      slowDownMagnitude: 0
+    damage: 25
+    range: 100
+    fireRate: 0.6
+    burstCount: 0
+    burstRate: 0
+    chargeTime: 0
+    detonateTime: 0
+    projectileCount: 0
+    projectileSpread: 0
+    blastRadius: 10
+    energyRechargeRate: 0
+  availableUpgrades: []
   savedMode: 0
   wepDmg: 0
   attackRate: 0.8
   range: 200
   magSize: 5
-  ammoMax: 25
   pelletCount: 10
   pelletSpread: 3
   currentAmmoInMag: 5

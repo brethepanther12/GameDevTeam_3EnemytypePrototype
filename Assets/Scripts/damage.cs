@@ -14,10 +14,10 @@ public class damage : MonoBehaviour
     [SerializeField] public float damageRate;
     [SerializeField] public int speed;
     [SerializeField] public float destroyTime;
-    [SerializeField] GameObject projectileStraightPrefab;
-    [SerializeField] GameObject projectileHomingPrefab;
+    //[SerializeField] GameObject projectileStraightPrefab;
+    //[SerializeField] GameObject projectileHomingPrefab;
 
-    [SerializeField] GameObject impactPrefab;
+    [SerializeField] public GameObject impactPrefab;
 
     bool isDamaging;
     public int weaponDMG;
@@ -148,6 +148,22 @@ public class damage : MonoBehaviour
     public void SetStatusData(StatusEffectData statusData)
     {
         currentStatusData = statusData;
+    }
+
+    public void ApplyDamageTo(Collider other)
+    {
+        IDamage dmg = other.GetComponent<IDamage>();
+
+        if (other.GetComponent<StatusEffectHandler>() != null)
+        {
+            statusTarget = other.GetComponent<StatusEffectHandler>();
+            statusTarget.ApplyStatusEffect(currentStatusData, dmg);
+        }
+
+        if (dmg != null)
+        {
+            dmg.takeDamage(damageAmount + weaponDMG);
+        }
     }
 
 }

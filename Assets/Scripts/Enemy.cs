@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Assertions.Must;
+using UnityEngine.ProBuilder.MeshOperations;
 using UnityEngine.Rendering;
 
-public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
+public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
 {
 
     [SerializeField] SkinnedMeshRenderer[] modelParts;
@@ -40,6 +41,8 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
     [SerializeField] int roamDistance;
     [SerializeField] int roamPauseTime;
 
+    public GameObject componentPrefab;
+    public GameObject mutagenPickupPrefab;
     [SerializeField] GameObject healthPickupPrefab;
     [SerializeField] GameObject ammoPickupPrefab;
     [SerializeField] GameObject shieldPrefab;
@@ -49,6 +52,12 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
     [SerializeField] GameObject bullet;
     [SerializeField] float shootRate;
     [SerializeField] StatusEffectData statusEffectData;
+
+    [Header("AI - Call for Help")]
+    [SerializeField] private float helpRadius = 15f;
+    [SerializeField] private LayerMask enemyLayer;
+    private bool hasCalledForHelp = false;
+    private Transform playerTarget;
 
     Color colorOrig;
 
@@ -65,6 +74,9 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
     float roamTimer;
     float stoppingDistanceOrig;
 
+    private float originalSpeed;
+    private Coroutine slowRoutine;
+
     //private List<Collider> smokeZone = new List<Collider>();
     bool IsBlind;
 
@@ -74,12 +86,23 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        originalSpeed = agent.speed;
         shootTimer = 0f;
         currentAmmo = maxAmmo;
         colorOrig = modelParts[0].material.color;
         gamemanager.instance.updateGameGoal(1);
         startingPos = transform.position;
         stoppingDistanceOrig = agent.stoppingDistance;
+
+        if(shield == 0)
+        {
+            shieldPrefab.SetActive(false);
+        }
+
+        if (armor == 0)
+        {
+            armorPrefab.SetActive(false);
+        }
 
     }
 
@@ -266,63 +289,64 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
 
     public void takeDamage(int amount)
     {
-        if (isDead)
-        {
+
+        if (isDead || amount <= 0)
             return;
+
+        int remainingDamage = amount;
+
+        if (!hasCalledForHelp)
+        {
+            playerTarget = gamemanager.instance.player.transform;
+            CallForHelp();
         }
 
         if (shield > 0)
         {
-            shield -= amount;
+            int damageToShield = Mathf.Min(remainingDamage, shield);
+            shield -= damageToShield;
+            remainingDamage -= damageToShield;
+
             AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
             agent.SetDestination(gamemanager.instance.player.transform.position);
 
             if (shield <= 0)
             {
                 shield = 0;
-
                 shieldPrefab.SetActive(false);
-                armor -= amount;
-                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-                agent.SetDestination(gamemanager.instance.player.transform.position);
-
             }
-
         }
 
-        else if (armor > 0)
+        if (remainingDamage > 0 && armor > 0)
         {
-            armor -= amount;
+            int damageToArmor = Mathf.Min(remainingDamage, armor);
+            armor -= damageToArmor;
+            remainingDamage -= damageToArmor;
 
-            if (armor <= 0 && shield <= 0)
+            if (armor <= 0)
             {
-
                 armor = 0;
-                shield = 0;
                 armorPrefab.SetActive(false);
-                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-                agent.SetDestination(gamemanager.instance.player.transform.position);
             }
-        } 
-        else
-        {
-            HP -= amount;
+
             AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
             agent.SetDestination(gamemanager.instance.player.transform.position);
         }
-            
 
-        
+        if (remainingDamage > 0)
+        {
+            HP -= remainingDamage;
+            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+            agent.SetDestination(gamemanager.instance.player.transform.position);
+        }
 
-        
         if (HP <= 0)
         {
-
             shieldPrefab.SetActive(false);
             armorPrefab.SetActive(false);
             isDead = true;
 
-            if(reloadingRT != null)
+            if (reloadingRT != null)
             {
                 StopCoroutine(reloadingRT);
                 reloadingRT = null;
@@ -332,11 +356,10 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
             animator.ResetTrigger("Reload");
             animator.CrossFade("Death", 0f);
             StartCoroutine(Die());
-
+            ScoreManager.instance.AddPointsForEnemy(gameObject.tag);
         }
         else
         {
-
             StartCoroutine(FlashRed());
         }
     }
@@ -365,6 +388,33 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
                 {
                     takeDamage(amount + 1);
                 }
+                    break;
+
+            case DamageStatus.Cryo:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Electric:
+
+                if (shield > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                else
+                {
+                    takeDamage(amount);
+                }
+                break;
+
+            case DamageStatus.Explosive:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Plasma:
+
+                takeDamage(amount + 1);
                 break;
 
             default:
@@ -467,20 +517,24 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
 
     void TryDropPickup()
     {
-        float roll = Random.value; // 0 to 1
-        if (roll <= dropChance)
-        {
-            int itemType = Random.Range(0, 2); // 0 = health, 1 = ammo
+            int itemType = Random.Range(0, 4); // 0 = health, 1 = ammo, 2 = mutagen, 3 = component.
 
             GameObject drop = null;
-            if (itemType == 0 && healthPickupPrefab != null)
-            {
-                drop = Instantiate(healthPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
-            }
-            else if (itemType == 1 && ammoPickupPrefab != null)
-            {
-                drop = Instantiate(ammoPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
-            }
+        if (itemType == 0 && healthPickupPrefab != null)
+        {
+            drop = Instantiate(healthPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
+        }
+        else if (itemType == 1 && ammoPickupPrefab != null)
+        {
+            drop = Instantiate(ammoPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
+        }
+        else if (itemType == 2 && mutagenPickupPrefab != null)
+        {
+            drop = Instantiate(mutagenPickupPrefab, transform.position + Vector3.up, Quaternion.identity);        
+        }
+        else if (itemType == 3 && componentPrefab != null)
+        {
+            drop = Instantiate(componentPrefab, transform.position + Vector3.up, Quaternion.identity);
         }
     }
 
@@ -501,5 +555,78 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility
         }
     }
 
-   
+    public void slowDown(float magnitude, float duration)
+    {
+        if (slowRoutine != null)
+        {
+            StopCoroutine(slowRoutine);
+        }
+
+        slowRoutine = StartCoroutine(SlowRoutine(magnitude, duration));
+    }
+
+    private IEnumerator SlowRoutine(float magnitude, float duration)
+    {
+        NavMeshAgent agent = GetComponent<NavMeshAgent>();
+        if (agent == null) yield break;
+
+        if (originalSpeed == 0f)
+            originalSpeed = agent.speed;
+
+        float slowedSpeed = originalSpeed * (1f - magnitude);
+        agent.speed = slowedSpeed;
+
+        yield return new WaitForSeconds(duration);
+
+        agent.speed = originalSpeed;
+        slowRoutine = null;
+    }
+
+    private void CallForHelp()
+    {
+        hasCalledForHelp = true;
+        Debug.Log(gameObject.name + " is calling for help!");
+
+        Collider[] nearbyAllies = Physics.OverlapSphere(transform.position, helpRadius, enemyLayer);
+
+        Debug.Log("Found " + nearbyAllies.Length + " potential allies in range.");
+
+        foreach (Collider allyCollider in nearbyAllies)
+        {
+
+            Debug.Log("Checking ally: " + allyCollider.name + " on layer: " + LayerMask.LayerToName(allyCollider.gameObject.layer));
+
+            if (allyCollider.gameObject == this.gameObject) continue;
+
+            IEnemyAI allyAI = allyCollider.GetComponent<IEnemyAI>();
+            if (allyAI != null)
+            {
+                allyAI.RespondToHelpCall(playerTarget);
+            }
+            else
+            {
+
+                Debug.LogWarning(allyCollider.name + " is on the Enemy layer but is missing the 'Enemy' script!");
+            }
+        }
+    }
+
+    public void RespondToHelpCall(Transform target)
+    {
+
+        if (hasCalledForHelp || isDead)
+        {
+            return;
+        }
+
+        Debug.Log(gameObject.name + " is responding to a help call!");
+
+        playerTarget = target;
+        hasCalledForHelp = true;
+
+        if (agent.isActiveAndEnabled)
+        {
+            agent.SetDestination(playerTarget.position);
+        }
+    }
 }

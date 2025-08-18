@@ -48,13 +48,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef396377418919e48aff9079808ae744, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentEffectData:
-    statusType: 0
-    statusDamage: 0
-    statusTickRate: 0
-    statusDuration: 0
-    slowDownMagnitude: 0
-  currentStatuses: []
 --- !u!114 &5660295291747462646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67,7 +60,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21132d5697c7a42459b9d769bf0988c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HP: 20
+  HP: 50
   isDestructible: 0
   model: {fileID: 8930805047602468490}
 --- !u!33 &2645167060935286096

@@ -13,9 +13,10 @@ public class Weapon : MonoBehaviour
     public float attackRate;
     public int range;
     public int magSize;
-    public int ammoMax;
     public int pellets;
     public float spread;
+    public float blastRadius;
+    public float energyRecharge;
 
     public AmmoType ammoType;
     public FireMode currentFireMode;
@@ -45,6 +46,15 @@ public class Weapon : MonoBehaviour
     public Animator gunAnim;
     public ParticleSystem muzzleFlash;
 
+    private bool isCharging;
+    private float chargeTimer;
+    public GameObject chargeEffectPrefab;
+    private GameObject activeChargeEffect;
+    public AudioClip chargeSound;
+    public AudioClip chargeFinished;
+    private bool hasPlayedChargeCompleteSound;
+    private Grenade activeGrenade;
+
 
     private void Awake()
     {
@@ -63,9 +73,10 @@ public class Weapon : MonoBehaviour
 
     public void InitializeWeapon(WeaponSO data, bool refillMag = false)
     {
-        
+        Debug.LogWarning("--- WEAPON INITIALIZED: " + data.weaponName + " at time " + Time.time + " ---");
+
         weaponData = data;
-        
+
         currentFireMode = weaponData.savedMode;
         FMData = weaponData.GetFireModeData(currentFireMode);
         ApplyFireModeStats();
@@ -79,6 +90,11 @@ public class Weapon : MonoBehaviour
             ammoInMag = magSize;
 
         shootTimer = 0f;
+
+        if (FMData.projectileType == AmmoType.Energy && ammoInMag != magSize)
+        {
+            StartCoroutine(RechargeEnergy());
+        }
     }
 
     public void SetAmmoState(int mag, int reserve)
@@ -93,13 +109,18 @@ public class Weapon : MonoBehaviour
 
         CheckReticleTarget();
 
+
+        if (gamemanager.instance.isPaused)
+            return;
+
+
         if (currentFireMode == FireMode.Semi)
         {
 
             if (Input.GetButtonDown("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
             {
                 shootTimer = 0f;
-                if (ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket)
+                if (ammoType == AmmoType.Pistol || ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket || ammoType == AmmoType.Energy)
                     Shoot();
                 else if (ammoType == AmmoType.Shell)
                     ShootMultiple();
@@ -111,7 +132,7 @@ public class Weapon : MonoBehaviour
             if (Input.GetButton("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
             {
                 shootTimer = 0f;
-                if (ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket)
+                if (ammoType == AmmoType.Pistol || ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket || ammoType == AmmoType.Energy)
                     Shoot();
                 else if (ammoType == AmmoType.Shell)
                     ShootMultiple();
@@ -126,6 +147,87 @@ public class Weapon : MonoBehaviour
             {
                 StartCoroutine(BurstFire());
 
+            }
+
+        }
+        else if (currentFireMode == FireMode.Charge)
+        {
+
+            if (Input.GetButtonDown("Fire1") && ammoInMag > 0)
+            {
+                isCharging = true;
+                chargeTimer = 0f;
+                hasPlayedChargeCompleteSound = false;
+
+                if (chargeEffectPrefab != null && shootPos != null)
+                {
+                    activeChargeEffect = Instantiate(chargeEffectPrefab, shootPos.position, shootPos.rotation, shootPos);
+
+                    if (chargeSound != null && gunAudio != null)
+                    {
+                        gunAudio.loop = true;
+                        gunAudio.clip = chargeSound;
+                        gunAudio.Play();
+
+                    }
+                    
+                }
+            }
+
+            if (Input.GetButton("Fire1") && isCharging)
+            {
+                chargeTimer += Time.deltaTime;
+
+                if (chargeTimer >= FMData.chargeTime && !hasPlayedChargeCompleteSound)
+                {
+                    hasPlayedChargeCompleteSound = true;
+
+                    if (chargeFinished != null)
+                    {
+                        gunAudio.Stop();
+                        gunAudio.PlayOneShot(chargeFinished);
+                    }
+                }
+            }
+
+            if (Input.GetButtonUp("Fire1") && isCharging)
+            {
+                isCharging = false;
+
+                if (gunAudio != null && gunAudio.isPlaying)
+                {
+                    gunAudio.Stop();
+                }
+
+                if (activeChargeEffect != null)
+                {
+                    Destroy(activeChargeEffect);
+                    activeChargeEffect = null;
+                }
+                if (chargeTimer >= FMData.chargeTime)
+                {
+                    if (ammoType == AmmoType.Shell)
+                        ShootMultiple();
+                    else
+                        Shoot();
+                }
+
+                chargeTimer = 0f;
+            }
+
+        }
+
+        else if (currentFireMode == FireMode.Detonate)
+        {
+
+            if (Input.GetButtonDown("Fire1") && ammoInMag > 0)
+            {
+                LaunchDetonateGrenade();
+            }
+
+            if (Input.GetButtonUp("Fire1") && activeGrenade != null)
+            {
+                DetonateGrenade();
             }
 
         }
@@ -158,19 +260,45 @@ public class Weapon : MonoBehaviour
         }
     }
 
+    private void LaunchDetonateGrenade()
+    {
+        GameObject grenadeObj = Instantiate(FMData.projectile, shootPos.position, shootPos.rotation);
+        activeGrenade = grenadeObj.GetComponent<Grenade>();
+
+        ammoInMag--;
+    }
+
+    private void DetonateGrenade()
+    {
+        if (activeGrenade != null)
+        {
+            activeGrenade.RemoteDetonate();
+            activeGrenade = null;
+        }
+    }
+
     public void ApplyFireModeStats()
     {
 
         FMData = weaponData.GetFireModeData(currentFireMode);
         
-        
-        wepDmg = FMData.damage;
+        if (equippedPlayer != null)
+        {
+            wepDmg = FMData.damage + equippedPlayer.GetBaseShootDamage();
+        } else
+        {
+            wepDmg = FMData.damage;
+            Debug.Log($"<color=orange>STATS RESET:</color> ApplyFireModeStats ran. wepDmg reset to {wepDmg}");
+        }
+            
         attackRate = FMData.fireRate;
         range = FMData.range;
         pellets = FMData.projectileCount;
         spread = FMData.projectileSpread;
         ammoType = FMData.projectileType;
         bullet = FMData.projectile;
+        blastRadius = FMData.blastRadius;
+        energyRecharge = FMData.energyRechargeRate;
     }
 
     private IEnumerator BurstFire()
@@ -202,7 +330,8 @@ public class Weapon : MonoBehaviour
 
     void Shoot()
     {
-        
+        Debug.Log($"<color=cyan>FIRING:</color> Bullet is using {wepDmg} damage.");
+
         ammoInMag--;
 
         if (muzzleFlash != null)
@@ -235,6 +364,14 @@ public class Weapon : MonoBehaviour
 
         GameObject bulletObj = Instantiate(bullet, shootPos.position, Quaternion.LookRotation(direction));
         damage dmgScript = bulletObj.GetComponent<damage>();
+
+        if (dmgScript.impactPrefab != null)
+        {
+            Transform explosionPrefab = dmgScript.impactPrefab.transform;
+
+            explosionPrefab.localScale = Vector3.one * FMData.blastRadius;
+        }
+        
         if (dmgScript != null)
 
             if (FMData.effectData.statusType != DamageStatus.None)
@@ -302,6 +439,7 @@ public class Weapon : MonoBehaviour
     }
     IEnumerator Reload()
     {
+
         equippedPlayer.isReloading = true;
 
         if (reloadSound != null)
@@ -361,5 +499,58 @@ public class Weapon : MonoBehaviour
     {
         if (ammoInMag < magSize)
             StartCoroutine(Reload());
+    }
+
+    private IEnumerator RechargeEnergy()
+    {
+        while (true)
+        {
+            int magSizeOrig = magSize;
+
+            if (ammoInMag < magSizeOrig)
+            {
+                yield return new WaitForSeconds(energyRecharge);
+
+                ammoInMag++;
+            }
+            else
+            {
+                yield return null;
+            }
+        }
+    }
+
+
+    public void ApplyUpgrade(WeaponUpgradeSO upgrade)
+    {
+        if (upgrade.isFireModeUnlock)
+        {
+            if (!weaponData.availableFireModes.Contains(upgrade.fireModeToUnlock))
+            {
+                weaponData.availableFireModes.Add(upgrade.fireModeToUnlock);
+            }
+            return;
+        }
+
+        switch (upgrade.statToUpgrade)
+        {
+            case WeaponStatType.Damage:
+                wepDmg += (int)upgrade.upgradeAmount;
+                Debug.Log($"<color=green>UPGRADE APPLIED:</color> wepDmg is now {wepDmg}");
+                break;
+            case WeaponStatType.MagSize:
+                magSize += (int)upgrade.upgradeAmount;
+                break;
+            case WeaponStatType.AttackRate:
+                attackRate -= upgrade.upgradeAmount;
+                if (attackRate < 0.05f) attackRate = 0.05f;
+                break;
+            case WeaponStatType.Range:
+                range += (int)upgrade.upgradeAmount;
+                break;
+            case WeaponStatType.MaxAmmo:
+                inventory.ApplyMaxAmmoUpgrade(this.ammoType, (int)upgrade.upgradeAmount);
+                break;
+        }
     }
 }

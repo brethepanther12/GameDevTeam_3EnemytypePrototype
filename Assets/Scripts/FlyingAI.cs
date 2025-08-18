@@ -90,6 +90,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     [SerializeField] private float hitVolume;
     [SerializeField] private float deathVolume ;
 
+
     [Header("--- Drops ---")]
     public GameObject healthPickupPrefab;
     public GameObject ammoPickupPrefab;
@@ -104,15 +105,30 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     private enum DroneState { Idle, Chasing, Retreating, ReturningToCeiling }
     private DroneState currentState;
 
-    // Slowdown
+    //Slowdown
     private float originalSpeed;
     private Coroutine slowRoutine;
 
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         currentHP = HP;
-        currentAmmo = maxAmmo;
-        if (modelRender != null) originColor = modelRender.material.color;
+		currentAmmo = maxAmmo;
+        originalSpeed = flyingSpeed;
+
+        if (shield == 0)
+        {
+            shieldPrefab.SetActive(false);
+        }
+
+        if (armor == 0)
+        {
+            armorPrefab.SetActive(false);
+        }
+        // Store original material color
+        if (modelRender != null)
+            originColor = modelRender.material.color;
+		
         if (rigidBody == null) rigidBody = GetComponent<Rigidbody>();
 
         playerTarget = gamemanager.instance.player;
@@ -455,6 +471,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         {
             Die();
             //ScoreManager.instance.AddPointsForEnemy(gameObject.tag);
+
         }
 
     }
@@ -474,6 +491,9 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
                 if (shield <= 0 && armor <= 0 && HP > 0)
                 {
                     takeDamage(amount + 1);
+                } else
+                {
+                    takeDamage(amount);
                 }
                 else
                 {
@@ -663,7 +683,6 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         flyingSpeed = originalSpeed;
         slowRoutine = null;
     }
-
     public void SetInvisible(bool state)
     {
        // throw new System.NotImplementedException();

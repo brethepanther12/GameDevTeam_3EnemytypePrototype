@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 740458416735814838}
   m_Layer: 11
   m_Name: Shotgun_Pellet_Player
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -50,14 +50,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   rb: {fileID: 1633918009748077101}
-  damageAmount: 0
+  damageAmount: 1
   damageRate: 0
   speed: 50
   destroyTime: 3
-  projectileStraightPrefab: {fileID: 0}
-  projectileHomingPrefab: {fileID: 0}
   impactPrefab: {fileID: 2408714428905375140, guid: ec2cd9d24f8932148ab9480fc3b65b15, type: 3}
   weaponDMG: 0
+  currentStatus: 0
+  currentStatusData:
+    statusType: 0
+    statusDamage: 0
+    statusTickRate: 0
+    statusDuration: 0
+    slowDownMagnitude: 0
+  statusTarget: {fileID: 0}
 --- !u!135 &7151715210018084798
 SphereCollider:
   m_ObjectHideFlags: 0

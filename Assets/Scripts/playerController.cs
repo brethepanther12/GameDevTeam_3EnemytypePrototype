@@ -1,7 +1,8 @@
-using UnityEngine;
 using System.Collections;
-using Unity.VisualScripting;
 using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class playerController : MonoBehaviour, IDamage, Visibility
 {
@@ -13,23 +14,29 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
 
-    [SerializeField] int HP;
+    [SerializeField] public int HP;
     [SerializeField] int maxHP;
-    [SerializeField] int speed;
+    [SerializeField] float speed;
     [SerializeField] int sprintMod;
     [SerializeField] int jumpVel;
     [SerializeField] int jumpMax;
-    [SerializeField] int gravity;
+    [SerializeField] float gravity;
     [SerializeField] int magazineSize = 15;
     [SerializeField] int reserveAmmo = 90;
-    [SerializeField] int shield;
+    [SerializeField] public int shield;
     [SerializeField] int maxShield;
-    [SerializeField] int armor;
+    [SerializeField] public int armor;
     [SerializeField] int maxArmor;
     [SerializeField] int shootDamage;
     [SerializeField] int meleeDamage;
     [SerializeField] float shootRate;
     [SerializeField] int shootDist;
+
+    [SerializeField] float dashCooldown;
+    [SerializeField] float dashDuration;
+    [SerializeField] int dashCount;
+    [SerializeField] int maxDashCount;
+    private bool isDashing;
 
     [Header("--- Audio ---")]
     [SerializeField] private AudioClip hurtSound;
@@ -53,6 +60,9 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     public bool isVisible;
     public int currentAmmo;
 
+    private float originalSpeed;
+    private Coroutine slowRoutine;
+
     private enum powerUpType
     {
         health, shield, armor, ammo, speed, jump, damage
@@ -73,14 +83,17 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     int shieldOrig;
 
     float shootTimer;
-    float sprintTimer;
-    public float sprintCD;
+    public GameObject meleeTrigger;
+    bool isAttacking;
 
     void Start()
     {
+        originalSpeed = this.speed;
         HPOrig = HP;
         armorOrig = armor;
         shieldOrig = shield;
+        dashCount = maxDashCount;
+        StartCoroutine(RechargeDash());
         spawnPlayer();
 
         inventory = GetComponent<PlayerInventory>();
@@ -99,15 +112,34 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     void Update()
     {
-        sprint();
+        //sprint();
         movement();
         HandleWeaponSwitching();
+
+        if (gamemanager.instance.isPaused)
+            return;
+
+
+        if (Input.GetButtonDown("Interact"))
+        {
+            Debug.Log("Interact pressed");
+
+            if (AbilityUIController.instance != null)
+            {
+                AbilityUIController.instance.OpenMenu();
+            }
+        }
+        if (Input.GetButtonDown("Sprint") && dashCount > 0 && !isDashing)
+        {
+            StartCoroutine(Dash());
+            StartCoroutine(UpdateDashCooldown());
+        }
 
         if (Input.GetKeyDown(KeyCode.R))
         {
             if (animator != null)
             {
-                animator.SetTrigger("Reload");
+                animator.SetTrigger("Reloading");
             }
 
             Weapon currentWeapon = inventory.GetActiveWeapon();
@@ -115,6 +147,15 @@ public class playerController : MonoBehaviour, IDamage, Visibility
             if (currentWeapon != null)
             {
                 currentWeapon.StartReload();
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            if (animator != null && !isAttacking)
+            {
+                animator.SetTrigger("Attacking");
+                StartCoroutine(Melee());
             }
         }
     }
@@ -136,7 +177,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     void movement()
     {
         shootTimer += Time.deltaTime;
-        
+
 
         if (controller.isGrounded)
         {
@@ -172,8 +213,8 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if (controller != null) 
-        { 
+        if (controller != null)
+        {
             if (hit.collider.CompareTag("Moving Platform"))
                 targetPlatform = hit.collider.GetComponent<MovingPlatformStick>();
             else
@@ -222,7 +263,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 animator.SetTrigger("Jump");
             }
 
-            if(playerVel.y < jumpVel)
+            if (playerVel.y < jumpVel)
             {
                 playerVel.y = jumpVel;
             }
@@ -233,53 +274,53 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         }
     }
 
-    void sprint()
-    {
-        if (Input.GetButtonDown("Sprint"))
-        {
-         
-         speed *= sprintMod;
-                 
-        }
-        else if (Input.GetButtonUp("Sprint"))
-        {
-            speed /= sprintMod;
-            
-        }
-    }
+    //void sprint()
+    //{
+    //    if (Input.GetButtonDown("Sprint"))
+    //    {
+
+    //     speed *= sprintMod;
+
+    //    }
+    //    else if (Input.GetButtonUp("Sprint"))
+    //    {
+    //        speed /= sprintMod;
+
+    //    }
+    //}
 
     public void takeDamage(int amount)
     {
+        if (amount <= 0)
+            return;
+
+        int remainingDamage = amount;
+
         if (shield > 0)
         {
-            shield -= amount;
+            int damageToShield = Mathf.Min(remainingDamage, shield);
+            shield -= damageToShield;
+            remainingDamage -= damageToShield;
 
-            if (shield < 0)
-            {
-                shield = 0;
-            }
             updatePlayerUI();
             StartCoroutine(ShieldDamageFlashScreen());
         }
-        else if (armor > 0)
-        {
-            armor -= amount;
 
-            if (armor < 0)
-            {
-                armor = 0;
-            }
+        if (remainingDamage > 0 && armor > 0)
+        {
+            int damageToArmor = Mathf.Min(remainingDamage, armor);
+            armor -= damageToArmor;
+            remainingDamage -= damageToArmor;
+
             updatePlayerUI();
             StartCoroutine(ArmorDamageFlashScreen());
         }
-        else
-        {
-            HP -= amount;
 
-            if (HP < 0)
-            {
-                HP = 0;
-            }
+        if (remainingDamage > 0)
+        {
+            HP -= remainingDamage;
+            if (HP < 0) HP = 0;
+
             AudioSource.PlayClipAtPoint(hurtSound, transform.position, hurtVol);
             updatePlayerUI();
             StartCoroutine(damageFlashScreen());
@@ -307,6 +348,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 {
                     takeDamage(amount + 1);
                 }
+                else
+                {
+                    takeDamage(amount);
+                }
                 break;
 
             case DamageStatus.Corrosive:
@@ -315,6 +360,37 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 {
                     takeDamage(amount + 1);
                 }
+                else
+                {
+                    takeDamage(amount);
+                }
+                break;
+
+            case DamageStatus.Cryo:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Electric:
+
+                if (shield > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                else
+                {
+                    takeDamage(amount);
+                }
+                break;
+
+            case DamageStatus.Explosive:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Plasma:
+
+                takeDamage(amount + 1);
                 break;
 
             default:
@@ -380,7 +456,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     public void IncreaseDamage(int amount, int magnitude)
     {
-        if (magnitude == 1)
+        if (magnitude >= 1)
         {
             shootDamage += amount;
 
@@ -396,7 +472,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     public void IncreaseSpeed(int amount, int magnitude)
     {
-        if (magnitude == 1)
+        if (magnitude >= 1)
         {
             speed += amount;
 
@@ -412,7 +488,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     public void IncreaseJumpMaxCount(int amount, int magnitude)
     {
-        if (magnitude == 1)
+        if (magnitude >= 1)
         {
             jumpMax += amount;
 
@@ -466,13 +542,13 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
         gamemanager.instance.playerShieldBar.fillAmount = (float)shield / maxShield;
         gamemanager.instance.playerArmorBar.fillAmount = (float)armor / maxArmor;
-        gamemanager.instance.jumpCounter.text = $"{jumpCur.ToString()} / {jumpMax.ToString()}";
+        gamemanager.instance.dashCounter.text = $"{dashCount.ToString()} / {maxDashCount.ToString()}";
         gamemanager.instance.playerHp.text = $"{HP} / {maxHP}";
         gamemanager.instance.playerArmor.text = $"{armor} / {maxArmor}";
         gamemanager.instance.playerShield.text = $"{shield} / {maxShield}";
-        if (inventory.weaponInventory.Count > 0)
+        if (inventory.weaponHolster.Count > 0)
         {
-            gamemanager.instance.gunName.text = $"{inventory.weaponInventory[inventory.weaponListPos].weaponName}";
+            gamemanager.instance.gunName.text = $"{inventory.weaponHolster[inventory.weaponListPos].weaponName}";
         }
         Weapon activeWep = weaponSocket.GetComponentInChildren<Weapon>();
 
@@ -511,6 +587,12 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     public void spawnPlayer()
     {
+        SpawnerTemp[] allSpawners = FindObjectsByType<SpawnerTemp>(FindObjectsSortMode.None);
+        foreach (SpawnerTemp spawner in allSpawners)
+        {
+            spawner.ResetSpawner();
+        }
+
         if (controller != null)
             controller.enabled = false;
 
@@ -520,7 +602,27 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         if (controller != null)
             controller.enabled = true;
 
-        HP = HPOrig;
+        if (PlayerPrefs.HasKey("CheckpointPlayerData"))
+        {
+            string json = PlayerPrefs.GetString("CheckpointPlayerData");
+            PlayerData data = JsonUtility.FromJson<PlayerData>(json);
+            HP = (int)data.health;
+            shield = (int)data.shield;
+            armor = (int)data.armor;
+        }
+        else
+        {
+            HP = HPOrig;
+            shield = shieldOrig;
+            armor = armorOrig;
+        }
+
+        PlayerInventory inventory = GetComponent<PlayerInventory>();
+        if (inventory != null)
+        {
+            inventory.EquipWeapon();
+        }
+
         updatePlayerUI();
     }
 
@@ -555,4 +657,107 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         if (other.CompareTag("Smoke"))
             isVisible = false;
     }
+
+    public void slowDown(float magnitude, float duration)
+    {
+        if (slowRoutine != null)
+        {
+            StopCoroutine(slowRoutine);
+        }
+
+        slowRoutine = StartCoroutine(SlowRoutine(magnitude, duration));
+    }
+
+    private IEnumerator SlowRoutine(float magnitude, float duration)
+    {
+
+        if (this == null) yield break;
+
+        if (originalSpeed == 0f)
+            originalSpeed = speed;
+
+        float slowedSpeed = originalSpeed * (1f - magnitude);
+        speed = slowedSpeed;
+
+        yield return new WaitForSeconds(duration);
+
+        speed = originalSpeed;
+        slowRoutine = null;
+    }
+
+    private IEnumerator Dash()
+    {
+        isDashing = true;
+        dashCount--;
+
+        speed = originalSpeed * sprintMod;
+
+        yield return new WaitForSeconds(dashDuration);
+
+        speed = originalSpeed;
+        isDashing = false;
+    }
+
+    private IEnumerator RechargeDash()
+    {
+        while (true)
+        {
+            if (dashCount < maxDashCount)
+            {
+                yield return new WaitForSeconds(dashCooldown);
+                dashCount++;
+            }
+            else
+            {
+                yield return null;
+            }
+        }
+    }
+
+    public IEnumerator UpdateDashCooldown()
+    {
+
+        float timeElapsed = 0f;
+
+        while (timeElapsed < dashCooldown)
+        {
+            timeElapsed += Time.deltaTime;
+
+            float fill = Mathf.Clamp01(timeElapsed / dashCooldown);
+            gamemanager.instance.dashCounterCDImage.fillAmount = fill;
+
+            yield return null;
+        }
+
+        gamemanager.instance.dashCounterCDImage.fillAmount = 1f;
+    }
+
+    public int GetBaseShootDamage()
+    {
+        return shootDamage;
+    }
+
+    public IEnumerator Melee()
+    {
+        damage meleeDmg = meleeTrigger.GetComponent<damage>();
+
+        isAttacking = true;
+        yield return new WaitForSeconds(1f);
+        meleeTrigger.SetActive(true);
+        yield return new WaitForSeconds(meleeDmg.damageRate);
+        meleeTrigger.SetActive(false);
+        isAttacking = false;
+    }
+
+    public void SetGravity(float newValue)
+    {
+        gravity = newValue;
+    }
+
+    public float GetGravity()
+    {
+        return gravity;
+    }
+
+
 }

@@ -407,13 +407,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef396377418919e48aff9079808ae744, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentEffectData:
-    statusType: 0
-    statusDamage: 0
-    statusTickRate: 0
-    statusDuration: 0
-    slowDownMagnitude: 0
-  currentStatuses: []
 --- !u!114 &4389261893341757577
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -475,10 +468,10 @@ MonoBehaviour:
   deathSound: {fileID: 8300000, guid: c7dff7457517f03499ebc0d9ff32b81d, type: 3}
   hitVolume: 1
   deathVolume: 1
-  healthPickupPrefab: {fileID: 0}
-  ammoPickupPrefab: {fileID: 0}
-  mutagenPickupPrefab: {fileID: 0}
-  componentPrefab: {fileID: 0}
+  healthPickupPrefab: {fileID: 812925201868858803, guid: 671bd7c77f7ef0b41be0c80e67f11eee, type: 3}
+  ammoPickupPrefab: {fileID: 5257549024183734213, guid: 96e55ce566e615444b8cc0546399653a, type: 3}
+  mutagenPickupPrefab: {fileID: 8778012921625836679, guid: 67a34a4775b535748a2b3d268b6df2f3, type: 3}
+  componentPrefab: {fileID: 2979532794829859336, guid: 42aa1920a98756e4796605ac2a0639fd, type: 3}
   modelRender: {fileID: 1433037744321536348}
 --- !u!135 &3582038614179718291
 SphereCollider:

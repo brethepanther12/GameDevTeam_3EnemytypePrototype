@@ -10,6 +10,7 @@ public class GrappleHook : MonoBehaviour
     public float grappleRange = 15f;
     public float pullSpeed = 15f;
     public LayerMask grappleLayer;
+    public LayerMask wallLayer;
     [SerializeField] private float grappleCD = 5f;
     [SerializeField] private Image grappleCooldownUI;
 
@@ -76,55 +77,54 @@ public class GrappleHook : MonoBehaviour
 
     void TryGrapple()
     {
-        RaycastHit hit;
         Vector3 rayStart = grappleOrigin.position + Camera.main.transform.forward * 0.5f;
 
         Debug.DrawRay(rayStart, Camera.main.transform.forward * grappleRange, Color.cyan, 1f);
 
-        if (Physics.Raycast(rayStart, Camera.main.transform.forward, out hit, grappleRange, grappleLayer, QueryTriggerInteraction.Collide))
+        RaycastHit[] hits = Physics.RaycastAll(
+            rayStart,
+            Camera.main.transform.forward,
+            grappleRange,
+            grappleLayer,
+            QueryTriggerInteraction.Collide
+        );
+
+        if (hits.Length == 0)
+        {
+            Debug.Log("Grapple missed.");
+            return;
+        }
+
+        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
+        foreach (RaycastHit hit in hits)
         {
             GameObject target = hit.collider.gameObject;
 
-            if (target.TryGetComponent<IGrapplable>(out IGrapplable ai))
+            if (Physics.Linecast(rayStart, hit.point, wallLayer))
+                continue;
+
+            if (target.TryGetComponent<IGrapplable>(out IGrapplable ai) && ai.canBeGrappled)
             {
-                if (!ai.canBeGrappled)
-                {
-                    Debug.Log("This target cannot be grappled: " + target.name);
-                    return;
-                }
-
-                grappledEnemy = target;
-                grappledAI = ai;
-                grappledAI.isBeingGrappled = true;
-                isPulling = true;
-                lastGrapple = Time.time;
-
-                if (target.TryGetComponent<PickupMotion>(out PickupMotion motion))
-                {
-                    motion.isBeingPulled = true;
-                }
-
-                if (target.TryGetComponent<NavMeshAgent>(out grappledAgent))
-                {
-                    grappledAgent.enabled = false;
-                }
-
-                Debug.Log("Grapple hit: " + target.name);
-            }
-            else
-            {
-                Debug.Log("Hit something without IGrapplable: " + target.name);
+                StartGrapple(target, ai);
+                return;
             }
         }
-        else
-        {
-            Debug.Log("Grapple missed.");
-        }
+
+        Debug.Log("No valid grapple target found.");
     }
 
     void PullEnemy()
     {
         if (grappledEnemy == null) return;
+
+        if (Physics.Linecast(grappleOrigin.position, grappledEnemy.transform.position, wallLayer))
+        {
+            Debug.Log("Line of sight to grappled target was broken!");
+
+            StartCoroutine(ResumeEnemyAI());
+            return;
+        }
 
         Vector3 newPos = Vector3.MoveTowards(
             grappledEnemy.transform.position,
@@ -194,5 +194,22 @@ public class GrappleHook : MonoBehaviour
         grappledAgent = null;
         grappledAI = null;        
         isReleased = false;
+    }
+
+    void StartGrapple(GameObject target, IGrapplable ai)
+    {
+        grappledEnemy = target;
+        grappledAI = ai;
+        grappledAI.isBeingGrappled = true;
+        isPulling = true;
+        lastGrapple = Time.time;
+
+        if (target.TryGetComponent<PickupMotion>(out PickupMotion motion))
+            motion.isBeingPulled = true;
+
+        if (target.TryGetComponent<NavMeshAgent>(out grappledAgent))
+            grappledAgent.enabled = false;
+
+        Debug.Log("Grapple hit: " + target.name);
     }
 }

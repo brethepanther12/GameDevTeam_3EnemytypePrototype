@@ -51,13 +51,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef396377418919e48aff9079808ae744, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentEffectData:
-    statusType: 0
-    statusDamage: 0
-    statusTickRate: 0
-    statusDuration: 0
-    slowDownMagnitude: 0
-  currentStatuses: []
 --- !u!114 &2200018932441696591
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98,6 +91,8 @@ MonoBehaviour:
   faceTargetSpeed: 5
   roamDistance: 25
   roamPauseTime: 3
+  componentPrefab: {fileID: 2979532794829859336, guid: 42aa1920a98756e4796605ac2a0639fd, type: 3}
+  mutagenPickupPrefab: {fileID: 8778012921625836679, guid: 67a34a4775b535748a2b3d268b6df2f3, type: 3}
   healthPickupPrefab: {fileID: 812925201868858803, guid: 671bd7c77f7ef0b41be0c80e67f11eee, type: 3}
   ammoPickupPrefab: {fileID: 5257549024183734213, guid: 96e55ce566e615444b8cc0546399653a, type: 3}
   shieldPrefab: {fileID: 425844476136536924}
@@ -105,6 +100,16 @@ MonoBehaviour:
   dropChance: 0.5
   bullet: {fileID: 7539981003205437294, guid: 15e413eb919cc96498d4944671d59116, type: 3}
   shootRate: 0.2
+  statusEffectData:
+    statusType: 0
+    statusDamage: 0
+    statusTickRate: 0
+    statusDuration: 0
+    slowDownMagnitude: 0
+  helpRadius: 15
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!195 &7785100596418267582
 NavMeshAgent:
   m_ObjectHideFlags: 0

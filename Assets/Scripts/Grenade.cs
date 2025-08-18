@@ -139,6 +139,12 @@ public class Grenade : MonoBehaviour
         Destroy(gameObject);
     }
 
+    public void RemoteDetonate()
+    {
+        destroyTimer = 0;
+        StartCoroutine(explode());
+    }
+
 
 }
 

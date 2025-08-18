@@ -411,13 +411,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef396377418919e48aff9079808ae744, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentEffectData:
-    statusType: 0
-    statusDamage: 0
-    statusTickRate: 0
-    statusDuration: 0
-    slowDownMagnitude: 0
-  currentStatuses: []
 --- !u!114 &3106708886149262270
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -437,9 +430,9 @@ MonoBehaviour:
   agent: {fileID: 5612344703545328633}
   shootPos: {fileID: 6625256131101932775}
   headPos: {fileID: 6360116116719051010}
-  shootRange: 15
-  maxAmmo: 3
-  reloadTime: 3
+  shootRange: 20
+  maxAmmo: 4
+  reloadTime: 2
   animator: {fileID: 6345579211403220884}
   reloadSound: {fileID: 8300000, guid: a40641150cd218c49a68a971c7304757, type: 3}
   reloadVolume: 1
@@ -448,6 +441,8 @@ MonoBehaviour:
   deathVolume: 1
   hitSound: {fileID: 8300000, guid: 4e549632238c61b41941d69056f5f944, type: 3}
   hitVolume: 1
+  componentPrefab: {fileID: 2979532794829859336, guid: 42aa1920a98756e4796605ac2a0639fd, type: 3}
+  mutagenPickupPrefab: {fileID: 8778012921625836679, guid: 67a34a4775b535748a2b3d268b6df2f3, type: 3}
   healthPickupPrefab: {fileID: 812925201868858803, guid: 671bd7c77f7ef0b41be0c80e67f11eee, type: 3}
   ammoPickupPrefab: {fileID: 3852054919859103683, guid: 2e95976944b5a4b45ad78f834ffd796e, type: 3}
   dropChance: 0.5
@@ -464,7 +459,7 @@ MonoBehaviour:
   footstepClip: {fileID: 8300000, guid: 3387b8e4b2ac870438bca51986d5c7bd, type: 3}
   footstepDelay: 0.5
   bullet: {fileID: 6464396715701181540, guid: f813845d79b94a1478e686084f78b011, type: 3}
-  shootRate: 2
+  shootRate: 1.5
 --- !u!195 &5612344703545328633
 NavMeshAgent:
   m_ObjectHideFlags: 0

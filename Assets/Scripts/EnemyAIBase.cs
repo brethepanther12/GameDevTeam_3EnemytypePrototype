@@ -31,7 +31,8 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     [SerializeField] public Transform enemyPlayerObject;
     protected bool enemyPlayerInSight;
 
-    
+    private float originalSpeed;
+    private Coroutine slowRoutine;
 
 
     protected Vector3 enemyPlayerDirection;
@@ -39,8 +40,20 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     protected virtual void Start()
 
     {
+
+        originalSpeed = enemyNavAgent.speed;
         //To save the enemy's max health to currently.
         enemyCurrentHealthPoints = enemyHealthPointsMax;
+
+        if (shield == 0)
+        {
+            shieldPrefab.SetActive(false);
+        }
+
+        if (armor == 0)
+        {
+            armorPrefab.SetActive(false);
+        }
 
         EnemyHealthUI ui = GetComponent<EnemyHealthUI>();
         if (ui != null)
@@ -146,47 +159,51 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     public virtual void takeDamage(int amount)
     {
 
+        if (amount <= 0)
+            return;
+
+        int remainingDamage = amount;
+
         if (shield > 0)
         {
-            shield -= amount;
-            GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+            int damageToShield = Mathf.Min(remainingDamage, shield);
+            shield -= damageToShield;
+            remainingDamage -= damageToShield;
 
             if (shield <= 0)
             {
                 shield = 0;
-
                 shieldPrefab.SetActive(false);
-                armor -= amount;
-                GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
             }
-
         }
 
-        else if (armor > 0)
+        if (remainingDamage > 0 && armor > 0)
         {
-            armor -= amount;
-            GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+            int damageToArmor = Mathf.Min(remainingDamage, armor);
+            armor -= damageToArmor;
+            remainingDamage -= damageToArmor;
 
-            if (armor <= 0 && shield <= 0)
+            if (armor <= 0)
             {
-
                 armor = 0;
-                shield = 0;
                 armorPrefab.SetActive(false);
-                GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
             }
         }
-        else
+
+        if (remainingDamage > 0)
         {
-            enemyCurrentHealthPoints -= amount;
-            GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+            enemyCurrentHealthPoints -= remainingDamage;
+            if (enemyCurrentHealthPoints < 0)
+                enemyCurrentHealthPoints = 0;
         }
-        //GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+
+        GetComponent<EnemyHealthUI>().UpdateHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
 
         if (enemyCurrentHealthPoints <= 0)
         {
             gamemanager.instance.updateGameGoal(-1);
             enemyDeath();
+            ScoreManager.instance.AddPointsForEnemy(gameObject.tag);
         }
         else
         {
@@ -210,6 +227,10 @@ public class EnemyAIBase : MonoBehaviour, IDamage
                 {
                     takeDamage(amount + 1);
                 }
+                else
+                {
+                    takeDamage(amount);
+                }
                 break;
 
             case DamageStatus.Corrosive:
@@ -218,6 +239,37 @@ public class EnemyAIBase : MonoBehaviour, IDamage
                 {
                     takeDamage(amount + 1);
                 }
+                else
+                {
+                    takeDamage(amount);
+                }
+                break;
+
+            case DamageStatus.Cryo:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Electric:
+
+                if (shield > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                else
+                {
+                    takeDamage(amount);
+                }
+                break;
+
+            case DamageStatus.Explosive:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Plasma:
+
+                takeDamage(amount + 1);
                 break;
 
             default:
@@ -241,6 +293,33 @@ public class EnemyAIBase : MonoBehaviour, IDamage
         {
             part.material.color = enemyColorOrigin;
         }
+    }
+
+    public void slowDown(float magnitude, float duration)
+    {
+        if (slowRoutine != null)
+        {
+            StopCoroutine(slowRoutine);
+        }
+
+        slowRoutine = StartCoroutine(SlowRoutine(magnitude, duration));
+    }
+
+    private IEnumerator SlowRoutine(float magnitude, float duration)
+    {
+        //NavMeshAgent agent = GetComponent<NavMeshAgent>();
+        if (enemyNavAgent == null) yield break;
+
+        if (originalSpeed == 0f)
+            originalSpeed = enemyNavAgent.speed;
+
+        float slowedSpeed = originalSpeed * (1f - magnitude);
+        enemyNavAgent.speed = slowedSpeed;
+
+        yield return new WaitForSeconds(duration);
+
+        enemyNavAgent.speed = originalSpeed;
+        slowRoutine = null;
     }
 }
 
