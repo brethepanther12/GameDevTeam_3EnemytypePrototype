@@ -1,308 +1,339 @@
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.LowLevel;
 using static UnityEngine.Rendering.DebugUI;
 public class FlyingAI : MonoBehaviour, IDamage, Visibility
 {
+    [Header("--- Target & Timers ---")]
     [SerializeField] private Transform target;
     [SerializeField] private float lostPlayDelay;
     private GameObject playerTarget;
     private float playerLostTimer;
 
-    [Header("\"--- Flying & Rotation ---\"")]
+    [Header("--- Flying & Rotation ---")]
     [SerializeField] private float flyingSpeed;
     [SerializeField] private float rotationSpeed;
-    Vector3 playerDirection;
-
+    private Vector3 playerDirection;
     [SerializeField] private Rigidbody rigidBody;
 
-    [Header("\"--- Damage ---\"")]
+    [Header("--- Damage ---")]
     [SerializeField] private float damageRate;
     [SerializeField] private int damageAmount;
+    [SerializeField] private float attackRange;
     private bool isDamaging;
-    damage Damage;
-    IDamage iDamage;
+    private IDamage iDamage;
 
-    [Header("\"--- Hover ---\"")]
+    [Header("--- Hover ---")]
     [SerializeField] private float hoverHeight;
     [SerializeField] private float hoverClamp;
 
-    [Header("\"--- Ceiling ---\"")]
+    [Header("--- Ceiling ---")]
     [SerializeField] private float ceilingInRadius;
     [SerializeField] private float ceilingAttachmentRange;
-    //[SerializeField] private float ceilingHeightOff;
     [SerializeField] private LayerMask ceilingMask;
     [SerializeField] private SphereCollider bodyCollider;
-    private bool returnToCeiling;
-    private Vector3 ceilingTarget;
+    private bool attachedToCeiling;
     private Vector3 ceilingPoint;
 
-    [Header("\"--- Field of View ---\"")]
+    [Header("--- Field of View ---")]
     [SerializeField] private float fovDistance;
     [SerializeField] private float fovAngle;
-    [SerializeField] private LayerMask enviormentMask;
+    [SerializeField] private LayerMask environmentMask;
     private bool playerVisible;
     private bool InRange;
     private bool isBlind;
 
-    [Header("\"--- Health ---\"")]
+    [Header("--- Health ---")]
     [SerializeField] private int HP;
     private int currentHP;
     private bool Dead;
-
     [SerializeField] public int shield;
     [SerializeField] public int armor;
-
     [SerializeField] public GameObject shieldPrefab;
     [SerializeField] public GameObject armorPrefab;
 
-    [Header("\"--- Audio ---\"")]
+    [Header("--- Audio ---")]
     [SerializeField] private AudioClip hitSound;
     [SerializeField] private AudioClip deathSound;
     [SerializeField] private float hitVolume;
-    [SerializeField] private float deathVolume;
+    [SerializeField] private float deathVolume ;
 
-    [Header("\"--- Drops ---\"")]
+    [Header("--- Drops ---")]
     public GameObject healthPickupPrefab;
     public GameObject ammoPickupPrefab;
     public GameObject mutagenPickupPrefab;
     public GameObject componentPrefab;
 
-    [Header("\"--- Model ---\"")]
+    [Header("--- Model ---")]
     [SerializeField] private Renderer modelRender;
     private Color originColor;
 
+    [Header("--- Strafing ---")]
+    [SerializeField] private float strafeSpeed;
+    [SerializeField] private float strafeCooldown;
+    private float strafeTimer;
+    private Vector3 strafeDirection;
+
+    [Header("--- Retreat ---")]
+    [SerializeField] private float retreatSpeed;
+    [SerializeField] private float retreatDistance;
+    private bool isRetreating;
+    private float retreatTimer;
+    private Vector3 retreatDirection;
+
+    // Drone state
+    private enum DroneState { Idle, Chasing, Retreating, ReturningToCeiling }
+    private DroneState currentState;
+
+    // Slowdown
     private float originalSpeed;
     private Coroutine slowRoutine;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         currentHP = HP;
-        originalSpeed = flyingSpeed;
-
-        if (shield == 0)
-        {
-            shieldPrefab.SetActive(false);
-        }
-
-        if (armor == 0)
-        {
-            armorPrefab.SetActive(false);
-        }
-        // Store original material color
-        if (modelRender != null)
-            originColor = modelRender.material.color;
-
+        if (modelRender != null) originColor = modelRender.material.color;
         if (rigidBody == null) rigidBody = GetComponent<Rigidbody>();
 
         playerTarget = gamemanager.instance.player;
-
-        Damage = GetComponent<damage>();
-        if (Damage != null)
-            Damage.enabled = false;
-        gamemanager.instance.updateGameGoal(1);
+        rigidBody.isKinematic = false;
     }
 
-
-    // Update is called once per frame
     void FixedUpdate()
     {
-        playerVisible = !isBlind && PlayerInFieldOfView();
+        if (Dead) return;
 
-        target = playerVisible ? playerTarget.transform : null;
-
-        if (target == null)
-        {
-            playerLostTimer += Time.fixedDeltaTime;
-            if (playerLostTimer >= lostPlayDelay && !returnToCeiling)
-            {
-                NearestCeiling();
-                ceilingTarget = ceilingPoint;
-                returnToCeiling = true;
-            }
-        }
-        else
-        {
-            playerLostTimer = 0f;
-            returnToCeiling = false;
-        }
-
-        if (returnToCeiling)
-        {
-            MoveToCeiling();
-            return;
-        }
+        UpdateVisibility();
+        PlayerLost();
+        AssignTarget();
 
         Hover();
+        Movement();
+    }
 
-        if (target != null)
+    private void Movement()
+    {
+        switch (currentState)
         {
-            if (rigidBody.isKinematic) rigidBody.isKinematic = false;
+            case DroneState.Chasing:
+                if (target != null) MoveTowardsPlayer();
+                break;
+            case DroneState.Retreating:
+                Retreat();
+                break;
+            case DroneState.ReturningToCeiling:
+                MoveToCeiling();
+                break;
+        }
+    }
 
-            Vector3 direction = (target.position - transform.position).normalized;
+    private void MoveTowardsPlayer()
+    {
+        if (target == null || rigidBody == null) return;
 
-            //if (!Physics.Raycast(transform.position, direction, 1f, enviormentMask))
-            rigidBody.linearVelocity = direction * flyingSpeed;
+        if (rigidBody.isKinematic) rigidBody.isKinematic = false;
 
-            faceTarget();
+        Vector3 direction = (target.position - transform.position);
+        Vector3 horizontalDir = new Vector3(direction.x, 0, direction.z).normalized;
+
+        Vector3 horizontalVelocity = horizontalDir * flyingSpeed + Strafing(horizontalDir);
+        float verticalVelocity = rigidBody.linearVelocity.y;
+
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight * 2f))
+        {
+            float heightError = hoverHeight - hit.distance;
+            float proportionalLift = heightError * hoverClamp;
+            float damping = -rigidBody.linearVelocity.y * 0.5f;
+            verticalVelocity = proportionalLift + damping;
+        }
+
+        rigidBody.linearVelocity = new Vector3(horizontalVelocity.x, verticalVelocity, horizontalVelocity.z);
+        FaceTarget();
+    }
+
+    private Vector3 Strafing(Vector3 direction)
+    {
+        strafeTimer -= Time.fixedDeltaTime;
+        if (strafeTimer <= 0f)
+        {
+            strafeTimer = strafeCooldown;
+            Vector3 strafe = Vector3.Cross(Vector3.up, direction).normalized;
+            strafeDirection = Random.value > 0.5f ? strafe : -strafe;
+        }
+        return strafeDirection * strafeSpeed;
+    }
+
+    private void Retreat()
+    {
+        if (rigidBody.isKinematic) rigidBody.isKinematic = false;
+
+        retreatTimer -= Time.fixedDeltaTime;
+
+        if (strafeDirection == Vector3.zero)
+        {
+            Vector3 strafe = Vector3.Cross(Vector3.up, retreatDirection).normalized;
+            strafeDirection = Random.value > 0.5f ? strafe : -strafe;
+        }
+
+        Vector3 horizontalVelocity = (retreatDirection + strafeDirection).normalized * retreatSpeed;
+        rigidBody.linearVelocity = new Vector3(horizontalVelocity.x, rigidBody.linearVelocity.y, horizontalVelocity.z);
+
+        Quaternion targetRotation = Quaternion.LookRotation(retreatDirection);
+        rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime));
+
+        if (retreatTimer <= 0f || Vector3.Distance(transform.position, playerTarget.transform.position) >= retreatDistance)
+        {
+            strafeDirection = Vector3.zero;
+            rigidBody.linearVelocity = Vector3.zero;
+            NearestCeiling();
+            currentState = DroneState.ReturningToCeiling;
+        }
+    }
+
+    private void AssignTarget()
+    {
+        if (Dead) return;
+
+        InRange = playerTarget && Vector3.Distance(transform.position, playerTarget.transform.position) <= fovDistance;
+
+        if (!isRetreating && (playerVisible || InRange))
+        {
+            target = playerTarget.transform;
+            attachedToCeiling = false;
+            currentState = DroneState.Chasing;
+            playerLostTimer = 0f;
+
+            if (rigidBody.isKinematic)
+            {
+                rigidBody.isKinematic = false;
+                rigidBody.linearVelocity = Vector3.zero;
+                rigidBody.angularVelocity = Vector3.zero;
+            }
+        }
+        else if (!isRetreating && currentState != DroneState.ReturningToCeiling)
+        {
+            target = null;
+            NearestCeiling();
+            currentState = DroneState.ReturningToCeiling;
+        }
+    }
+
+    private void UpdateVisibility()
+    {
+        if (isBlind)
+        {
+            playerVisible = false;
+            target = null;
         }
         else
         {
+            playerVisible = PlayerInFieldOfView();
+        }
+    }
+
+    private bool PlayerInFieldOfView()
+    {
+        if (!playerTarget) return false;
+
+        Vector3 dir = playerTarget.transform.position - transform.position;
+        if (dir.magnitude > fovDistance) return false;
+
+        Vector3 flatDir = new Vector3(dir.x, 0, dir.z);
+        Vector3 flatFwd = new Vector3(transform.forward.x, 0, transform.forward.z);
+        if (Vector3.Angle(flatDir, flatFwd) > fovAngle) return false;
+
+        LayerMask mask = environmentMask | (1 << LayerMask.NameToLayer("Player"));
+        if (Physics.Raycast(transform.position, dir.normalized, out RaycastHit hit, fovDistance, mask))
+            return hit.collider.CompareTag("Player");
+
+        return false;
+    }
+
+    private void PlayerLost()
+    {
+        if (target == null) playerLostTimer += Time.fixedDeltaTime;
+        else playerLostTimer = 0f;
+
+        if (playerLostTimer >= lostPlayDelay && !playerVisible && !isRetreating)
+        {
+            NearestCeiling();
+            currentState = DroneState.ReturningToCeiling;
+        }
+    }
+
+    private void NearestCeiling()
+    {
+        attachedToCeiling = false;
+
+        Collider[] hits = Physics.OverlapSphere(transform.position, ceilingInRadius, ceilingMask);
+        float best = Mathf.Infinity;
+        Vector3 bestPoint = transform.position + Vector3.up * hoverHeight;
+
+        foreach (var c in hits)
+        {
+            Vector3 fromAbove = c.bounds.center + Vector3.up * (c.bounds.extents.y + 0.1f);
+            if (c.Raycast(new Ray(fromAbove, Vector3.down), out RaycastHit h, c.bounds.size.y + 1f))
+            {
+                float d = (h.point - transform.position).sqrMagnitude;
+                if (d < best) { best = d; bestPoint = h.point; }
+            }
+        }
+        ceilingPoint = bestPoint;
+    }
+
+    private void MoveToCeiling()
+    {
+        if (attachedToCeiling) return;
+
+        float radius = bodyCollider != null ? bodyCollider.radius : 0.5f;
+        float dangleOffset = 1f;
+        Vector3 targetPos = ceilingPoint - Vector3.up * (radius + dangleOffset);
+
+        if (!rigidBody.isKinematic)
+        {
             rigidBody.linearVelocity = Vector3.zero;
+            rigidBody.angularVelocity = Vector3.zero;
+            rigidBody.isKinematic = true;
+        }
+
+        rigidBody.MovePosition(Vector3.MoveTowards(
+            rigidBody.position,
+            targetPos,
+            flyingSpeed * Time.fixedDeltaTime
+        ));
+
+        if (Vector3.Distance(rigidBody.position, targetPos) < 0.05f)
+        {
+            attachedToCeiling = true;
+            rigidBody.position = targetPos;
+            currentState = DroneState.Idle;
         }
     }
 
     private void Hover()
     {
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight))
+        if (attachedToCeiling || rigidBody.isKinematic) return;
+
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight * 2f))
         {
-            float hoverError = hoverHeight - hit.distance;
-            float upwardForce = hoverClamp * hoverError;
-
-            if (hit.distance < 0.2f) upwardForce *= 3f;
-
-            rigidBody.AddForce(Vector3.up * upwardForce, ForceMode.Acceleration);
+            float heightError = hoverHeight - hit.distance;
+            float lift = heightError * hoverClamp - rigidBody.linearVelocity.y * 0.5f;
+            rigidBody.AddForce(Vector3.up * lift, ForceMode.Acceleration);
         }
     }
 
-    //Logic if the player is in view or not
-    private bool PlayerInFieldOfView()
-    {
-        //playerDirection = gamemanager.instance.player.transform.position - transform.position;
-
-        if (playerTarget == null || isBlind) return false;
-
-        //Locate player
-        Vector3 direction = playerTarget.transform.position - transform.position;
-        float angle = Vector3.Angle(direction, transform.forward);
-
-        Debug.DrawRay(transform.position, direction.normalized * fovDistance, Color.red);
-
-        //check if the player is far from the object
-        if (direction.magnitude > fovDistance || angle > fovAngle) return false;
-
-        if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, fovDistance))
-        {
-            if (hit.collider.CompareTag("Player"))
-            {
-                return true;
-            }
-            else if (hit.collider.CompareTag("Smoke"))
-            {
-                return false;
-            }
-            else if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
-            {
-                return false;
-            }
-
-        }
-        return false;
-    }
-
-    public void SetInvisible(bool invisible)
-    {
-        isBlind = invisible;
-        if (invisible)
-        {
-            target = null;
-            playerVisible = false;
-            InRange = false;
-        }
-    }
-    void NearestCeiling()
-    {
-        Collider[] hits = Physics.OverlapSphere(transform.position, ceilingInRadius, ceilingMask);
-
-        float closest = Mathf.Infinity;
-        ceilingPoint = Vector3.zero;
-
-        for (int i = 0; i < hits.Length; i++)
-        {
-            /*
-             Collider hit = hits[i];
-
-            Vector3 ceilingBottom = hit.bounds.center - new Vector3(0, hit.bounds.extents.y,0);
-            float distance = Vector3.Distance(transform.position, ceilingBottom);
-             */
-
-            Bounds bounds = hits[i].bounds;
-
-            //Y of the ceiling
-            float ceilingY = bounds.center.y - bounds.extents.y;
-
-            float margin = 0.5f;
-
-            float minX = bounds.min.x + margin;
-            float maxX = bounds.max.x - margin;
-            float minZ = bounds.min.z + margin;
-            float maxZ = bounds.max.z - margin;
-
-            if (minX >= maxX || minZ >= maxZ) continue;
-            ////Random z and x points
-            float ceilingX = Random.Range(minX, maxX);
-            float ceilngZ = Random.Range(minZ, maxZ);
-
-            Vector3 ceilingBottom = new Vector3(ceilingX, ceilingY, ceilngZ);
-            float distance = Vector3.Distance(transform.position, ceilingBottom);
-            if (distance < closest)
-            {
-                closest = distance;
-                ceilingPoint = ceilingBottom;
-            }
-        }
-
-        if (closest < Mathf.Infinity)
-        {
-            //rigidBody.linearVelocity = (ceilingPoint - transform.position).normalized * flyingSpeed;
-        }
-    }
-
-    void MoveToCeiling()
-    {
-        if (!returnToCeiling) return;
-
-        if (rigidBody.isKinematic) return;
-
-        Vector3 direction = (ceilingTarget - transform.position).normalized;
-        float distance = Vector3.Distance(transform.position, ceilingTarget);
-
-        if (distance > ceilingAttachmentRange)
-        {
-            rigidBody.linearVelocity = direction * flyingSpeed;
-
-            Quaternion targetRot = Quaternion.LookRotation(direction);
-            rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime));
-        }
-        else
-        {
-            rigidBody.linearVelocity = Vector3.zero;
-            rigidBody.angularVelocity = Vector3.zero;
-
-            rigidBody.isKinematic = true;
-
-            float ceilingHeightOff = bodyCollider.bounds.extents.y; //bodyCollider.radius * transform.localScale.y;
-            // snap to point
-            transform.position = ceilingTarget - new Vector3(0, ceilingHeightOff, 0);
-
-        }
-    }
-
-    void faceTarget()
+    private void FaceTarget()
     {
         if (target == null) return;
 
         playerDirection = (target.position - transform.position).normalized;
-
         if (playerDirection.sqrMagnitude > 0.01f)
         {
             Quaternion rotate = Quaternion.LookRotation(playerDirection);
-            transform.rotation = Quaternion.Lerp(rigidBody.rotation, rotate, Time.deltaTime * rotationSpeed);
-
+            transform.rotation = Quaternion.Lerp(rigidBody.rotation, rotate, Time.fixedDeltaTime * rotationSpeed);
         }
-
     }
 
     public void takeDamage(int amount)
@@ -559,5 +590,10 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         flyingSpeed = originalSpeed;
         slowRoutine = null;
+    }
+
+    public void SetInvisible(bool state)
+    {
+       // throw new System.NotImplementedException();
     }
 }
