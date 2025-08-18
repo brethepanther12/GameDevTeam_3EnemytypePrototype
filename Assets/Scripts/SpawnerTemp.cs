@@ -7,7 +7,7 @@ public class SpawnerTemp : MonoBehaviour
     [SerializeField] private float spawnRate = 2f; // seconds between spawns (float is nicer)
     [SerializeField] private int baseSpawnAmount;
     [SerializeField] private Transform[] spawnPoints;
-    [SerializeField] private int enemiesPerDeath = 1;
+   // [SerializeField] private int enemiesPerDeath = 1;
 
     private List<GameObject> spawnedEnemies = new List<GameObject>();
 

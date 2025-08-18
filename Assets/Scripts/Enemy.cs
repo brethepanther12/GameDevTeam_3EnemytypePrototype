@@ -47,7 +47,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
     [SerializeField] GameObject ammoPickupPrefab;
     [SerializeField] GameObject shieldPrefab;
     [SerializeField] GameObject armorPrefab;
-    [SerializeField] float dropChance = 0.5f;
+  //  [SerializeField] float dropChance = 0.5f;
 
     [SerializeField] GameObject bullet;
     [SerializeField] float shootRate;

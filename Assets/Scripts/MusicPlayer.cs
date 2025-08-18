@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Linq;
 
+[RequireComponent(typeof(AudioSource))]
 public class MusicPlayer : MonoBehaviour
 {
     public static MusicPlayer instance;
@@ -14,17 +15,17 @@ public class MusicPlayer : MonoBehaviour
     private AudioSource audioSource;
     private List<AudioClip> currentPlaylist = new List<AudioClip>();
     private List<AudioClip> shuffledPlaylist = new List<AudioClip>();
-    
+
     public float Volume
     {
-        get => audioSource != null ? audioSource.volume : .5f;
+        get => audioSource != null ? audioSource.volume : 0.5f;
         set
         {
             if (audioSource != null)
                 audioSource.volume = Mathf.Clamp01(value);
         }
-
     }
+
     void Awake()
     {
         if (instance != null && instance != this)
@@ -32,17 +33,23 @@ public class MusicPlayer : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
         instance = this;
         DontDestroyOnLoad(gameObject);
+
         audioSource = GetComponent<AudioSource>();
         SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded; 
     }
 
     void Start()
     {
         Volume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
-        Scene currentScene = SceneManager.GetActiveScene();
-        TriggerMusicForScene(currentScene.name);
+        TriggerMusicForScene(SceneManager.GetActiveScene().name);
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -55,17 +62,11 @@ public class MusicPlayer : MonoBehaviour
         shuffledPlaylist.Clear();
 
         if (sceneName == "Main Menu")
-        {
             currentPlaylist = mainMenuTracks;
-        }
         else if (sceneName == "Travis-(Boss enemy)")
-        {
             currentPlaylist = bossFightTracks;
-        }
         else
-        {
             currentPlaylist = gameplayTracks;
-        }
 
         PlayNextTrack();
     }
@@ -75,9 +76,7 @@ public class MusicPlayer : MonoBehaviour
         if (currentPlaylist.Count == 0) return;
 
         if (shuffledPlaylist.Count == 0)
-        {
             shuffledPlaylist = currentPlaylist.OrderBy(a => Random.value).ToList();
-        }
 
         AudioClip clipToPlay = shuffledPlaylist.Last();
         shuffledPlaylist.RemoveAt(shuffledPlaylist.Count - 1);
@@ -86,27 +85,16 @@ public class MusicPlayer : MonoBehaviour
 
     void Update()
     {
-        if (audioSource.isPlaying || currentPlaylist.Count == 0)
-        {
-            return;
-        }
+        if (audioSource == null) return; 
 
-        PlayNextTrack();
+        if (!audioSource.isPlaying && currentPlaylist.Count > 0)
+            PlayNextTrack();
     }
 
     void PlayMusic(AudioClip clip)
     {
-        if (audioSource == null)
-        {
-            audioSource = GetComponent<AudioSource>();
-            if (audioSource == null)
-            {
-                Debug.LogError("MusicPlayer is missing its AudioSource component and cannot play music!");
-                return;
-            }
-        }
-
         if (clip == null) return;
+        if (audioSource == null) audioSource = GetComponent<AudioSource>();
 
         audioSource.clip = clip;
         audioSource.loop = false;

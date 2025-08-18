@@ -43,6 +43,7 @@ public class BossAI : EnemyAIBase, IGrapplable
     {
         base.Start();
         bossAnimator.applyRootMotion = false;
+        //bossAnimator.applyRootMotion = false;
         if (bossRoarSource && roarClip)
             bossRoarSource.PlayOneShot(roarClip);
 
