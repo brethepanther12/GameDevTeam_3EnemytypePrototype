@@ -96,6 +96,16 @@ public class MusicPlayer : MonoBehaviour
 
     void PlayMusic(AudioClip clip)
     {
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+            {
+                Debug.LogError("MusicPlayer is missing its AudioSource component and cannot play music!");
+                return;
+            }
+        }
+
         if (clip == null) return;
 
         audioSource.clip = clip;

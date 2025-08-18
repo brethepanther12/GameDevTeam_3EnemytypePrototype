@@ -273,6 +273,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &1047143453 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1663543364928428666, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+  m_PrefabInstance: {fileID: 7773660180209451559}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1355907319 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6218375317122356938, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+  m_PrefabInstance: {fileID: 7773660180209451559}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1414796215
 GameObject:
   m_ObjectHideFlags: 0
@@ -477,6 +499,46 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[3].lockIcon
+      value: 
+      objectReference: {fileID: 7773660180209451561}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[3].sceneName
+      value: Travis-(Boss enemy)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[4].sceneName
+      value: ShowCase Level
+      objectReference: {fileID: 0}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[3].levelButton
+      value: 
+      objectReference: {fileID: 1047143453}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[4].levelButton
+      value: 
+      objectReference: {fileID: 1355907319}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[0].levelNumberToUnlock
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[1].levelNumberToUnlock
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[3].levelNumberToUnlock
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.data[4].levelNumberToUnlock
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5970844855040321860, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 877.4075
@@ -526,6 +588,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+--- !u!1 &7773660180209451561 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6491718780837543818, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+  m_PrefabInstance: {fileID: 7773660180209451559}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -533,6 +600,6 @@ SceneRoots:
   - {fileID: 1414796218}
   - {fileID: 970418959}
   - {fileID: 7773660180209451559}
-  - {fileID: 339332163583305559}
   - {fileID: 533770475}
   - {fileID: 1832149569}
+  - {fileID: 339332163583305559}

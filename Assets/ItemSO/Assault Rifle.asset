@@ -38,14 +38,15 @@ MonoBehaviour:
     projectileCount: 0
     projectileSpread: 0
     blastRadius: 0
+    energyRechargeRate: 0
   - mode: 1
     projectileType: 1
     projectile: {fileID: 7539981003205437294, guid: c41dabc6cf1391944983f22da4d66236, type: 3}
     effectData:
       statusType: 1
       statusDamage: 1
-      statusTickRate: 0.5
-      statusDuration: 3
+      statusTickRate: 0.25
+      statusDuration: 5
       slowDownMagnitude: 0
     damage: 1
     range: 100
@@ -57,14 +58,15 @@ MonoBehaviour:
     projectileCount: 0
     projectileSpread: 0
     blastRadius: 0
+    energyRechargeRate: 0
   - mode: 2
     projectileType: 1
     projectile: {fileID: 7539981003205437294, guid: f6b8a90c5c62e004a9b1b4325f5e121e, type: 3}
     effectData:
       statusType: 4
-      statusDamage: 2
-      statusTickRate: 0.5
-      statusDuration: 10
+      statusDamage: 1
+      statusTickRate: 0.25
+      statusDuration: 5
       slowDownMagnitude: 0.75
     damage: 2
     range: 150
@@ -76,6 +78,7 @@ MonoBehaviour:
     projectileCount: 0
     projectileSpread: 0
     blastRadius: 0
+    energyRechargeRate: 0
   availableUpgrades:
   - {fileID: 11400000, guid: bf784c3f5cf84b3479f0b8c17988d42b, type: 2}
   - {fileID: 11400000, guid: b79c609445af5884c916523c02ee6902, type: 2}

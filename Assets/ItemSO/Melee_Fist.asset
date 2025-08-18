@@ -28,7 +28,7 @@ MonoBehaviour:
       statusTickRate: 0
       statusDuration: 0
       slowDownMagnitude: 0
-    damage: 100
+    damage: 20
     range: 10
     fireRate: 0.5
     burstCount: 0
@@ -38,12 +38,13 @@ MonoBehaviour:
     projectileCount: 0
     projectileSpread: 0
     blastRadius: 0
+    energyRechargeRate: 0
+  availableUpgrades: []
   savedMode: 0
   wepDmg: 0
   attackRate: 0
   range: 0
   magSize: 0
-  ammoMax: 0
   pelletCount: 0
   pelletSpread: 0
   currentAmmoInMag: 0
