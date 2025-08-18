@@ -47,12 +47,12 @@ ParticleSystem:
   serializedVersion: 8
   lengthInSec: 2
   simulationSpeed: 1
-  stopAction: 0
+  stopAction: 2
   cullingMode: 3
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 1
-  looping: 1
+  looping: 0
   prewarm: 0
   playOnAwake: 1
   useUnscaledTime: 0
@@ -274,7 +274,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 3
       scalar: 1
-      minScalar: 10
+      minScalar: 5
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -4840,6 +4840,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 4993a3a816630b349890038d3d9120d4, type: 2}
+    - target: {fileID: 169705845687516035, guid: aaafa64c510961647a2d5fe9d2d999c3, type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4912,6 +4916,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 110592494967523746, guid: c9cb60b4545c8584ebd07d0033baabe5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 232424947430074556, guid: c9cb60b4545c8584ebd07d0033baabe5, type: 3}
+      propertyPath: looping
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 232424947430074556, guid: c9cb60b4545c8584ebd07d0033baabe5, type: 3}
@@ -5034,6 +5042,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: ba3b065332eb7b344a511e2d4fc15dbf, type: 2}
+    - target: {fileID: 5583057104914594224, guid: ad92c33f90db8ea42b04f0db95b36d61, type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5583057104914594224, guid: ad92c33f90db8ea42b04f0db95b36d61, type: 3}
       propertyPath: InitialModule.startColor.maxColor.b
       value: 0.2924528
