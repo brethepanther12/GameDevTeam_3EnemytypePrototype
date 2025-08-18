@@ -102,7 +102,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         Damage = GetComponent<damage>();
         if (Damage != null)
             Damage.enabled = false;
-       gamemanager.instance.updateGameGoal(1);
+        gamemanager.instance.updateGameGoal(1);
     }
 
 
@@ -371,11 +371,12 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
                 if (shield <= 0 && armor <= 0 && HP > 0)
                 {
                     takeDamage(amount + 1);
-                } else
+                }
+                else
                 {
                     takeDamage(amount);
                 }
-                    break;
+                break;
 
             case DamageStatus.Corrosive:
 
@@ -387,7 +388,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
                 {
                     takeDamage(amount);
                 }
-                    break;
+                break;
 
             case DamageStatus.Cryo:
 
