@@ -25,8 +25,8 @@ MonoBehaviour:
     effectData:
       statusType: 2
       statusDamage: 1
-      statusTickRate: 0.5
-      statusDuration: 3
+      statusTickRate: 0.25
+      statusDuration: 5
       slowDownMagnitude: 0
     damage: 4
     range: 300
@@ -37,6 +37,8 @@ MonoBehaviour:
     detonateTime: 0
     projectileCount: 0
     projectileSpread: 0
+    blastRadius: 0
+    energyRechargeRate: 0
   - mode: 1
     projectileType: 1
     projectile: {fileID: 7539981003205437294, guid: 97a4c4b329aa6bc4c8a68940aaff17f4, type: 3}
@@ -55,8 +57,10 @@ MonoBehaviour:
     detonateTime: 0
     projectileCount: 0
     projectileSpread: 0
+    blastRadius: 0
+    energyRechargeRate: 0
   - mode: 2
-    projectileType: 1
+    projectileType: 2
     projectile: {fileID: 7539981003205437294, guid: 97a4c4b329aa6bc4c8a68940aaff17f4, type: 3}
     effectData:
       statusType: 0
@@ -64,21 +68,23 @@ MonoBehaviour:
       statusTickRate: 0
       statusDuration: 0
       slowDownMagnitude: 0
-    damage: 3
+    damage: 25
     range: 150
     fireRate: 0.35
-    burstCount: 2
+    burstCount: 3
     burstRate: 0.1
     chargeTime: 0
     detonateTime: 0
-    projectileCount: 0
-    projectileSpread: 0
+    projectileCount: 10
+    projectileSpread: 0.5
+    blastRadius: 0
+    energyRechargeRate: 0
+  availableUpgrades: []
   savedMode: 0
   wepDmg: 2
   attackRate: 0.35
   range: 200
   magSize: 18
-  ammoMax: 60
   pelletCount: 0
   pelletSpread: 0
   currentAmmoInMag: 0

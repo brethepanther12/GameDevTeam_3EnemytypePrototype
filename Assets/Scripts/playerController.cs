@@ -20,7 +20,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] int sprintMod;
     [SerializeField] int jumpVel;
     [SerializeField] int jumpMax;
-    [SerializeField] int gravity;
+    [SerializeField] float gravity;
     [SerializeField] int magazineSize = 15;
     [SerializeField] int reserveAmmo = 90;
     [SerializeField] public int shield;
@@ -747,5 +747,15 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         isAttacking = false;
     }
 
-    
+    public void SetGravity(float newValue)
+    {
+        gravity = newValue;
+    }
+
+    public float GetGravity()
+    {
+        return gravity;
+    }
+
+
 }

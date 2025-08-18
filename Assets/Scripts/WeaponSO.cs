@@ -38,7 +38,7 @@ public class FireModeData
     public float projectileSpread;
     public float blastRadius;
     public float energyRechargeRate;
-
+    
 }
 
 [CreateAssetMenu(menuName = "Inventory/Weapon")]
