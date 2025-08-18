@@ -26,22 +26,38 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     private IDamage iDamage;
 
     [Header("--- Shooting ---")]
-    [SerializeField] private Transform shootPos;
     [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private Transform shootPos;
+    [SerializeField] private float shootRange;
     [SerializeField] private float shootRate;
     [SerializeField] private int maxAmmo;
     [SerializeField] private float reloadTime;
     [SerializeField] private AudioClip shootSound;
     [SerializeField] private AudioClip reloadSound;
-    [SerializeField] private float reloadVolume;
+    [SerializeField] private Animator animator;
+    [SerializeField] private StatusEffectData statusEffectData;
+
     private int currentAmmo;
     private float shootTimer;
     private bool isReloading;
-    private Coroutine reloadCoroutine;
+    private Coroutine reloadingRT;
 
     [Header("--- Hover ---")]
     [SerializeField] private float hoverHeight;
     [SerializeField] private float hoverClamp;
+
+    [Header("--- Strafing ---")]
+    [SerializeField] private float strafeSpeed;
+    [SerializeField] private float strafeCooldown;
+    private float strafeTimer;
+    private Vector3 strafeDirection;
+
+    [Header("--- Retreat ---")]
+    [SerializeField] private float retreatSpeed;
+    [SerializeField] private float retreatDistance;
+    private bool isRetreating;
+    private float retreatTimer;
+    private Vector3 retreatDirection;
 
     [Header("--- Ceiling ---")]
     [SerializeField] private float ceilingInRadius;
@@ -84,19 +100,6 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     [SerializeField] private Renderer modelRender;
     private Color originColor;
 
-    [Header("--- Strafing ---")]
-    [SerializeField] private float strafeSpeed;
-    [SerializeField] private float strafeCooldown;
-    private float strafeTimer;
-    private Vector3 strafeDirection;
-
-    [Header("--- Retreat ---")]
-    [SerializeField] private float retreatSpeed;
-    [SerializeField] private float retreatDistance;
-    private bool isRetreating;
-    private float retreatTimer;
-    private Vector3 retreatDirection;
-
     // Drone state
     private enum DroneState { Idle, Chasing, Retreating, ReturningToCeiling }
     private DroneState currentState;
@@ -108,6 +111,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     void Start()
     {
         currentHP = HP;
+        currentAmmo = maxAmmo;
         if (modelRender != null) originColor = modelRender.material.color;
         if (rigidBody == null) rigidBody = GetComponent<Rigidbody>();
 
@@ -125,6 +129,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         Hover();
         Movement();
+        HandleShooting();
     }
 
     private void Movement()
@@ -252,15 +257,17 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         if (!playerTarget) return false;
 
         Vector3 dir = playerTarget.transform.position - transform.position;
-        if (dir.magnitude > fovDistance) return false;
+        float distance = dir.magnitude;
 
-        Vector3 flatDir = new Vector3(dir.x, 0, dir.z);
-        Vector3 flatFwd = new Vector3(transform.forward.x, 0, transform.forward.z);
-        if (Vector3.Angle(flatDir, flatFwd) > fovAngle) return false;
+        if (distance > fovDistance) return false;
 
-        LayerMask mask = environmentMask | (1 << LayerMask.NameToLayer("Player"));
-        if (Physics.Raycast(transform.position, dir.normalized, out RaycastHit hit, fovDistance, mask))
+        float angle = Vector3.Angle(transform.forward, dir);
+        if (angle > fovAngle) return false;
+
+        if (Physics.Raycast(transform.position, dir.normalized, out RaycastHit hit, fovDistance, environmentMask | (1 << LayerMask.NameToLayer("Player"))))
+        {
             return hit.collider.CompareTag("Player");
+        }
 
         return false;
     }
@@ -363,9 +370,9 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         {
             Shoot();
         }
-        else if (currentAmmo <= 0 && reloadCoroutine == null)
+        else if (currentAmmo <= 0 && reloadingRT == null)
         {
-            reloadCoroutine = StartCoroutine(Reload());
+            reloadingRT = StartCoroutine(Reload());
         }
     }
 
@@ -386,7 +393,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     {
         isReloading = true;
         if (reloadSound != null)
-            AudioSource.PlayClipAtPoint(reloadSound, transform.position, reloadVolume);
+            AudioSource.PlayClipAtPoint(reloadSound, transform.position);
 
         float timer = 0f;
         while (timer < reloadTime)
@@ -397,7 +404,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         currentAmmo = maxAmmo;
         isReloading = false;
-        reloadCoroutine = null;
+        reloadingRT = null;
     }
 
 
