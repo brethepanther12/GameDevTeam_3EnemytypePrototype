@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.LowLevel;
@@ -491,9 +492,6 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
                 if (shield <= 0 && armor <= 0 && HP > 0)
                 {
                     takeDamage(amount + 1);
-                } else
-                {
-                    takeDamage(amount);
                 }
                 else
                 {
@@ -543,11 +541,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             default:
                 break;
         }
-
-
-
     }
-
     private void OnCollisionEnter(Collision other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Bullet"))
