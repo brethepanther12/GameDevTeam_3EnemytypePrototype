@@ -21,8 +21,8 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] int jumpVel;
     [SerializeField] int jumpMax;
     [SerializeField] float gravity;
-    [SerializeField] int magazineSize = 15;
-    [SerializeField] int reserveAmmo = 90;
+    //[SerializeField] int magazineSize = 15;
+  //  [SerializeField] int reserveAmmo = 90;
     [SerializeField] public int shield;
     [SerializeField] int maxShield;
     [SerializeField] public int armor;

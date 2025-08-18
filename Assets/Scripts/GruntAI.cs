@@ -30,7 +30,7 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable, IEnemyAI
     public GameObject mutagenPickupPrefab;
     [SerializeField] GameObject healthPickupPrefab;
     [SerializeField] GameObject ammoPickupPrefab;
-    [SerializeField] float dropChance = 0.5f;
+  //  [SerializeField] float dropChance = 0.5f;
 
     [SerializeField] int HP;
 
