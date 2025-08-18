@@ -25,6 +25,20 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     private bool isDamaging;
     private IDamage iDamage;
 
+    [Header("--- Shooting ---")]
+    [SerializeField] private Transform shootPos;
+    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private float shootRate;
+    [SerializeField] private int maxAmmo;
+    [SerializeField] private float reloadTime;
+    [SerializeField] private AudioClip shootSound;
+    [SerializeField] private AudioClip reloadSound;
+    [SerializeField] private float reloadVolume;
+    private int currentAmmo;
+    private float shootTimer;
+    private bool isReloading;
+    private Coroutine reloadCoroutine;
+
     [Header("--- Hover ---")]
     [SerializeField] private float hoverHeight;
     [SerializeField] private float hoverClamp;
@@ -335,6 +349,57 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             transform.rotation = Quaternion.Lerp(rigidBody.rotation, rotate, Time.fixedDeltaTime * rotationSpeed);
         }
     }
+
+    private void HandleShooting()
+    {
+        if (currentState != DroneState.Chasing || target == null || isReloading) return;
+
+        float distance = Vector3.Distance(transform.position, target.position);
+        if (distance > fovDistance) return;
+
+        shootTimer += Time.fixedDeltaTime;
+
+        if (shootTimer >= shootRate && currentAmmo > 0)
+        {
+            Shoot();
+        }
+        else if (currentAmmo <= 0 && reloadCoroutine == null)
+        {
+            reloadCoroutine = StartCoroutine(Reload());
+        }
+    }
+
+    private void Shoot()
+    {
+        if (bulletPrefab == null || shootPos == null) return;
+
+        currentAmmo--;
+        shootTimer = 0f;
+
+        Instantiate(bulletPrefab, shootPos.position, shootPos.rotation);
+
+        if (shootSound != null)
+            AudioSource.PlayClipAtPoint(shootSound, shootPos.position);
+    }
+
+    private IEnumerator Reload()
+    {
+        isReloading = true;
+        if (reloadSound != null)
+            AudioSource.PlayClipAtPoint(reloadSound, transform.position, reloadVolume);
+
+        float timer = 0f;
+        while (timer < reloadTime)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        currentAmmo = maxAmmo;
+        isReloading = false;
+        reloadCoroutine = null;
+    }
+
 
     public void takeDamage(int amount)
     {
