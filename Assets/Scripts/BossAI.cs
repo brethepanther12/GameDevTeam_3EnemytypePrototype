@@ -20,7 +20,7 @@ public class BossAI : EnemyAIBase, IGrapplable
     [SerializeField] AudioSource bossRoarSource;
     [SerializeField] AudioClip roarClip;
 
-    
+
 
 
     public string bossName = "Boss 1";
@@ -42,7 +42,7 @@ public class BossAI : EnemyAIBase, IGrapplable
     protected override void Start()
     {
         base.Start();
-
+        bossAnimator.applyRootMotion = false;
         if (bossRoarSource && roarClip)
             bossRoarSource.PlayOneShot(roarClip);
 
@@ -53,7 +53,7 @@ public class BossAI : EnemyAIBase, IGrapplable
 
     IEnumerator DelayedNavStart()
     {
-        yield return new WaitForEndOfFrame();
+        yield return null;
         enemyNavAgent.enabled = true;
         enemyNavAgent.updateRotation = false;
     }
@@ -136,13 +136,15 @@ public class BossAI : EnemyAIBase, IGrapplable
     {
         if (enemyPlayerObject == null) return;
 
-        Vector3 targetPos = enemyPlayerObject.position - (enemyPlayerObject.position - transform.position).normalized * desiredDistance;
         enemyNavAgent.isStopped = false;
+
+        Vector3 targetPos = enemyPlayerObject.position - (enemyPlayerObject.position - transform.position).normalized * desiredDistance;
         enemyNavAgent.SetDestination(targetPos);
     }
 
     void SmoothFacePlayer()
     {
+        enemyNavAgent.isStopped = false;
         Vector3 direction = enemyPlayerObject.position - transform.position;
         direction.y = 0;
 
@@ -182,13 +184,13 @@ public class BossAI : EnemyAIBase, IGrapplable
 
     IEnumerator Dodge()
     {
+        enemyNavAgent.isStopped = false;
         isDodging = true;
 
         Vector3 dodgeDir = Vector3.Cross((enemyPlayerObject.position - transform.position).normalized, Vector3.up) *
                            (Random.value > 0.5f ? 1 : -1);
         Vector3 dodgeTarget = transform.position + dodgeDir * 5f;
 
-        enemyNavAgent.isStopped = false;
         enemyNavAgent.SetDestination(dodgeTarget);
 
         float t = 0f;
@@ -213,12 +215,12 @@ public class BossAI : EnemyAIBase, IGrapplable
 
     IEnumerator RetreatAndBurst()
     {
+        enemyNavAgent.isStopped = false;
         isRetreating = true;
 
         Vector3 retreatDir = -(enemyPlayerObject.position - transform.position).normalized;
         Vector3 retreatTarget = transform.position + retreatDir * 5f;
 
-        enemyNavAgent.isStopped = false;
         enemyNavAgent.SetDestination(retreatTarget);
 
         float t = 0f;
@@ -264,7 +266,7 @@ public class BossAI : EnemyAIBase, IGrapplable
 
     public override void takeDamage(int amount)
     {
-    
+
 
         if (shield > 0)
         {
