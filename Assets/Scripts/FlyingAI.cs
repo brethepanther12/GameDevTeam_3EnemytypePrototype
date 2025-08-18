@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.LowLevel;
 using static UnityEngine.Rendering.DebugUI;
 public class FlyingAI : MonoBehaviour, IDamage, Visibility
@@ -34,26 +35,8 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     [SerializeField] private LayerMask ceilingMask;
     [SerializeField] private SphereCollider bodyCollider;
     private bool returnToCeiling;
-    private bool attachedToCeiling;
     private Vector3 ceilingTarget;
     private Vector3 ceilingPoint;
-    private Vector3 attachedCeilingPoint;
-
-
-    [Header("\"--- Retreat ---\"")]
-    [SerializeField] private float retreatCooldown;
-    [SerializeField] private float retreatSpeed;
-    [SerializeField] private float retreatDistance;
-    private bool isRetreating;
-    private float retreatTimer;
-    private Vector3 retreatDirection;
-
-    [Header("\"--- Strafing ---\"")]
-    [SerializeField] private float strafeSpeed;
-    [SerializeField] private float strafeCooldown;
-    [SerializeField] private float strafeDistance;
-    private float strafeTimer;
-    private Vector3 strafeDirection;
 
     [Header("\"--- Field of View ---\"")]
     [SerializeField] private float fovDistance;
@@ -80,15 +63,34 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     [SerializeField] private float hitVolume;
     [SerializeField] private float deathVolume;
 
+    [Header("\"--- Drops ---\"")]
+    public GameObject healthPickupPrefab;
+    public GameObject ammoPickupPrefab;
+    public GameObject mutagenPickupPrefab;
+    public GameObject componentPrefab;
+
     [Header("\"--- Model ---\"")]
     [SerializeField] private Renderer modelRender;
     private Color originColor;
+
+    private float originalSpeed;
+    private Coroutine slowRoutine;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         currentHP = HP;
+        originalSpeed = flyingSpeed;
 
+        if (shield == 0)
+        {
+            shieldPrefab.SetActive(false);
+        }
+
+        if (armor == 0)
+        {
+            armorPrefab.SetActive(false);
+        }
         // Store original material color
         if (modelRender != null)
             originColor = modelRender.material.color;
@@ -107,106 +109,61 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (Dead) return;
+        playerVisible = !isBlind && PlayerInFieldOfView();
 
-        Visibility();
-        AssignTarget();
+        target = playerVisible ? playerTarget.transform : null;
 
-        Movement(); 
-    }
-
-    private void Movement()
-    {
-        // If player visible or in range
-        if (target != null && (playerVisible || InRange))
+        if (target == null)
         {
-            MoveTowardsPlayer();
-        }
-        else
-        {
-            // Player not found, move toward nearest ceiling
-            if (!returnToCeiling)
+            playerLostTimer += Time.fixedDeltaTime;
+            if (playerLostTimer >= lostPlayDelay && !returnToCeiling)
             {
                 NearestCeiling();
                 ceilingTarget = ceilingPoint;
                 returnToCeiling = true;
             }
-            else
-            {
-                MoveToCeiling();
-            }
+        }
+        else
+        {
+            playerLostTimer = 0f;
+            returnToCeiling = false;
         }
 
-        // Hover
-        if (!returnToCeiling)
-            Hover();
-    }
-
-    private void MoveTowardsPlayer()
-    {
-        Vector3 directionToPlayer = (target.position - transform.position).normalized;
-        Vector3 finalVelocity = directionToPlayer * flyingSpeed + Strafing(directionToPlayer);
-
-        if (isRetreating)
+        if (returnToCeiling)
         {
-            Retreat();
+            MoveToCeiling();
             return;
         }
 
-        // Collision check
-        if (!Physics.Raycast(transform.position, finalVelocity.normalized, 1f, enviormentMask))
-            rigidBody.linearVelocity = finalVelocity;
+        Hover();
+
+        if (target != null)
+        {
+            if (rigidBody.isKinematic) rigidBody.isKinematic = false;
+
+            Vector3 direction = (target.position - transform.position).normalized;
+
+            //if (!Physics.Raycast(transform.position, direction, 1f, enviormentMask))
+            rigidBody.linearVelocity = direction * flyingSpeed;
+
+            faceTarget();
+        }
         else
+        {
             rigidBody.linearVelocity = Vector3.zero;
-
-        faceTarget();
+        }
     }
 
-    private Vector3 Strafing(Vector3 direction)
+    private void Hover()
     {
-        strafeTimer -= Time.deltaTime;
-        if (strafeTimer <= 0f)
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight))
         {
-            strafeTimer = strafeCooldown;
+            float hoverError = hoverHeight - hit.distance;
+            float upwardForce = hoverClamp * hoverError;
 
-            Vector3 strafing = Vector3.Cross(Vector3.up, direction).normalized;
-            if (Random.value > 0.5f)
-                strafeDirection = strafing;
-            else
-                strafeDirection = -strafing;
+            if (hit.distance < 0.2f) upwardForce *= 3f;
 
-            strafeDistance = Random.Range(1f, 3f);
-        }
-        
-        return strafeDirection * strafeSpeed;
-    }
-
-    private void Retreat()
-    {
-        retreatTimer -= Time.deltaTime;
-
-        if (strafeDirection == Vector3.zero)
-        {
-            Vector3 strafing = Vector3.Cross(Vector3.up, retreatDirection).normalized;
-
-            if (Random.value > 0.3f)
-                strafeDirection = strafing;
-            else
-                strafeDirection = -strafing;
-        }
-
-        Vector3 velocity = (retreatDirection + strafeDirection).normalized * retreatSpeed;
-        rigidBody.linearVelocity = velocity;
-
-        Quaternion targetRotation = Quaternion.LookRotation(retreatDirection);
-        rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime));
-
-        if (retreatTimer <= 0f ||
-            Vector3.Distance(transform.position, playerTarget.transform.position) >= retreatDistance)
-        {
-            isRetreating = false;
-            strafeDirection = Vector3.zero;
-            rigidBody.linearVelocity = Vector3.zero;
+            rigidBody.AddForce(Vector3.up * upwardForce, ForceMode.Acceleration);
         }
     }
 
@@ -217,63 +174,32 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         if (playerTarget == null || isBlind) return false;
 
+        //Locate player
         Vector3 direction = playerTarget.transform.position - transform.position;
-        float distanceToPlayer = direction.magnitude;
         float angle = Vector3.Angle(direction, transform.forward);
 
-        // Check FOV angle and distance first
-        if (distanceToPlayer > fovDistance || angle > fovAngle) return false;
+        Debug.DrawRay(transform.position, direction.normalized * fovDistance, Color.red);
 
-        // Raycast to check occlusion
+        //check if the player is far from the object
+        if (direction.magnitude > fovDistance || angle > fovAngle) return false;
+
         if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, fovDistance))
         {
-            // Only visible if the first thing hit is the player
             if (hit.collider.CompareTag("Player"))
-                return true;
-
-            // Check if hit something like smoke, walls, or environment
-            if (hit.collider.CompareTag("Smoke"))
-                return false;
-
-            if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
-                return false;
-
-            return false;
-        }
-
-        return false;
-    }
-
-    private void Visibility()
-    {
-        if (isBlind)
-        {
-            playerVisible = false;
-            target = null;
-        }
-        else
-        {
-            //  check if the player is in range and visible
-            playerVisible = PlayerInFieldOfView();
-        }
-    }
-
-    private void PlayerLost()
-    {
-        if (target == null)
-            playerLostTimer += Time.deltaTime;
-        else
-            playerLostTimer = 0f;
-
-        if (playerLostTimer >= lostPlayDelay && !InRange && !playerVisible && !isRetreating)
-        {
-            if (!returnToCeiling)
             {
-                NearestCeiling();
-                ceilingTarget = ceilingPoint;
-                returnToCeiling = true;
+                return true;
             }
+            else if (hit.collider.CompareTag("Smoke"))
+            {
+                return false;
+            }
+            else if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
+            {
+                return false;
+            }
+
         }
+        return false;
     }
 
     public void SetInvisible(bool invisible)
@@ -286,16 +212,6 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             InRange = false;
         }
     }
-
-    private void AssignTarget()
-    {
-        // Assign or clear the target based on FOV + trigger
-        if (InRange || playerVisible)
-        {
-            target = playerTarget.transform;
-            attachedToCeiling = false;
-        }
-    }
     void NearestCeiling()
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, ceilingInRadius, ceilingMask);
@@ -305,27 +221,32 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         for (int i = 0; i < hits.Length; i++)
         {
+            /*
+             Collider hit = hits[i];
+
+            Vector3 ceilingBottom = hit.bounds.center - new Vector3(0, hit.bounds.extents.y,0);
+            float distance = Vector3.Distance(transform.position, ceilingBottom);
+             */
+
             Bounds bounds = hits[i].bounds;
 
-            // Bottom Y of the ceiling
+            //Y of the ceiling
             float ceilingY = bounds.center.y - bounds.extents.y;
 
-            // Margin to stay inside the collider
             float margin = 0.5f;
+
             float minX = bounds.min.x + margin;
             float maxX = bounds.max.x - margin;
             float minZ = bounds.min.z + margin;
             float maxZ = bounds.max.z - margin;
 
             if (minX >= maxX || minZ >= maxZ) continue;
-
-            // Pick a random point fully inside the bounds
+            ////Random z and x points
             float ceilingX = Random.Range(minX, maxX);
-            float ceilingZ = Random.Range(minZ, maxZ);
+            float ceilngZ = Random.Range(minZ, maxZ);
 
-            Vector3 ceilingBottom = new Vector3(ceilingX, ceilingY, ceilingZ);
+            Vector3 ceilingBottom = new Vector3(ceilingX, ceilingY, ceilngZ);
             float distance = Vector3.Distance(transform.position, ceilingBottom);
-
             if (distance < closest)
             {
                 closest = distance;
@@ -333,74 +254,42 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             }
         }
 
-        if (closest == Mathf.Infinity)
+        if (closest < Mathf.Infinity)
         {
-            Debug.Log("No ceiling found in range!");
+            //rigidBody.linearVelocity = (ceilingPoint - transform.position).normalized * flyingSpeed;
         }
-
-        // Reset the attached flag so the drone will pick a new local offset
-        attachedToCeiling = false;
     }
 
     void MoveToCeiling()
     {
         if (!returnToCeiling) return;
 
-        if (rigidBody.isKinematic) rigidBody.isKinematic = false;
+        if (rigidBody.isKinematic) return;
 
-        Vector3 toCeiling = ceilingTarget - transform.position;
-        float distance = toCeiling.magnitude;
+        Vector3 direction = (ceilingTarget - transform.position).normalized;
+        float distance = Vector3.Distance(transform.position, ceilingTarget);
 
-        float ceilingHeightOff = bodyCollider.bounds.extents.y;
-
-        // Pick a random point on the ceiling once
-        if (!attachedToCeiling)
+        if (distance > ceilingAttachmentRange)
         {
-            float offsetX = Random.Range(-1f, 1f);
-            float offsetZ = Random.Range(-1f, 1f);
-            attachedCeilingPoint = ceilingTarget - new Vector3(0, ceilingHeightOff, 0) + new Vector3(offsetX, 0, offsetZ);
+            rigidBody.linearVelocity = direction * flyingSpeed;
 
-            attachedToCeiling = true;
+            Quaternion targetRot = Quaternion.LookRotation(direction);
+            rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime));
         }
-
-        // Smoothly move toward the attached ceiling point
-        Vector3 desiredPosition = attachedCeilingPoint;
-        rigidBody.position = Vector3.MoveTowards(rigidBody.position, desiredPosition, Time.fixedDeltaTime * flyingSpeed);
-
-        // Smoothly rotate toward ceiling
-        Vector3 direction = (attachedCeilingPoint - transform.position).normalized;
-        Quaternion targetRot = Quaternion.LookRotation(direction);
-        rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime));
-
-        // If close enough, attach
-        if (distance < ceilingAttachmentRange)
+        else
         {
-            rigidBody.position = attachedCeilingPoint;
             rigidBody.linearVelocity = Vector3.zero;
             rigidBody.angularVelocity = Vector3.zero;
+
             rigidBody.isKinematic = true;
-            returnToCeiling = false;
-            attachedToCeiling = true;
+
+            float ceilingHeightOff = bodyCollider.bounds.extents.y; //bodyCollider.radius * transform.localScale.y;
+            // snap to point
+            transform.position = ceilingTarget - new Vector3(0, ceilingHeightOff, 0);
+
         }
     }
 
-    private void Hover()
-    {
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight * 2f))
-        {
-            float heightError = hoverHeight - hit.distance;
-
-           
-            float proportionalLift = heightError * hoverClamp;
-
-            float damping = -rigidBody.linearVelocity.y * 0.5f;
-
-            float upwardForce = proportionalLift + damping;
-
-            rigidBody.AddForce(Vector3.up * upwardForce, ForceMode.Acceleration);
-        }
-    }
-    
     void faceTarget()
     {
         if (target == null) return;
@@ -419,58 +308,50 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     public void takeDamage(int amount)
     {
 
-        if (Dead) return;
+        if (Dead || amount <= 0)
+            return;
+
+        int remainingDamage = amount;
 
         if (shield > 0)
         {
-            shield -= amount;
-            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-            StartCoroutine(FlashRed());
+            int damageToShield = Mathf.Min(remainingDamage, shield);
+            shield -= damageToShield;
+            remainingDamage -= damageToShield;
 
             if (shield <= 0)
             {
                 shield = 0;
-
                 shieldPrefab.SetActive(false);
-                armor -= amount;
-                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-                StartCoroutine(FlashRed());
-
             }
-
         }
-        else if (armor > 0)
-        {
-            armor -= amount;
 
-            if (armor <= 0 && shield <= 0)
+        if (remainingDamage > 0 && armor > 0)
+        {
+            int damageToArmor = Mathf.Min(remainingDamage, armor);
+            armor -= damageToArmor;
+            remainingDamage -= damageToArmor;
+
+            if (armor <= 0)
             {
-
                 armor = 0;
-                shield = 0;
                 armorPrefab.SetActive(false);
-                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-                StartCoroutine(FlashRed());
             }
         }
-        else
-        {
-            currentHP -= amount;
-            AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-            StartCoroutine(FlashRed());
-        }
-        if (!Dead && playerTarget != null) 
-        {
-            isRetreating = true;
-            retreatTimer = retreatCooldown;
-            SetRetreatPoint();
 
+        if (remainingDamage > 0)
+        {
+            currentHP -= remainingDamage;
+            if (currentHP < 0) currentHP = 0;
         }
+
+        AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+        StartCoroutine(FlashRed());
 
         if (currentHP <= 0)
         {
-            //Die method
             Die();
+            //ScoreManager.instance.AddPointsForEnemy(gameObject.tag);
         }
 
     }
@@ -490,8 +371,11 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
                 if (shield <= 0 && armor <= 0 && HP > 0)
                 {
                     takeDamage(amount + 1);
+                } else
+                {
+                    takeDamage(amount);
                 }
-                break;
+                    break;
 
             case DamageStatus.Corrosive:
 
@@ -499,6 +383,37 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
                 {
                     takeDamage(amount + 1);
                 }
+                else
+                {
+                    takeDamage(amount);
+                }
+                    break;
+
+            case DamageStatus.Cryo:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Electric:
+
+                if (shield > 0)
+                {
+                    takeDamage(amount + 1);
+                }
+                else
+                {
+                    takeDamage(amount);
+                }
+                break;
+
+            case DamageStatus.Explosive:
+
+                takeDamage(amount);
+                break;
+
+            case DamageStatus.Plasma:
+
+                takeDamage(amount + 1);
                 break;
 
             default:
@@ -507,22 +422,6 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
 
 
-    }
-
-    private void SetRetreatPoint()
-    {
-        Vector3 retreatPoint = (transform.position - playerTarget.transform.position).normalized;
-
-        Vector3 randomPoint = Vector3.Cross(Vector3.up, retreatPoint).normalized;
-        float retreatRange = Random.Range(-1f, 1f);
-
-        Vector3 direction = (retreatPoint + randomPoint * retreatRange).normalized;
-
-        Vector3 retreatTarget = transform.position + direction * retreatDistance;
-
-        retreatTarget.y = transform.position.y;
-
-        retreatDirection = (retreatTarget - transform.position).normalized;
     }
 
     private void OnCollisionEnter(Collision other)
@@ -562,7 +461,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
     private void OnCollisionStay(Collision other)
     {
-        if (!isRetreating && !isDamaging && other.gameObject.CompareTag("Player"))
+        if (!isDamaging && other.gameObject.CompareTag("Player"))
         {
             iDamage = other.gameObject.GetComponent<IDamage>();
             if (iDamage != null)
@@ -584,7 +483,34 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         AudioSource.PlayClipAtPoint(deathSound, transform.position, deathVolume);
 
+        TryDropPickup();
+
         Destroy(gameObject);
+    }
+
+    void TryDropPickup()
+    {
+        int itemType = Random.Range(0, 4); // 0 = health, 1 = ammo, 2 = mutagen, 3 = component
+
+        GameObject drop = null;
+        if (itemType == 0 && healthPickupPrefab != null)
+        {
+            drop = Instantiate(healthPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
+        }
+        else if (itemType == 1 && ammoPickupPrefab != null)
+        {
+            drop = Instantiate(ammoPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
+        }
+        else if (itemType == 2 && mutagenPickupPrefab != null)
+        {
+            drop = Instantiate(mutagenPickupPrefab, transform.position + Vector3.up, Quaternion.identity);
+
+        }
+
+        else if (itemType == 3 && componentPrefab != null)
+        {
+            drop = Instantiate(componentPrefab, transform.position + Vector3.up, Quaternion.identity);
+        }
     }
 
     IEnumerator DOT(IDamage target)
@@ -609,4 +535,28 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         modelRender.material.color = originColor;
     }
 
+    public void slowDown(float magnitude, float duration)
+    {
+        if (slowRoutine != null)
+        {
+            StopCoroutine(slowRoutine);
+        }
+
+        slowRoutine = StartCoroutine(SlowRoutine(magnitude, duration));
+    }
+
+    private IEnumerator SlowRoutine(float magnitude, float duration)
+    {
+
+        if (originalSpeed == 0f)
+            originalSpeed = flyingSpeed;
+
+        float slowedSpeed = originalSpeed * (1f - magnitude);
+        flyingSpeed = slowedSpeed;
+
+        yield return new WaitForSeconds(duration);
+
+        flyingSpeed = originalSpeed;
+        slowRoutine = null;
+    }
 }
