@@ -17,6 +17,7 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     [SerializeField] public GameObject armorPrefab;
     public int CurrentHealthPoints => enemyCurrentHealthPoints;
     public int MaxHealthPoints => enemyHealthPointsMax;
+
     //Enemy model
     [SerializeField] public SkinnedMeshRenderer[] enemyModel;
     protected Color enemyColorOrigin;
@@ -34,13 +35,11 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     private float originalSpeed;
     private Coroutine slowRoutine;
 
-
     protected Vector3 enemyPlayerDirection;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Start()
-
     {
-
         originalSpeed = enemyNavAgent.speed;
         //To save the enemy's max health to currently.
         enemyCurrentHealthPoints = enemyHealthPointsMax;
@@ -71,7 +70,6 @@ public class EnemyAIBase : MonoBehaviour, IDamage
         enemyNavAgent = GetComponent<NavMeshAgent>();
 
         //This assigns the original color of the placed model in the Unity Inspector
-
         gamemanager.instance.updateGameGoal(1);
 
         enemyColorOrigin = enemyModel[0].material.color;
@@ -83,6 +81,7 @@ public class EnemyAIBase : MonoBehaviour, IDamage
         //Since the enemy is moving, it will constantly update
         enemyMoveToPlayer();
     }
+
     protected virtual void enemyDeath()
     {
         //Debug will message the debugger that an enemy dies
@@ -91,8 +90,8 @@ public class EnemyAIBase : MonoBehaviour, IDamage
 
         //Then it destroy 'this' object after
         Destroy(gameObject);
-
     }
+
     protected virtual void enemyMoveToPlayer()
     {
         //If check checks the toggled bool enemyPlayerInSight
@@ -109,7 +108,6 @@ public class EnemyAIBase : MonoBehaviour, IDamage
                 enemyFacePlayer();
             }
         }
-
     }
 
     //The OnTriggers toggle the player going in and out of the NavMesh
@@ -120,6 +118,7 @@ public class EnemyAIBase : MonoBehaviour, IDamage
             enemyPlayerInSight = true;
         }
     }
+
     protected virtual void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -158,7 +157,6 @@ public class EnemyAIBase : MonoBehaviour, IDamage
 
     public virtual void takeDamage(int amount)
     {
-
         if (amount <= 0)
             return;
 
@@ -215,14 +213,10 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     {
         switch (effect.statusType)
         {
-
             case DamageStatus.None:
-
                 takeDamage(amount);
                 break;
-
             case DamageStatus.Fire:
-
                 if (shield <= 0 && armor <= 0 && enemyCurrentHealthPoints > 0)
                 {
                     takeDamage(amount + 1);
@@ -232,9 +226,7 @@ public class EnemyAIBase : MonoBehaviour, IDamage
                     takeDamage(amount);
                 }
                 break;
-
             case DamageStatus.Corrosive:
-
                 if (shield <= 0 && armor > 0)
                 {
                     takeDamage(amount + 1);
@@ -244,14 +236,10 @@ public class EnemyAIBase : MonoBehaviour, IDamage
                     takeDamage(amount);
                 }
                 break;
-
             case DamageStatus.Cryo:
-
                 takeDamage(amount);
                 break;
-
             case DamageStatus.Electric:
-
                 if (shield > 0)
                 {
                     takeDamage(amount + 1);
@@ -261,23 +249,15 @@ public class EnemyAIBase : MonoBehaviour, IDamage
                     takeDamage(amount);
                 }
                 break;
-
             case DamageStatus.Explosive:
-
                 takeDamage(amount);
                 break;
-
             case DamageStatus.Plasma:
-
                 takeDamage(amount + 1);
                 break;
-
             default:
                 break;
         }
-
-
-
     }
 
     protected virtual IEnumerator enemyFlashRead()
@@ -307,7 +287,6 @@ public class EnemyAIBase : MonoBehaviour, IDamage
 
     private IEnumerator SlowRoutine(float magnitude, float duration)
     {
-        //NavMeshAgent agent = GetComponent<NavMeshAgent>();
         if (enemyNavAgent == null) yield break;
 
         if (originalSpeed == 0f)
@@ -322,4 +301,3 @@ public class EnemyAIBase : MonoBehaviour, IDamage
         slowRoutine = null;
     }
 }
-
