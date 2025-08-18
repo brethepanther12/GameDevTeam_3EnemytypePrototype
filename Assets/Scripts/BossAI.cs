@@ -42,6 +42,7 @@ public class BossAI : EnemyAIBase, IGrapplable
     protected override void Start()
     {
         base.Start();
+        bossAnimator.applyRootMotion = false;
         //bossAnimator.applyRootMotion = false;
         if (bossRoarSource && roarClip)
             bossRoarSource.PlayOneShot(roarClip);
