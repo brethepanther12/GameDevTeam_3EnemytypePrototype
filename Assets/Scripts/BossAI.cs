@@ -20,7 +20,7 @@ public class BossAI : EnemyAIBase, IGrapplable
     [SerializeField] AudioSource bossRoarSource;
     [SerializeField] AudioClip roarClip;
 
-    
+
 
 
     public string bossName = "Boss 1";
@@ -42,7 +42,7 @@ public class BossAI : EnemyAIBase, IGrapplable
     protected override void Start()
     {
         base.Start();
-        bossAnimator.applyRootMotion = false;
+        //bossAnimator.applyRootMotion = false;
         if (bossRoarSource && roarClip)
             bossRoarSource.PlayOneShot(roarClip);
 
@@ -266,7 +266,7 @@ public class BossAI : EnemyAIBase, IGrapplable
 
     public override void takeDamage(int amount)
     {
-    
+
 
         if (shield > 0)
         {
