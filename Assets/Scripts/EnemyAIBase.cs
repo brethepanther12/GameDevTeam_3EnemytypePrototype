@@ -2,6 +2,7 @@ using System.Collections;
 //using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.InputSystem.Processors;
 using static UnityEngine.Rendering.DebugUI;
 
 public class EnemyAIBase : MonoBehaviour, IDamage
@@ -17,6 +18,7 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     [SerializeField] public GameObject armorPrefab;
     public int CurrentHealthPoints => enemyCurrentHealthPoints;
     public int MaxHealthPoints => enemyHealthPointsMax;
+    public bool isDead;
 
     //Enemy model
     [SerializeField] public SkinnedMeshRenderer[] enemyModel;
@@ -87,7 +89,7 @@ public class EnemyAIBase : MonoBehaviour, IDamage
         //Debug will message the debugger that an enemy dies
         //by getting the string name of the gameObject
         Debug.Log($"{gameObject.name} has died");
-
+        isDead = true;
         //Then it destroy 'this' object after
         Destroy(gameObject);
     }
@@ -299,5 +301,10 @@ public class EnemyAIBase : MonoBehaviour, IDamage
 
         enemyNavAgent.speed = originalSpeed;
         slowRoutine = null;
+    }
+
+    bool IDamage.isDead()
+    {
+        return isDead;
     }
 }

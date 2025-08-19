@@ -8,6 +8,8 @@ public class Destructible : MonoBehaviour, IDamage
     [SerializeField] bool isDestructible;
     [SerializeField] Renderer model;
 
+    private bool isDestroyed;
+
     Color colorOrig;
 
     public void takeDamage(int amount)
@@ -88,5 +90,10 @@ public class Destructible : MonoBehaviour, IDamage
     public void slowDown(float magnitude, float duration)
     {
         return;
+    }
+
+    bool IDamage.isDead()
+    {
+        return isDestroyed;
     }
 }

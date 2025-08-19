@@ -22,7 +22,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] int jumpMax;
     [SerializeField] float gravity;
     //[SerializeField] int magazineSize = 15;
-  //  [SerializeField] int reserveAmmo = 90;
+    //  [SerializeField] int reserveAmmo = 90;
     [SerializeField] public int shield;
     [SerializeField] int maxShield;
     [SerializeField] public int armor;
@@ -759,5 +759,15 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         return gravity;
     }
 
-
+    bool IDamage.isDead()
+    {
+        if (HP <= 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
 }

@@ -65,7 +65,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
     public bool canBeGrappled => true;
     private float footstepTimer;
     private Coroutine reloadingRT;
-    private bool isDead;
+    public bool isDead;
     private int currentAmmo;
     private bool isReloading;
     bool playerInTrigger;
@@ -628,5 +628,10 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
         {
             agent.SetDestination(playerTarget.position);
         }
+    }
+
+    bool IDamage.isDead()
+    {
+        return isDead;
     }
 }

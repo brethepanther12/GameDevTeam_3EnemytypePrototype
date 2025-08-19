@@ -560,4 +560,9 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable, IEnemyAI
         }
 
     }
+
+    bool IDamage.isDead()
+    {
+        return isDead;
+    }
 }

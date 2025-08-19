@@ -116,6 +116,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         currentHP = HP;
 		currentAmmo = maxAmmo;
         originalSpeed = flyingSpeed;
+        gamemanager.instance.updateGameGoal(1); //DO NOT REMOVE THIS FOR ANY REASON. IT HAS SINGLE-HANDEDLY MADE OUR LAST BUILD UNPLAYABLE AND ALMOST DID THE FIRST TIME TOO
 
         if (shield == 0)
         {
@@ -471,7 +472,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         if (currentHP <= 0)
         {
             Die();
-            //ScoreManager.instance.AddPointsForEnemy(gameObject.tag);
+            ScoreManager.instance.AddPointsForEnemy(gameObject.tag);
 
         }
 
@@ -680,5 +681,10 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     public void SetInvisible(bool state)
     {
        // throw new System.NotImplementedException();
+    }
+
+    bool IDamage.isDead()
+    {
+        return Dead;
     }
 }
