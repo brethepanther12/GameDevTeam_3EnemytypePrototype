@@ -55,7 +55,7 @@ MonoBehaviour:
   damageRate: 0
   speed: 50
   destroyTime: 3
-  impactPrefab: {fileID: 1000011128802252, guid: 1b42f75d44db36e428b67d2805076a86, type: 3}
+  impactPrefab: {fileID: 6284537494054096426, guid: 56718f236099ab64f8a4d619a44f3ecf, type: 3}
   weaponDMG: 0
   currentStatus: 0
   currentStatusData:
@@ -178,37 +178,53 @@ PrefabInstance:
       propertyPath: m_Name
       value: FlamesEffectsRed
       objectReference: {fileID: 0}
+    - target: {fileID: 1126461894715624, guid: 74d8934c39789c7439b963959aa4789f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1463581904545520, guid: 74d8934c39789c7439b963959aa4789f, type: 3}
       propertyPath: m_Name
       value: FlamesParticleEffectRed
       objectReference: {fileID: 0}
     - target: {fileID: 4132551088966812, guid: 74d8934c39789c7439b963959aa4789f, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.07
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4132551088966812, guid: 74d8934c39789c7439b963959aa4789f, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.07
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4132551088966812, guid: 74d8934c39789c7439b963959aa4789f, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.07
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4132551088966812, guid: 74d8934c39789c7439b963959aa4789f, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4450372746673954, guid: 74d8934c39789c7439b963959aa4789f, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4450372746673954, guid: 74d8934c39789c7439b963959aa4789f, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4450372746673954, guid: 74d8934c39789c7439b963959aa4789f, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 4780604034120858, guid: 74d8934c39789c7439b963959aa4789f, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.44
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4780604034120858, guid: 74d8934c39789c7439b963959aa4789f, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.44
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4780604034120858, guid: 74d8934c39789c7439b963959aa4789f, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.44
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4780604034120858, guid: 74d8934c39789c7439b963959aa4789f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -221,6 +237,18 @@ PrefabInstance:
     - target: {fileID: 4780604034120858, guid: 74d8934c39789c7439b963959aa4789f, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4931001233121808, guid: 74d8934c39789c7439b963959aa4789f, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4931001233121808, guid: 74d8934c39789c7439b963959aa4789f, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4931001233121808, guid: 74d8934c39789c7439b963959aa4789f, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4931001233121808, guid: 74d8934c39789c7439b963959aa4789f, type: 3}
       propertyPath: m_LocalPosition.x

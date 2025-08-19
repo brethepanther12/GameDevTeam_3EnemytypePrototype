@@ -24,9 +24,9 @@ MonoBehaviour:
     projectile: {fileID: 3219972179486975252, guid: a9c34932f2cfc72418f04b1eb4970ab2, type: 3}
     effectData:
       statusType: 5
-      statusDamage: 0
-      statusTickRate: 0
-      statusDuration: 0
+      statusDamage: 25
+      statusTickRate: 0.1
+      statusDuration: 0.1
       slowDownMagnitude: 0
     damage: 25
     range: 100
@@ -37,16 +37,16 @@ MonoBehaviour:
     detonateTime: 0
     projectileCount: 0
     projectileSpread: 0
-    blastRadius: 10
+    blastRadius: 0
     energyRechargeRate: 0
   - mode: 4
     projectileType: 6
     projectile: {fileID: 3219972179486975252, guid: a9c34932f2cfc72418f04b1eb4970ab2, type: 3}
     effectData:
-      statusType: 5
-      statusDamage: 0
-      statusTickRate: 0
-      statusDuration: 0
+      statusType: 0
+      statusDamage: 25
+      statusTickRate: 0.1
+      statusDuration: 0.1
       slowDownMagnitude: 0
     damage: 25
     range: 100

@@ -55,10 +55,16 @@ MonoBehaviour:
   damageRate: 0
   speed: 0
   destroyTime: 0.25
-  projectileStraightPrefab: {fileID: 0}
-  projectileHomingPrefab: {fileID: 0}
   impactPrefab: {fileID: 0}
   weaponDMG: 0
+  currentStatus: 0
+  currentStatusData:
+    statusType: 0
+    statusDamage: 0
+    statusTickRate: 0
+    statusDuration: 0
+    slowDownMagnitude: 0
+  statusTarget: {fileID: 0}
 --- !u!33 &7472055187840015431
 MeshFilter:
   m_ObjectHideFlags: 0

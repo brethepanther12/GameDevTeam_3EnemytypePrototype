@@ -14,8 +14,7 @@ public class damage : MonoBehaviour
     [SerializeField] public float damageRate;
     [SerializeField] public int speed;
     [SerializeField] public float destroyTime;
-    //[SerializeField] GameObject projectileStraightPrefab;
-    //[SerializeField] GameObject projectileHomingPrefab;
+    [SerializeField] public float blastRadius;
 
     [SerializeField] public GameObject impactPrefab;
 
@@ -58,22 +57,43 @@ public class damage : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+
         if (other.isTrigger)
             return;
 
-        IDamage dmg = other.GetComponent<IDamage>();
-
-        if (other.GetComponent<StatusEffectHandler>() != null)
+        // Apply AOE if blastRadius > 0
+        if (blastRadius > 0f)
         {
-            statusTarget = other.GetComponent<StatusEffectHandler>();
-            statusTarget.ApplyStatusEffect(currentStatusData, dmg);
+            Collider[] hits = Physics.OverlapSphere(transform.position, blastRadius, LayerMask.GetMask("Enemy", "Destructible"));
+
+            foreach (Collider hit in hits)
+            {
+                IDamage aoeDmg = hit.GetComponent<IDamage>();
+                if (aoeDmg != null)
+                    aoeDmg.takeDamage(damageAmount + weaponDMG);
+
+                StatusEffectHandler statusTarget = hit.GetComponent<StatusEffectHandler>();
+                if (statusTarget != null)
+                    statusTarget.ApplyStatusEffect(currentStatusData, aoeDmg);
+
+                if (hit.CompareTag("Enemy"))
+                {
+                    GameObject reticle = GameObject.Find("Reticle");
+                    ReticleController rc = reticle.GetComponent<ReticleController>();
+                    rc.Pulse(true);
+                }
+            }
         }
-
-        if (dmg != null && type != damagetype.DOT)
+        else
         {
+            // Single-target fallback
+            IDamage dmg = other.GetComponent<IDamage>();
+            if (dmg != null)
+                dmg.takeDamage(damageAmount + weaponDMG);
 
-            dmg.takeDamage(damageAmount + weaponDMG);
-
+            StatusEffectHandler statusTarget = other.GetComponent<StatusEffectHandler>();
+            if (statusTarget != null)
+                statusTarget.ApplyStatusEffect(currentStatusData, dmg);
 
             if (other.CompareTag("Enemy"))
             {
@@ -83,23 +103,23 @@ public class damage : MonoBehaviour
             }
         }
 
-        if ((type == damagetype.moving || type == damagetype.homing) && impactPrefab != null)
-        {
-            RaycastHit hit;
-            Vector3 rayOrigin = transform.position + transform.forward * 0.2f;
-            Vector3 rayDirection = -transform.forward;
+        //if ((type == damagetype.moving || type == damagetype.homing) && impactPrefab != null)
+        //{
+        //    RaycastHit hit;
+        //    Vector3 rayOrigin = transform.position + transform.forward * 0.2f;
+        //    Vector3 rayDirection = -transform.forward;
 
-            if (Physics.Raycast(rayOrigin, rayDirection, out hit, 1f, ~0, QueryTriggerInteraction.Ignore))
-            {
-                GameObject splatInstance = Instantiate(
-                    impactPrefab,
-                    hit.point,
-                    Quaternion.LookRotation(-hit.normal)
-                );
+        //    if (Physics.Raycast(rayOrigin, rayDirection, out hit, 1f, ~0, QueryTriggerInteraction.Ignore))
+        //    {
+        //        GameObject splatInstance = Instantiate(
+        //            impactPrefab,
+        //            hit.point,
+        //            Quaternion.LookRotation(-hit.normal)
+        //        );
 
-                splatInstance.transform.SetParent(hit.collider.transform, worldPositionStays: true);
-            }
-        }
+        //        splatInstance.transform.SetParent(hit.collider.transform, worldPositionStays: true);
+        //    }
+        //}
         if (type == damagetype.moving || type == damagetype.homing)
         {
             Destroy(gameObject);
@@ -128,6 +148,11 @@ public class damage : MonoBehaviour
     public void SetWeaponDamage(int wepDmg)
     {
         weaponDMG = wepDmg;
+    }
+
+    public void SetBlastRadius(float radius)
+    {
+        blastRadius = radius;
     }
 
     public void SetDamageType(damagetype newType)
@@ -163,6 +188,37 @@ public class damage : MonoBehaviour
         if (dmg != null)
         {
             dmg.takeDamage(damageAmount + weaponDMG);
+        }
+    }
+
+    private void OnDestroy()
+    {
+
+        if (impactPrefab == null) return;
+
+        RaycastHit hit;
+        Vector3 rayOrigin = transform.position;
+        Vector3 rayDirection = rb.linearVelocity.normalized;
+
+        if (Physics.Raycast(rayOrigin, rayDirection, out hit, 1f, ~0, QueryTriggerInteraction.Ignore))
+        {
+            GameObject impact = Instantiate(
+                impactPrefab,
+                hit.point,
+                Quaternion.LookRotation(hit.normal)
+            );
+
+            impact.transform.SetParent(hit.collider.transform, false);
+            impact.transform.position += hit.normal * 0.01f;
+        }
+        else
+        {
+            // Fallback if raycast fails
+            Instantiate(
+                impactPrefab,
+                transform.position,
+                Quaternion.LookRotation(transform.forward)
+            );
         }
     }
 

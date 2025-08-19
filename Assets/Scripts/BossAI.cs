@@ -28,7 +28,7 @@ public class BossAI : EnemyAIBase, IGrapplable
     private float burstTimer = 0f;
     private float aoeTimer = 0f;
     private float attackTimer = 0f;
-    private bool isDead = false;
+    //private bool isDead = false;
     private bool isDodging = false;
     private bool isRetreating = false;
     private bool isPhaseTwo = false;
@@ -42,6 +42,7 @@ public class BossAI : EnemyAIBase, IGrapplable
     protected override void Start()
     {
         base.Start();
+        bossAnimator.applyRootMotion = false;
         //bossAnimator.applyRootMotion = false;
         if (bossRoarSource && roarClip)
             bossRoarSource.PlayOneShot(roarClip);
@@ -331,4 +332,6 @@ public class BossAI : EnemyAIBase, IGrapplable
         foreach (var part in enemyModel)
             part.material.color = enemyColorOrigin;
     }
+
+
 }

@@ -1,78 +1,112 @@
 using System.Collections;
+using UnityEditor;
+//using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.LowLevel;
 using static UnityEngine.Rendering.DebugUI;
 public class FlyingAI : MonoBehaviour, IDamage, Visibility
 {
+    [Header("--- Target & Timers ---")]
     [SerializeField] private Transform target;
     [SerializeField] private float lostPlayDelay;
     private GameObject playerTarget;
     private float playerLostTimer;
 
-    [Header("\"--- Flying & Rotation ---\"")]
+    [Header("--- Flying & Rotation ---")]
     [SerializeField] private float flyingSpeed;
     [SerializeField] private float rotationSpeed;
-    Vector3 playerDirection;
-
+    private Vector3 playerDirection;
     [SerializeField] private Rigidbody rigidBody;
 
-    [Header("\"--- Damage ---\"")]
+    [Header("--- Damage ---")]
     [SerializeField] private float damageRate;
     [SerializeField] private int damageAmount;
+    [SerializeField] private float attackRange;
     private bool isDamaging;
-    damage Damage;
-    IDamage iDamage;
+    private IDamage iDamage;
 
-    [Header("\"--- Hover ---\"")]
+    [Header("--- Shooting ---")]
+    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private Transform shootPos;
+    [SerializeField] private float shootRange;
+    [SerializeField] private float shootRate;
+    [SerializeField] private int maxAmmo;
+    [SerializeField] private float reloadTime;
+    [SerializeField] private AudioClip shootSound;
+    [SerializeField] private AudioClip reloadSound;
+    [SerializeField] private Animator animator;
+    [SerializeField] private StatusEffectData statusEffectData;
+
+    private int currentAmmo;
+    private float shootTimer;
+    private bool isReloading;
+    private Coroutine reloadingRT;
+
+    [Header("--- Hover ---")]
     [SerializeField] private float hoverHeight;
     [SerializeField] private float hoverClamp;
 
-    [Header("\"--- Ceiling ---\"")]
+    [Header("--- Strafing ---")]
+    [SerializeField] private float strafeSpeed;
+    [SerializeField] private float strafeCooldown;
+    private float strafeTimer;
+    private Vector3 strafeDirection;
+
+    [Header("--- Retreat ---")]
+    [SerializeField] private float retreatSpeed;
+    [SerializeField] private float retreatDistance;
+    private bool isRetreating;
+    private float retreatTimer;
+    private Vector3 retreatDirection;
+
+    [Header("--- Ceiling ---")]
     [SerializeField] private float ceilingInRadius;
     [SerializeField] private float ceilingAttachmentRange;
-    //[SerializeField] private float ceilingHeightOff;
     [SerializeField] private LayerMask ceilingMask;
     [SerializeField] private SphereCollider bodyCollider;
-    private bool returnToCeiling;
-    private Vector3 ceilingTarget;
+    private bool attachedToCeiling;
     private Vector3 ceilingPoint;
 
-    [Header("\"--- Field of View ---\"")]
+    [Header("--- Field of View ---")]
     [SerializeField] private float fovDistance;
     [SerializeField] private float fovAngle;
-    [SerializeField] private LayerMask enviormentMask;
+    [SerializeField] private LayerMask environmentMask;
     private bool playerVisible;
     private bool InRange;
     private bool isBlind;
 
-    [Header("\"--- Health ---\"")]
+    [Header("--- Health ---")]
     [SerializeField] private int HP;
     private int currentHP;
     private bool Dead;
-
     [SerializeField] public int shield;
     [SerializeField] public int armor;
-
     [SerializeField] public GameObject shieldPrefab;
     [SerializeField] public GameObject armorPrefab;
 
-    [Header("\"--- Audio ---\"")]
+    [Header("--- Audio ---")]
     [SerializeField] private AudioClip hitSound;
     [SerializeField] private AudioClip deathSound;
     [SerializeField] private float hitVolume;
-    [SerializeField] private float deathVolume;
+    [SerializeField] private float deathVolume ;
 
-    [Header("\"--- Drops ---\"")]
+
+    [Header("--- Drops ---")]
     public GameObject healthPickupPrefab;
     public GameObject ammoPickupPrefab;
     public GameObject mutagenPickupPrefab;
     public GameObject componentPrefab;
 
-    [Header("\"--- Model ---\"")]
+    [Header("--- Model ---")]
     [SerializeField] private Renderer modelRender;
     private Color originColor;
 
+    // Drone state
+    private enum DroneState { Idle, Chasing, Retreating, ReturningToCeiling }
+    private DroneState currentState;
+
+    //Slowdown
     private float originalSpeed;
     private Coroutine slowRoutine;
 
@@ -80,7 +114,9 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     void Start()
     {
         currentHP = HP;
+		currentAmmo = maxAmmo;
         originalSpeed = flyingSpeed;
+        gamemanager.instance.updateGameGoal(1); //DO NOT REMOVE THIS FOR ANY REASON. IT HAS SINGLE-HANDEDLY MADE OUR LAST BUILD UNPLAYABLE AND ALMOST DID THE FIRST TIME TOO
 
         if (shield == 0)
         {
@@ -94,20 +130,134 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         // Store original material color
         if (modelRender != null)
             originColor = modelRender.material.color;
-
+		
         if (rigidBody == null) rigidBody = GetComponent<Rigidbody>();
 
         playerTarget = gamemanager.instance.player;
-
-        Damage = GetComponent<damage>();
-        if (Damage != null)
-            Damage.enabled = false;
-       gamemanager.instance.updateGameGoal(1);
+        rigidBody.isKinematic = false;
     }
 
-
-    // Update is called once per frame
     void FixedUpdate()
+    {
+        if (Dead) return;
+
+        UpdateVisibility();
+        PlayerLost();
+        AssignTarget();
+
+        Hover();
+        Movement();
+        HandleShooting();
+    }
+
+    private void Movement()
+    {
+        switch (currentState)
+        {
+            case DroneState.Chasing:
+                if (target != null) MoveTowardsPlayer();
+                break;
+            case DroneState.Retreating:
+                Retreat();
+                break;
+            case DroneState.ReturningToCeiling:
+                MoveToCeiling();
+                break;
+        }
+    }
+
+    private void MoveTowardsPlayer()
+    {
+        if (target == null || rigidBody == null) return;
+
+        if (rigidBody.isKinematic) rigidBody.isKinematic = false;
+
+        Vector3 direction = (target.position - transform.position);
+        Vector3 horizontalDir = new Vector3(direction.x, 0, direction.z).normalized;
+
+        Vector3 horizontalVelocity = horizontalDir * flyingSpeed + Strafing(horizontalDir);
+        float verticalVelocity = rigidBody.linearVelocity.y;
+
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight * 2f))
+        {
+            float heightError = hoverHeight - hit.distance;
+            float proportionalLift = heightError * hoverClamp;
+            float damping = -rigidBody.linearVelocity.y * 0.5f;
+            verticalVelocity = proportionalLift + damping;
+        }
+
+        rigidBody.linearVelocity = new Vector3(horizontalVelocity.x, verticalVelocity, horizontalVelocity.z);
+        FaceTarget();
+    }
+
+    private Vector3 Strafing(Vector3 direction)
+    {
+        strafeTimer -= Time.fixedDeltaTime;
+        if (strafeTimer <= 0f)
+        {
+            strafeTimer = strafeCooldown;
+            Vector3 strafe = Vector3.Cross(Vector3.up, direction).normalized;
+            strafeDirection = Random.value > 0.5f ? strafe : -strafe;
+        }
+        return strafeDirection * strafeSpeed;
+    }
+
+    private void Retreat()
+    {
+        if (rigidBody.isKinematic) rigidBody.isKinematic = false;
+
+        retreatTimer -= Time.fixedDeltaTime;
+
+        if (strafeDirection == Vector3.zero)
+        {
+            Vector3 strafe = Vector3.Cross(Vector3.up, retreatDirection).normalized;
+            strafeDirection = Random.value > 0.5f ? strafe : -strafe;
+        }
+
+        Vector3 horizontalVelocity = (retreatDirection + strafeDirection).normalized * retreatSpeed;
+        rigidBody.linearVelocity = new Vector3(horizontalVelocity.x, rigidBody.linearVelocity.y, horizontalVelocity.z);
+
+        Quaternion targetRotation = Quaternion.LookRotation(retreatDirection);
+        rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime));
+
+        if (retreatTimer <= 0f || Vector3.Distance(transform.position, playerTarget.transform.position) >= retreatDistance)
+        {
+            strafeDirection = Vector3.zero;
+            rigidBody.linearVelocity = Vector3.zero;
+            NearestCeiling();
+            currentState = DroneState.ReturningToCeiling;
+        }
+    }
+
+    private void AssignTarget()
+    {
+        if (Dead) return;
+
+        InRange = playerTarget && Vector3.Distance(transform.position, playerTarget.transform.position) <= fovDistance;
+
+        if (!isRetreating && (playerVisible || InRange))
+        {
+            target = playerTarget.transform;
+            attachedToCeiling = false;
+            currentState = DroneState.Chasing;
+            playerLostTimer = 0f;
+
+            if (rigidBody.isKinematic)
+            {
+                rigidBody.isKinematic = false;
+                rigidBody.linearVelocity = Vector3.zero;
+                rigidBody.angularVelocity = Vector3.zero;
+            }
+        }
+        else if (!isRetreating && currentState != DroneState.ReturningToCeiling)
+        {
+            target = null;
+            NearestCeiling();
+            currentState = DroneState.ReturningToCeiling;
+        }
+    }
+
+    private void UpdateVisibility()
     {
         if (isBlind)
         {
@@ -116,235 +266,165 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         }
         else
         {
-            //  check if the player is in range and visible
             playerVisible = PlayerInFieldOfView();
         }
-
-
-        // Assign or clear the target based on FOV + trigger
-        if (InRange && playerVisible && target == null)
-        {
-            target = playerTarget.transform;
-        }
-        else if ((!InRange || !playerVisible) && target != null)
-        {
-            target = null;
-        }
-
-        // Determine if the player is "lost"
-        bool playerLost = target == null;
-
-        // Handle player loss timer
-        if (playerLost)
-        {
-            playerLostTimer += Time.fixedDeltaTime;
-        }
-        else
-        {
-            playerLostTimer = 0f;
-        }
-
-        // If lost for long enough, go to ceiling
-        if (playerLostTimer >= lostPlayDelay && !returnToCeiling)
-        {
-            NearestCeiling();
-            ceilingTarget = ceilingPoint;
-            returnToCeiling = true;
-        }
-
-        if (!playerLost && returnToCeiling)
-        {
-            returnToCeiling = false;
-        }
-
-        // If returning to ceiling, override all movement
-        if (returnToCeiling)
-        {
-            MoveToCeiling();
-            return;
-        }
-
-        // Hover logic (always active)
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight))
-        {
-            float hoverError = hoverHeight - hit.distance;
-            float upwardForce = hoverClamp * hoverError;
-
-            if (hit.distance < 0.2f)
-            {
-                upwardForce *= 3f;
-            }
-
-            rigidBody.AddForce(Vector3.up * upwardForce, ForceMode.Acceleration);
-        }
-
-        // Movement logic
-        if (!playerLost && target != null)
-        {
-            if (rigidBody.isKinematic)
-            {
-                rigidBody.isKinematic = false;
-            }
-
-            Vector3 direction = (target.position - transform.position).normalized;
-            Debug.DrawRay(transform.position, direction * 1f, Color.red);
-
-            if (!Physics.Raycast(transform.position, direction, 1f, enviormentMask))
-            {
-                rigidBody.linearVelocity = direction * flyingSpeed;
-            }
-            else
-            {
-                rigidBody.linearVelocity = Vector3.zero;
-            }
-
-            faceTarget();
-        }
-        else
-        {
-            rigidBody.linearVelocity = Vector3.zero;
-        }
-
     }
 
-
-    //Logic if the player is in view or not
     private bool PlayerInFieldOfView()
     {
-        //playerDirection = gamemanager.instance.player.transform.position - transform.position;
+        if (!playerTarget) return false;
 
-        if (playerTarget == null || isBlind) return false;
+        Vector3 dir = playerTarget.transform.position - transform.position;
+        float distance = dir.magnitude;
 
-        //Locate player
-        Vector3 direction = playerTarget.transform.position - transform.position;
-        float angle = Vector3.Angle(direction, transform.forward);
+        if (distance > fovDistance) return false;
 
-        Debug.DrawRay(transform.position, direction.normalized * fovDistance, Color.red);
+        float angle = Vector3.Angle(transform.forward, dir);
+        if (angle > fovAngle) return false;
 
-        //check if the player is far from the object
-        if (direction.magnitude > fovDistance || angle > fovAngle) return false;
-
-        if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, fovDistance))
+        if (Physics.Raycast(transform.position, dir.normalized, out RaycastHit hit, fovDistance, environmentMask | (1 << LayerMask.NameToLayer("Player"))))
         {
-            if (hit.collider.CompareTag("Player"))
-            {
-                return true;
-            }
-            else if (hit.collider.CompareTag("Smoke"))
-            {
-                return false;
-            }
-            else if (((1 << hit.collider.gameObject.layer) & enviormentMask) != 0)
-            {
-                return false;
-            }
-
+            return hit.collider.CompareTag("Player");
         }
+
         return false;
     }
 
-    public void SetInvisible(bool invisible)
+    private void PlayerLost()
     {
-        isBlind = invisible;
-        if (invisible)
+        if (target == null) playerLostTimer += Time.fixedDeltaTime;
+        else playerLostTimer = 0f;
+
+        if (playerLostTimer >= lostPlayDelay && !playerVisible && !isRetreating)
         {
-            target = null;
-            playerVisible = false;
-            InRange = false;
+            NearestCeiling();
+            currentState = DroneState.ReturningToCeiling;
         }
     }
-    void NearestCeiling()
+
+    private void NearestCeiling()
     {
+        attachedToCeiling = false;
+
         Collider[] hits = Physics.OverlapSphere(transform.position, ceilingInRadius, ceilingMask);
+        float best = Mathf.Infinity;
+        Vector3 bestPoint = transform.position + Vector3.up * hoverHeight;
 
-        float closest = Mathf.Infinity;
-        ceilingPoint = Vector3.zero;
-
-        for (int i = 0; i < hits.Length; i++)
+        foreach (var c in hits)
         {
-            /*
-             Collider hit = hits[i];
-
-            Vector3 ceilingBottom = hit.bounds.center - new Vector3(0, hit.bounds.extents.y,0);
-            float distance = Vector3.Distance(transform.position, ceilingBottom);
-             */
-
-            Bounds bounds = hits[i].bounds;
-
-            //Y of the ceiling
-            float ceilingY = bounds.center.y - bounds.extents.y;
-
-            float margin = 0.5f;
-
-            float minX = bounds.min.x + margin;
-            float maxX = bounds.max.x - margin;
-            float minZ = bounds.min.z + margin;
-            float maxZ = bounds.max.z - margin;
-
-            if (minX >= maxX || minZ >= maxZ) continue;
-            ////Random z and x points
-            float ceilingX = Random.Range(minX, maxX);
-            float ceilngZ = Random.Range(minZ, maxZ);
-
-            Vector3 ceilingBottom = new Vector3(ceilingX, ceilingY, ceilngZ);
-            float distance = Vector3.Distance(transform.position, ceilingBottom);
-            if (distance < closest)
+            Vector3 fromAbove = c.bounds.center + Vector3.up * (c.bounds.extents.y + 0.1f);
+            if (c.Raycast(new Ray(fromAbove, Vector3.down), out RaycastHit h, c.bounds.size.y + 1f))
             {
-                closest = distance;
-                ceilingPoint = ceilingBottom;
+                float d = (h.point - transform.position).sqrMagnitude;
+                if (d < best) { best = d; bestPoint = h.point; }
             }
         }
-
-        if (closest < Mathf.Infinity)
-        {
-            //rigidBody.linearVelocity = (ceilingPoint - transform.position).normalized * flyingSpeed;
-        }
+        ceilingPoint = bestPoint;
     }
 
-    void MoveToCeiling()
+    private void MoveToCeiling()
     {
-        if (!returnToCeiling) return;
+        if (attachedToCeiling) return;
 
-        if (rigidBody.isKinematic) return;
+        float radius = bodyCollider != null ? bodyCollider.radius : 0.5f;
+        float dangleOffset = 1f;
+        Vector3 targetPos = ceilingPoint - Vector3.up * (radius + dangleOffset);
 
-        Vector3 direction = (ceilingTarget - transform.position).normalized;
-        float distance = Vector3.Distance(transform.position, ceilingTarget);
-
-        if (distance > ceilingAttachmentRange)
-        {
-            rigidBody.linearVelocity = direction * flyingSpeed;
-
-            Quaternion targetRot = Quaternion.LookRotation(direction);
-            rigidBody.MoveRotation(Quaternion.Slerp(rigidBody.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime));
-        }
-        else
+        if (!rigidBody.isKinematic)
         {
             rigidBody.linearVelocity = Vector3.zero;
             rigidBody.angularVelocity = Vector3.zero;
-
             rigidBody.isKinematic = true;
+        }
 
-            float ceilingHeightOff = bodyCollider.bounds.extents.y; //bodyCollider.radius * transform.localScale.y;
-            // snap to point
-            transform.position = ceilingTarget - new Vector3(0, ceilingHeightOff, 0);
+        rigidBody.MovePosition(Vector3.MoveTowards(
+            rigidBody.position,
+            targetPos,
+            flyingSpeed * Time.fixedDeltaTime
+        ));
 
+        if (Vector3.Distance(rigidBody.position, targetPos) < 0.05f)
+        {
+            attachedToCeiling = true;
+            rigidBody.position = targetPos;
+            currentState = DroneState.Idle;
         }
     }
 
-    void faceTarget()
+    private void Hover()
+    {
+        if (attachedToCeiling || rigidBody.isKinematic) return;
+
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight * 2f))
+        {
+            float heightError = hoverHeight - hit.distance;
+            float lift = heightError * hoverClamp - rigidBody.linearVelocity.y * 0.5f;
+            rigidBody.AddForce(Vector3.up * lift, ForceMode.Acceleration);
+        }
+    }
+
+    private void FaceTarget()
     {
         if (target == null) return;
 
         playerDirection = (target.position - transform.position).normalized;
-
         if (playerDirection.sqrMagnitude > 0.01f)
         {
             Quaternion rotate = Quaternion.LookRotation(playerDirection);
-            transform.rotation = Quaternion.Lerp(rigidBody.rotation, rotate, Time.deltaTime * rotationSpeed);
+            transform.rotation = Quaternion.Lerp(rigidBody.rotation, rotate, Time.fixedDeltaTime * rotationSpeed);
+        }
+    }
 
+    private void HandleShooting()
+    {
+        if (currentState != DroneState.Chasing || target == null || isReloading) return;
+
+        float distance = Vector3.Distance(transform.position, target.position);
+        if (distance > fovDistance) return;
+
+        shootTimer += Time.fixedDeltaTime;
+
+        if (shootTimer >= shootRate && currentAmmo > 0)
+        {
+            Shoot();
+        }
+        else if (currentAmmo <= 0 && reloadingRT == null)
+        {
+            reloadingRT = StartCoroutine(Reload());
+        }
+    }
+
+    private void Shoot()
+    {
+        if (bulletPrefab == null || shootPos == null) return;
+
+        currentAmmo--;
+        shootTimer = 0f;
+
+        Instantiate(bulletPrefab, shootPos.position, shootPos.rotation);
+
+        if (shootSound != null)
+            AudioSource.PlayClipAtPoint(shootSound, shootPos.position);
+    }
+
+    private IEnumerator Reload()
+    {
+        isReloading = true;
+        if (reloadSound != null)
+            AudioSource.PlayClipAtPoint(reloadSound, transform.position);
+
+        float timer = 0f;
+        while (timer < reloadTime)
+        {
+            timer += Time.deltaTime;
+            yield return null;
         }
 
+        currentAmmo = maxAmmo;
+        isReloading = false;
+        reloadingRT = null;
     }
+
 
     public void takeDamage(int amount)
     {
@@ -393,6 +473,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         {
             Die();
             ScoreManager.instance.AddPointsForEnemy(gameObject.tag);
+
         }
 
     }
@@ -412,11 +493,12 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
                 if (shield <= 0 && armor <= 0 && HP > 0)
                 {
                     takeDamage(amount + 1);
-                } else
+                }
+                else
                 {
                     takeDamage(amount);
                 }
-                    break;
+                break;
 
             case DamageStatus.Corrosive:
 
@@ -428,7 +510,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
                 {
                     takeDamage(amount);
                 }
-                    break;
+                break;
 
             case DamageStatus.Cryo:
 
@@ -460,11 +542,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
             default:
                 break;
         }
-
-
-
     }
-
     private void OnCollisionEnter(Collision other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Bullet"))
@@ -599,5 +677,14 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
 
         flyingSpeed = originalSpeed;
         slowRoutine = null;
+    }
+    public void SetInvisible(bool state)
+    {
+       // throw new System.NotImplementedException();
+    }
+
+    bool IDamage.isDead()
+    {
+        return Dead;
     }
 }

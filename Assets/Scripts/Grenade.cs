@@ -10,8 +10,8 @@ public class Grenade : MonoBehaviour
     [SerializeField] private int grenadeSpeed;
     [SerializeField] private int grenadeSpeedY;
     [SerializeField] private float destroyTimer;
-
-    [SerializeField] private GameObject explosionPrefab;
+    [SerializeField] private float fovThreshold = 0.5f;
+    [SerializeField] public GameObject explosionPrefab;
 
     [SerializeField] private bool OnStickyBomb;
     [SerializeField] private bool isTracking;
@@ -23,7 +23,7 @@ public class Grenade : MonoBehaviour
     
     void Start()
     {
-        
+        Transform player = gamemanager.instance.player.transform;
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         if (enemies.Length > 0)
         {
@@ -31,49 +31,51 @@ public class Grenade : MonoBehaviour
             {
                 isTracking = true;
             }
-            
 
-            GameObject closest = enemies[0];
-            float minDist = Vector3.Distance(transform.position, closest.transform.position);
+
+            GameObject closest = null;
+            float minDist = Mathf.Infinity;
 
             foreach (GameObject enemy in enemies)
             {
+                IDamage isEnemyDead = enemy.GetComponent<IDamage>();
+                if (isEnemyDead != null && isEnemyDead.isDead()) continue;
+
+                Vector3 toEnemy = (enemy.transform.position - transform.position).normalized;
+                float dot = Vector3.Dot(transform.forward, toEnemy);
+
+                if (dot < fovThreshold) continue;
+
                 float dist = Vector3.Distance(transform.position, enemy.transform.position);
                 if (dist < minDist)
                 {
                     closest = enemy;
                     minDist = dist;
-
-
                 }
             }
 
-            playerTarget = closest.transform;
-        } else
-        {
-            isTracking = false;
-        }
-
+            playerTarget = closest != null ? closest.transform : null;
+            isTracking = playerTarget != null;
 
             damageStats = GetComponent<damage>();
 
-        if (damageStats != null)
-        {
-            grenadeSpeed = damageStats.speed;
-            destroyTimer = damageStats.destroyTime;
-            grenadeRigidB = damageStats.rb;
+            if (damageStats != null)
+            {
+                grenadeSpeed = damageStats.speed;
+                destroyTimer = damageStats.destroyTime;
+                grenadeRigidB = damageStats.rb;
+            }
+
+
+            if (!isTracking)
+            {
+                grenadeRigidB.useGravity = true;
+                grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed) + (transform.up * grenadeSpeedY);
+            }
+
+
+            StartCoroutine(explode());
         }
-
-        
-        if (!isTracking)
-        {
-            grenadeRigidB.useGravity = true;
-            grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed )  + (transform.up * grenadeSpeedY);
-        }
-
-        
-        StartCoroutine(explode());
-
     }
 
     // Update is called once per frame
@@ -82,7 +84,8 @@ public class Grenade : MonoBehaviour
         
         if (isTracking && !OnSurface && playerTarget != null)
         {
-            grenadeRigidB.linearVelocity = (playerTarget.position - transform.position) * grenadeSpeed;
+            Vector3 direction = (playerTarget.position - transform.position).normalized;
+            grenadeRigidB.linearVelocity = direction * grenadeSpeed;
 
             float proximity = Vector3.Distance(transform.position, playerTarget.transform.position);
 
@@ -135,7 +138,7 @@ public class Grenade : MonoBehaviour
     {
         yield return new WaitForSeconds(destroyTimer);
         if (explosionPrefab != null )
-        Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        Instantiate(explosionPrefab, transform.position, Quaternion.identity); 
         Destroy(gameObject);
     }
 

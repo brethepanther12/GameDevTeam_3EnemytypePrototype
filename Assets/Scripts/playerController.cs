@@ -22,7 +22,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] int jumpMax;
     [SerializeField] float gravity;
     //[SerializeField] int magazineSize = 15;
-  //  [SerializeField] int reserveAmmo = 90;
+    //  [SerializeField] int reserveAmmo = 90;
     [SerializeField] public int shield;
     [SerializeField] int maxShield;
     [SerializeField] public int armor;
@@ -198,10 +198,11 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
         controller.Move(moveDir * speed * Time.deltaTime + movePlatform * Time.deltaTime);
 
-        float horizontalSpeed = new Vector3(controller.velocity.x, 0, controller.velocity.z).magnitude;
+        //float horizontalSpeed = new Vector3(controller.velocity.x, 0, controller.velocity.z).magnitude;
+        float input = moveDir.magnitude;
         if (animator != null)
         {
-            animator.SetFloat("Speed", horizontalSpeed);
+            animator.SetFloat("Speed", input * speed);
         }
 
         HandleFootsteps();
@@ -223,9 +224,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     void HandleFootsteps()
     {
-        float velocity = controller.velocity.magnitude;
+        // float velocity = controller.velocity.magnitude;
 
-        if (velocity > 0.2f && IsGrounded())
+        float input = moveDir.magnitude;
+        if (input > 0.2f && IsGrounded())
         {
             float currentStepDelay = Input.GetKey(KeyCode.LeftShift) ? sprintStepDelay : walkStepDelay;
 
@@ -757,5 +759,15 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         return gravity;
     }
 
-
+    bool IDamage.isDead()
+    {
+        if (HP <= 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
 }
