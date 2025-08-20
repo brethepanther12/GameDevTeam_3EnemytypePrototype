@@ -18,6 +18,7 @@ public class damage : MonoBehaviour
     [SerializeField] private float homingDelay;
     private float homingTimer = 0f;
     private bool homingActive = false;
+    private bool hasExploded = false;
 
     [SerializeField] public GameObject impactPrefab;
 
@@ -122,33 +123,16 @@ public class damage : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-
+        Debug.Log($"Trigger entered by {other.name}");
         if (other.isTrigger)
             return;
 
-        // Apply AOE if blastRadius > 0
-        if (blastRadius > 0f)
+        if (blastRadius > 0f && !hasExploded)
         {
-            Collider[] hits = Physics.OverlapSphere(transform.position, blastRadius, LayerMask.GetMask("Enemy", "Destructible"));
-
-            foreach (Collider hit in hits)
-            {
-                IDamage aoeDmg = hit.GetComponent<IDamage>();
-                if (aoeDmg != null)
-                    aoeDmg.takeDamage(damageAmount + weaponDMG);
-
-                StatusEffectHandler statusTarget = hit.GetComponent<StatusEffectHandler>();
-                if (statusTarget != null)
-                    statusTarget.ApplyStatusEffect(currentStatusData, aoeDmg);
-
-                if (hit.CompareTag("Enemy"))
-                {
-                    GameObject reticle = GameObject.Find("Reticle");
-                    ReticleController rc = reticle.GetComponent<ReticleController>();
-                    rc.Pulse(true);
-                }
-            }
+            hasExploded = true;
+            ApplyAOEDamage();
         }
+
         else
         {
             // Single-target fallback
@@ -258,6 +242,8 @@ public class damage : MonoBehaviour
 
             impact.transform.SetParent(hit.collider.transform, false);
             impact.transform.position += hit.normal * 0.01f;
+
+
         }
         else
         {
@@ -268,6 +254,38 @@ public class damage : MonoBehaviour
                 Quaternion.LookRotation(transform.forward)
             );
         }
+
+        if (type == damagetype.explosion && blastRadius > 0f && !hasExploded)
+        {
+            hasExploded = true;
+            ApplyAOEDamage();
+        }
+
+    }
+
+    private void ApplyAOEDamage()
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, blastRadius, LayerMask.GetMask("Enemy", "Default", "Player", "Environment", "Enemy Bullet", "Bullet"));
+
+        foreach (Collider target in hits)
+        {
+            IDamage aoeDmg = target.GetComponent<IDamage>();
+            if (aoeDmg != null)
+                aoeDmg.takeDamage(damageAmount + weaponDMG);
+
+            StatusEffectHandler statusTarget = target.GetComponent<StatusEffectHandler>();
+            if (statusTarget != null)
+                statusTarget.ApplyStatusEffect(currentStatusData, aoeDmg);
+
+            if (target.CompareTag("Enemy"))
+            {
+                GameObject reticle = GameObject.Find("Reticle");
+                ReticleController rc = reticle.GetComponent<ReticleController>();
+                rc.Pulse(true);
+            }
+        }
+
+        Debug.Log($"Explosion triggered at {transform.position} with radius {blastRadius}");
     }
 
     public void SetHomingTarget(Transform target)

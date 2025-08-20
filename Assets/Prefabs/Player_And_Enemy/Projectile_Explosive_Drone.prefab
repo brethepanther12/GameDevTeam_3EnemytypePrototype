@@ -11,12 +11,14 @@ GameObject:
   - component: {fileID: 805820712024718768}
   - component: {fileID: 1678781066422630087}
   - component: {fileID: 4817676317238360515}
+  - component: {fileID: 6146559928661529648}
   - component: {fileID: 3252908572778254321}
   - component: {fileID: 2529440205336581686}
   - component: {fileID: 2250057740767863113}
+  - component: {fileID: -6418975069029601918}
   m_Layer: 8
-  m_Name: Projectile_Spiral
-  m_TagString: Untagged
+  m_Name: Projectile_Explosive_Drone
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -89,6 +91,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6146559928661529648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7705143720950810493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef396377418919e48aff9079808ae744, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!135 &3252908572778254321
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -108,7 +122,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
+  m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &2529440205336581686
 Rigidbody:
@@ -156,15 +170,31 @@ MonoBehaviour:
   damageRate: 0
   speed: 5
   destroyTime: 5
-  blastRadius: 10
+  blastRadius: 0
   homingDelay: 0.5
   impactPrefab: {fileID: 8873835544158007701, guid: b1c56f041e8796147afb5703381a8078, type: 3}
   weaponDMG: 0
   currentStatus: 0
   currentStatusData:
     statusType: 5
-    statusDamage: 6
+    statusDamage: 5
     statusTickRate: 0.1
     statusDuration: 0.1
     slowDownMagnitude: 0
   statusTarget: {fileID: 0}
+--- !u!114 &-6418975069029601918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7705143720950810493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21132d5697c7a42459b9d769bf0988c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HP: 1
+  isDestructible: 1
+  model: {fileID: 4817676317238360515}
+  destroyPrefab: {fileID: 8873835544158007701, guid: cc2a4f70987966446a7595a04e4e90df, type: 3}
