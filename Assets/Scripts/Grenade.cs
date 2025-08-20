@@ -115,7 +115,7 @@ public class Grenade : MonoBehaviour
 
             
         } 
-        else if (collision.transform.CompareTag("Breakable") || collision.transform.CompareTag("Untagged") || collision.transform.CompareTag("Enemy"))
+        else if (collision.transform.CompareTag("Breakable") || collision.transform.CompareTag("Enemy"))
         {
             if (!isCooked)
             {
