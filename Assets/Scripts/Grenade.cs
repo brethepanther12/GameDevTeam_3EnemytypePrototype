@@ -24,65 +24,53 @@ public class Grenade : MonoBehaviour
     
     void Start()
     {
+        damageStats = GetComponent<damage>();
+
+        if (damageStats != null)
+        {
+            grenadeSpeed = damageStats.speed;
+            destroyTimer = damageStats.destroyTime;
+            grenadeRigidB = damageStats.rb;
+        }
+
         Transform player = gamemanager.instance.player.transform;
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        if (enemies.Length > 0)
+
+        GameObject closest = null;
+        float minDist = Mathf.Infinity;
+
+        foreach (GameObject enemy in enemies)
         {
-            if (!isCooked && !OnStickyBomb)
+            IDamage isEnemyDead = enemy.GetComponent<IDamage>();
+            if (isEnemyDead != null && isEnemyDead.isDead()) continue;
+
+            Vector3 toEnemy = (enemy.transform.position - transform.position).normalized;
+            float angle = Vector3.Angle(transform.forward, toEnemy);
+            if (angle > maxHomingAngle) continue;
+
+            float dist = Vector3.Distance(transform.position, enemy.transform.position);
+            if (dist < minDist)
             {
-                isTracking = true;
+                closest = enemy;
+                minDist = dist;
             }
-
-
-            GameObject closest = null;
-            float minDist = Mathf.Infinity;
-
-            foreach (GameObject enemy in enemies)
-            {
-                IDamage isEnemyDead = enemy.GetComponent<IDamage>();
-                if (isEnemyDead != null && isEnemyDead.isDead()) continue;
-
-                Vector3 toEnemy = (enemy.transform.position - transform.position).normalized;
-                float angle = Vector3.Angle(transform.forward, toEnemy);
-                if (angle > maxHomingAngle) continue; ;
-
-                float dist = Vector3.Distance(transform.position, enemy.transform.position);
-                if (dist < minDist)
-                {
-                    closest = enemy;
-                    minDist = dist;
-                }
-            }
-
-            playerTarget = closest != null ? closest.transform : null;
-            isTracking = canTrack && playerTarget != null;
-
-            damageStats = GetComponent<damage>();
-
-            if (damageStats != null)
-            {
-                grenadeSpeed = damageStats.speed;
-                destroyTimer = damageStats.destroyTime;
-                grenadeRigidB = damageStats.rb;
-                
-            }
-
-
-            if (!isTracking)
-            {
-                grenadeRigidB.useGravity = true;
-                grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed) + (transform.up * grenadeSpeedY);
-            }
-
-            if (isTracking)
-            {
-                grenadeRigidB.useGravity = false;
-                grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed * 0.5f);
-            }
-
-
-            StartCoroutine(explode());
         }
+
+        playerTarget = closest != null ? closest.transform : null;
+        isTracking = canTrack && playerTarget != null;
+
+        if (!isTracking)
+        {
+            grenadeRigidB.useGravity = true;
+            grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed) + (transform.up * grenadeSpeedY);
+        }
+        else
+        {
+            grenadeRigidB.useGravity = false;
+            grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed * 0.5f);
+        }
+
+        StartCoroutine(explode());
     }
 
     // Update is called once per frame
