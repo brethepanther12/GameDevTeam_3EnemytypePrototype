@@ -11,7 +11,9 @@ public class CharacterAiming : MonoBehaviour
 
     private Transform leftHandTarget;
     private Animator animator;
+
     private AnimatorStateInfo animatorStateInfo;
+
 
     void Start()
     {
