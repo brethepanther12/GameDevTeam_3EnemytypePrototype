@@ -690,6 +690,8 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         isDashing = true;
         dashCount--;
 
+        animator.SetTrigger("Dash");
+
         speed = originalSpeed * sprintMod;
 
         yield return new WaitForSeconds(dashDuration);
