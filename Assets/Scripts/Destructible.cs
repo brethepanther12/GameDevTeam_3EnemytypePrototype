@@ -7,6 +7,7 @@ public class Destructible : MonoBehaviour, IDamage
     [SerializeField] int HP;
     [SerializeField] bool isDestructible;
     [SerializeField] Renderer model;
+    [SerializeField] GameObject destroyPrefab;
 
     private bool isDestroyed;
 
@@ -26,6 +27,12 @@ public class Destructible : MonoBehaviour, IDamage
 
             if (HP <= 0 )
             {
+                isDestroyed = true;
+
+                if (destroyPrefab != null)
+                {
+                    Instantiate(destroyPrefab,gameObject.transform);
+                }
                 Destroy(gameObject);
             }
         }

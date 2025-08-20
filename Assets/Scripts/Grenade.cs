@@ -10,11 +10,12 @@ public class Grenade : MonoBehaviour
     [SerializeField] private int grenadeSpeed;
     [SerializeField] private int grenadeSpeedY;
     [SerializeField] private float destroyTimer;
-    [SerializeField] private float fovThreshold = 0.5f;
+    [SerializeField] private float maxHomingAngle = 30f;
     [SerializeField] public GameObject explosionPrefab;
 
     [SerializeField] private bool OnStickyBomb;
     [SerializeField] private bool isTracking;
+    [SerializeField] public bool canTrack;
     [SerializeField] private bool isCooked;
     private Transform playerTarget;
     private damage damageStats;
@@ -42,9 +43,8 @@ public class Grenade : MonoBehaviour
                 if (isEnemyDead != null && isEnemyDead.isDead()) continue;
 
                 Vector3 toEnemy = (enemy.transform.position - transform.position).normalized;
-                float dot = Vector3.Dot(transform.forward, toEnemy);
-
-                if (dot < fovThreshold) continue;
+                float angle = Vector3.Angle(transform.forward, toEnemy);
+                if (angle > maxHomingAngle) continue; ;
 
                 float dist = Vector3.Distance(transform.position, enemy.transform.position);
                 if (dist < minDist)
@@ -55,7 +55,7 @@ public class Grenade : MonoBehaviour
             }
 
             playerTarget = closest != null ? closest.transform : null;
-            isTracking = playerTarget != null;
+            isTracking = canTrack && playerTarget != null;
 
             damageStats = GetComponent<damage>();
 
@@ -64,6 +64,7 @@ public class Grenade : MonoBehaviour
                 grenadeSpeed = damageStats.speed;
                 destroyTimer = damageStats.destroyTime;
                 grenadeRigidB = damageStats.rb;
+                
             }
 
 
@@ -71,6 +72,12 @@ public class Grenade : MonoBehaviour
             {
                 grenadeRigidB.useGravity = true;
                 grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed) + (transform.up * grenadeSpeedY);
+            }
+
+            if (isTracking)
+            {
+                grenadeRigidB.useGravity = false;
+                grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed * 0.5f);
             }
 
 
@@ -81,7 +88,7 @@ public class Grenade : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
         if (isTracking && !OnSurface && playerTarget != null)
         {
             Vector3 direction = (playerTarget.position - transform.position).normalized;

@@ -9,15 +9,19 @@ public class damage : MonoBehaviour
 
     [SerializeField] damagetype type;
     [SerializeField] public Rigidbody rb;
-
+    [SerializeField] private float maxHomingAngle = 30f;
     [SerializeField] public int damageAmount;
     [SerializeField] public float damageRate;
     [SerializeField] public int speed;
     [SerializeField] public float destroyTime;
     [SerializeField] public float blastRadius;
+    [SerializeField] private float homingDelay;
+    private float homingTimer = 0f;
+    private bool homingActive = false;
 
     [SerializeField] public GameObject impactPrefab;
 
+    private Transform homingTarget;
     bool isDamaging;
     public int weaponDMG;
     public DamageStatus currentStatus;
@@ -49,9 +53,70 @@ public class damage : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (type == damagetype.homing)
+        if (type != damagetype.homing) return;
+
+        homingTimer += Time.deltaTime;
+        if (homingTimer < homingDelay) return;
+
+        homingActive = true;
+
+        if (homingTarget != null && homingActive)
         {
-            rb.linearVelocity = (gamemanager.instance.player.transform.position - transform.position).normalized * speed * Time.deltaTime;
+            Vector3 direction = (homingTarget.position - transform.position).normalized;
+
+            // Smooth rotation
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+
+            rb.linearVelocity = transform.forward * speed;
+            return;
+        }
+
+        // Fallback auto-targeting
+        if (gameObject.layer == LayerMask.NameToLayer("Enemy Bullet"))
+        {
+            Vector3 direction = (gamemanager.instance.player.transform.position - transform.position).normalized;
+            rb.linearVelocity = direction * speed;
+
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+        }
+        else if (gameObject.layer == LayerMask.NameToLayer("Player Bullet"))
+        {
+            GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+            GameObject closest = null;
+            float minDist = Mathf.Infinity;
+
+            foreach (GameObject enemy in enemies)
+            {
+                IDamage isEnemyDead = enemy.GetComponent<IDamage>();
+                if (isEnemyDead != null && isEnemyDead.isDead()) continue;
+
+                Vector3 toEnemy = (enemy.transform.position - transform.position).normalized;
+                float angle = Vector3.Angle(transform.forward, toEnemy);
+                if (angle > maxHomingAngle) continue;
+
+                float dist = Vector3.Distance(transform.position, enemy.transform.position);
+                if (dist < minDist)
+                {
+                    closest = enemy;
+                    minDist = dist;
+                }
+            }
+
+            if (closest != null)
+            {
+                Vector3 direction = (closest.transform.position - transform.position).normalized;
+
+                Quaternion targetRotation = Quaternion.LookRotation(direction);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+
+                rb.linearVelocity = transform.forward * speed;
+            }
+            else
+            {
+                rb.linearVelocity = transform.forward * speed;
+            }
         }
     }
 
@@ -103,23 +168,6 @@ public class damage : MonoBehaviour
             }
         }
 
-        //if ((type == damagetype.moving || type == damagetype.homing) && impactPrefab != null)
-        //{
-        //    RaycastHit hit;
-        //    Vector3 rayOrigin = transform.position + transform.forward * 0.2f;
-        //    Vector3 rayDirection = -transform.forward;
-
-        //    if (Physics.Raycast(rayOrigin, rayDirection, out hit, 1f, ~0, QueryTriggerInteraction.Ignore))
-        //    {
-        //        GameObject splatInstance = Instantiate(
-        //            impactPrefab,
-        //            hit.point,
-        //            Quaternion.LookRotation(-hit.normal)
-        //        );
-
-        //        splatInstance.transform.SetParent(hit.collider.transform, worldPositionStays: true);
-        //    }
-        //}
         if (type == damagetype.moving || type == damagetype.homing)
         {
             Destroy(gameObject);
@@ -220,6 +268,11 @@ public class damage : MonoBehaviour
                 Quaternion.LookRotation(transform.forward)
             );
         }
+    }
+
+    public void SetHomingTarget(Transform target)
+    {
+        homingTarget = target;
     }
 
 }
