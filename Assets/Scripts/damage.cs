@@ -127,15 +127,35 @@ public class damage : MonoBehaviour
         if (other.isTrigger)
             return;
 
+        // Spawn impact effect immediately
+        if (impactPrefab != null)
+        {
+            Vector3 hitPoint = transform.position;
+            Vector3 hitNormal = transform.forward;
+
+            GameObject impact = Instantiate(impactPrefab, hitPoint, Quaternion.LookRotation(hitNormal));
+
+            // Parent to the enemy if valid
+            if (other.CompareTag("Enemy"))
+            {
+                impact.transform.SetParent(other.transform, true); // true keeps world position
+                impact.transform.position += hitNormal * 0.01f; // slight offset to avoid z-fighting
+            }
+
+            // Assign status duration
+            ImpactEffectLifetime lifetime = impact.GetComponent<ImpactEffectLifetime>();
+            if (lifetime != null)
+                lifetime.duration = currentStatusData.statusDuration;
+        }
+
+        // Damage logic
         if (blastRadius > 0f && !hasExploded)
         {
             hasExploded = true;
             ApplyAOEDamage();
         }
-
         else
         {
-            // Single-target fallback
             IDamage dmg = other.GetComponent<IDamage>();
             if (dmg != null)
                 dmg.takeDamage(damageAmount + weaponDMG);
@@ -152,6 +172,7 @@ public class damage : MonoBehaviour
             }
         }
 
+        // Destroy projectile
         if (type == damagetype.moving || type == damagetype.homing)
         {
             Destroy(gameObject);
@@ -225,35 +246,6 @@ public class damage : MonoBehaviour
 
     private void OnDestroy()
     {
-
-        if (impactPrefab == null) return;
-
-        RaycastHit hit;
-        Vector3 rayOrigin = transform.position;
-        Vector3 rayDirection = rb.linearVelocity.normalized;
-
-        if (Physics.Raycast(rayOrigin, rayDirection, out hit, 1f, ~0, QueryTriggerInteraction.Ignore))
-        {
-            GameObject impact = Instantiate(
-                impactPrefab,
-                hit.point,
-                Quaternion.LookRotation(hit.normal)
-            );
-
-            impact.transform.SetParent(hit.collider.transform, false);
-            impact.transform.position += hit.normal * 0.01f;
-
-
-        }
-        else
-        {
-            // Fallback if raycast fails
-            Instantiate(
-                impactPrefab,
-                transform.position,
-                Quaternion.LookRotation(transform.forward)
-            );
-        }
 
         if (type == damagetype.explosion && blastRadius > 0f && !hasExploded)
         {
