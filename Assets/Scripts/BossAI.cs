@@ -207,4 +207,6 @@ public class BossAI : MonoBehaviour, IDamage
         Gizmos.color = Color.red; Gizmos.DrawWireSphere(transform.position, attackRange);
         Gizmos.color = Color.cyan; Gizmos.DrawWireSphere(transform.position, stopDistance);
     }
+
+
 }

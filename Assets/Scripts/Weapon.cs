@@ -364,13 +364,6 @@ public class Weapon : MonoBehaviour
 
         GameObject bulletObj = Instantiate(bullet, shootPos.position, Quaternion.LookRotation(direction));
         damage dmgScript = bulletObj.GetComponent<damage>();
-
-        if (dmgScript.impactPrefab != null)
-        {
-            Transform explosionPrefab = dmgScript.impactPrefab.transform;
-
-            explosionPrefab.localScale = Vector3.one * FMData.blastRadius;
-        }
         
         if (dmgScript != null)
 
@@ -379,6 +372,7 @@ public class Weapon : MonoBehaviour
                 dmgScript.SetStatusData(FMData.effectData);
             }
             dmgScript.SetWeaponDamage(wepDmg);
+            dmgScript.SetBlastRadius(FMData.blastRadius);
 
         equippedPlayer.updatePlayerUI();
     }

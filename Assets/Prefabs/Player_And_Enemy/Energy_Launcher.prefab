@@ -121,10 +121,10 @@ MonoBehaviour:
   attackRate: 1
   range: 300
   magSize: 1
-  ammoMax: 1
   pellets: 0
   spread: 0
   blastRadius: 0
+  energyRecharge: 0
   ammoType: 3
   currentFireMode: 0
   fireModeIndex: 0
@@ -148,6 +148,7 @@ MonoBehaviour:
     projectileCount: 0
     projectileSpread: 0
     blastRadius: 20
+    energyRechargeRate: 0
   leftHandGrip: {fileID: 2004328110117146938}
   bullet: {fileID: 7539981003205437294, guid: 3b4dede14439ebc45a2046ce35347dd8, type: 3}
   shootPos: {fileID: 6092746476709381641}
@@ -158,7 +159,7 @@ MonoBehaviour:
   gunShotSound: {fileID: 8300000, guid: 0e62edad5075cf547ad4869c8bfdf834, type: 3}
   gunAnim: {fileID: 1875598053942507755}
   muzzleFlash: {fileID: 0}
-  chargeEffectPrefab: {fileID: 0}
+  chargeEffectPrefab: {fileID: 64749036921866455, guid: aaafa64c510961647a2d5fe9d2d999c3, type: 3}
   chargeSound: {fileID: 8300000, guid: debc6ee3cd2bbb649ba1b2f69867d099, type: 3}
   chargeFinished: {fileID: 8300000, guid: c58e06ef1f3d5c74d89a178181f148bd, type: 3}
 --- !u!33 &2985346923818673281

@@ -7,6 +7,9 @@ public class Destructible : MonoBehaviour, IDamage
     [SerializeField] int HP;
     [SerializeField] bool isDestructible;
     [SerializeField] Renderer model;
+    [SerializeField] GameObject destroyPrefab;
+
+    private bool isDestroyed;
 
     Color colorOrig;
 
@@ -24,6 +27,12 @@ public class Destructible : MonoBehaviour, IDamage
 
             if (HP <= 0 )
             {
+                isDestroyed = true;
+
+                if (destroyPrefab != null)
+                {
+                    Instantiate(destroyPrefab,gameObject.transform);
+                }
                 Destroy(gameObject);
             }
         }
@@ -88,5 +97,10 @@ public class Destructible : MonoBehaviour, IDamage
     public void slowDown(float magnitude, float duration)
     {
         return;
+    }
+
+    bool IDamage.isDead()
+    {
+        return isDestroyed;
     }
 }

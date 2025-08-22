@@ -49,12 +49,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grenadeRigidB: {fileID: 8207744021673627751}
-  grenadeSpeed: 15
+  grenadeSpeed: 25
   grenadeSpeedY: 2
   destroyTimer: 3.5
+  fovThreshold: 0.5
   explosionPrefab: {fileID: 8873835544158007701, guid: cc2a4f70987966446a7595a04e4e90df, type: 3}
   OnStickyBomb: 0
-  isTracking: 1
+  isTracking: 0
+  canTrack: 1
   isCooked: 0
 --- !u!33 &7696528566794760053
 MeshFilter:

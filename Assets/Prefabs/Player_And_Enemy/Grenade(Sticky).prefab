@@ -52,6 +52,7 @@ MonoBehaviour:
   grenadeSpeed: 25
   grenadeSpeedY: 2
   destroyTimer: 3
+  fovThreshold: 0.5
   explosionPrefab: {fileID: 8873835544158007701, guid: cc2a4f70987966446a7595a04e4e90df, type: 3}
   OnStickyBomb: 1
   isTracking: 0
@@ -152,7 +153,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 0

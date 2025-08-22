@@ -3,14 +3,17 @@ using UnityEngine;
 public class CharacterAiming : MonoBehaviour
 {
     [Header("Core References")]
-    public Transform cameraTransform; 
-    public Transform spineBone;      
+    public Transform cameraTransform;
+    public Transform spineBone;
 
     [Header("Tuning")]
     public Vector3 rotationOffset;
 
     private Transform leftHandTarget;
     private Animator animator;
+
+    private AnimatorStateInfo animatorStateInfo;
+
 
     void Start()
     {
@@ -28,11 +31,21 @@ public class CharacterAiming : MonoBehaviour
         {
             leftHandTarget = null;
         }
+
+        if (Input.GetButtonDown("Fire1"))
+        {
+            if (animator != null)
+            {
+                animator.SetTrigger("Shoot");
+            }
+        }
     }
 
     void LateUpdate()
     {
-        if (spineBone != null && cameraTransform != null)
+        animatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
+
+        if (spineBone != null && cameraTransform != null && animatorStateInfo.IsTag("Shooting"))
         {
             spineBone.rotation = cameraTransform.rotation * Quaternion.Euler(rotationOffset);
         }
@@ -42,7 +55,9 @@ public class CharacterAiming : MonoBehaviour
     {
         if (animator == null) return;
 
-        if (leftHandTarget != null)
+        animatorStateInfo = animator.GetCurrentAnimatorStateInfo(layerIndex);
+
+        if (leftHandTarget != null && animatorStateInfo.IsTag("Shooting"))
         {
             animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1.0f);
             animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1.0f);

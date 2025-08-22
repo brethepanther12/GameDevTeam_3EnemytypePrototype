@@ -53,9 +53,11 @@ MonoBehaviour:
   grenadeSpeed: 25
   grenadeSpeedY: 0
   destroyTimer: 1
+  fovThreshold: 0.5
   explosionPrefab: {fileID: 8873835544158007701, guid: 839fc8c390fb97949bd18e9bf0bd4398, type: 3}
   OnStickyBomb: 0
   isTracking: 0
+  canTrack: 1
   isCooked: 0
 --- !u!33 &7696528566794760053
 MeshFilter:
