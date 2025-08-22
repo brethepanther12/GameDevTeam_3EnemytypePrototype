@@ -12,8 +12,8 @@ public class BossAI : MonoBehaviour, IDamage
     [Header("Targeting")]
     public Transform player;
     public float chaseRange = 40f;
-    public float attackRange = 18f; 
-    public float stopDistance = 10f; 
+    public float attackRange = 18f;
+    public float stopDistance = 10f;
     public float turnSpeed = 720f;
 
     [Header("Phase 1 (baseline)")]
@@ -35,9 +35,9 @@ public class BossAI : MonoBehaviour, IDamage
 
     // Runtime
     int currentHealth;
-    bool isDead;
+    bool isDeadFlag;          // renamed internal flag to avoid clash with interface method
     bool phase2;
-    float ramp;             // scales damage/speed in phase 2
+    float ramp;               // scales damage/speed in phase 2
     float nextAttackTime;
 
     NavMeshAgent agent;
@@ -74,7 +74,7 @@ public class BossAI : MonoBehaviour, IDamage
 
     void Update()
     {
-        if (isDead || player == null) return;
+        if (isDeadFlag || player == null) return;
 
         // Phase swap
         if (!phase2 && currentHealth <= maxHealth / 2)
@@ -116,10 +116,10 @@ public class BossAI : MonoBehaviour, IDamage
             nextAttackTime = Time.time + (phase2 ? attackCooldownP2 : attackCooldownP1);
         }
     }
-    // Called by an Animation Event on the Attack clip
+
     public void AnimEvent_AttackShoot()
     {
-        if (isDead || player == null) return;
+        if (isDeadFlag || player == null) return;
         StartCoroutine(DoBurstFire());
     }
 
@@ -129,7 +129,7 @@ public class BossAI : MonoBehaviour, IDamage
 
         for (int i = 0; i < shots; i++)
         {
-            Vector3 dir = (player.position + Vector3.up * 1.2f - firePoint.position); // aim chest-height
+            Vector3 dir = (player.position + Vector3.up * 1.2f - firePoint.position); // aim chest height
             float power = phase2 ? Mathf.Clamp01(1f + ramp) : 1f;
 
             int dmg = Mathf.RoundToInt((phase2 ? shotDamageP1 : shotDamageP1) * power);
@@ -160,7 +160,7 @@ public class BossAI : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
-        if (isDead) return;
+        if (isDeadFlag) return;
 
         currentHealth -= amount;
         if (gamemanager.instance != null)
@@ -176,7 +176,7 @@ public class BossAI : MonoBehaviour, IDamage
 
     public void slowDown(float magnitude, float duration)
     {
-        if (isDead) return;
+        if (isDeadFlag) return;
         StopAllCoroutines();
         StartCoroutine(SlowRoutine(magnitude, duration));
     }
@@ -189,9 +189,14 @@ public class BossAI : MonoBehaviour, IDamage
         agent.speed = original;
     }
 
+    public bool isDead()
+    {
+        return isDeadFlag;
+    }
+
     void Die()
     {
-        isDead = true;
+        isDeadFlag = true;
         agent.isStopped = true;
         anim.SetTrigger("Die");
 
@@ -207,6 +212,4 @@ public class BossAI : MonoBehaviour, IDamage
         Gizmos.color = Color.red; Gizmos.DrawWireSphere(transform.position, attackRange);
         Gizmos.color = Color.cyan; Gizmos.DrawWireSphere(transform.position, stopDistance);
     }
-
-
 }
