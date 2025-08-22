@@ -57,7 +57,6 @@ public class gamemanager : MonoBehaviour
     public TMPro.TextMeshProUGUI BossNameText;
     public static event Action<DifficultyLevels> OnDifficultyChanged;
 
-    public BossAI currentBoss;
 
     float timescaleOrig;
 
@@ -228,12 +227,6 @@ public class gamemanager : MonoBehaviour
         menuActive.SetActive(true);
     }
 
-    public void StartBossFight(BossAI boss)
-    {
-        currentBoss = boss;
-        BossHealthBarUI.SetActive(true);
-        BossNameText.text = boss.bossName;
-    }
     public void UpdateBossHealthBar(int currentHP, int maxHP)
     {
         if (BossHealthBarFill != null)
@@ -242,11 +235,6 @@ public class gamemanager : MonoBehaviour
         }
     }
 
-    public void EndBossFight()
-    {
-        BossHealthBarUI.SetActive(false);
-        currentBoss = null;
-    }
     public void updateInventoryUI()
     {
         if (playerScript == null)
