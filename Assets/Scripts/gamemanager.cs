@@ -148,8 +148,8 @@ public class gamemanager : MonoBehaviour
             creditsText.anchoredPosition += Vector2.up * creditsScrollSpeed * Time.unscaledDeltaTime;
 
             if (creditsText.anchoredPosition.y >= Screen.height * 2) 
-            { 
-            
+            {
+                StopCredits();
             }
 
         }
@@ -431,6 +431,20 @@ public class gamemanager : MonoBehaviour
         {
             statePause();
             creditsPanel.SetActive(true);
+            isCreditsActive = true;
+
+            creditsText.anchoredPosition = 
+            new Vector2(creditsText.anchoredPosition.x, -Screen.height);
         }
+    }
+
+    public void StopCredits()
+    {
+        if (creditsPanel != null)
+        {
+            creditsPanel.SetActive(false);
+        }
+        isCreditsActive = false;
+        stateUnpause();
     }
 }

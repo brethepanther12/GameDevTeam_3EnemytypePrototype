@@ -28,5 +28,9 @@ public class buttonFunctions : MonoBehaviour
         gamemanager.instance.playerScript.spawnPlayer();
         gamemanager.instance.stateUnpause();
     }
+    public void credits()
+    {
+       gamemanager.instance.StartCredits();
+    }
 }
 
