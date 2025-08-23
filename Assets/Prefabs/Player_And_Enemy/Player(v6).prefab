@@ -1108,6 +1108,7 @@ GameObject:
   - component: {fileID: 8223420741560371461}
   - component: {fileID: -7817358065326202486}
   - component: {fileID: 1343972030976924113}
+  - component: {fileID: 4521463405882600580}
   - component: {fileID: 1101868098296262399}
   - component: {fileID: 3112784695290392470}
   - component: {fileID: 8243512057141436783}
@@ -1175,8 +1176,6 @@ MonoBehaviour:
   jumpVel: 6
   jumpMax: 1
   gravity: 10
-  magazineSize: 15
-  reserveAmmo: 90
   shield: 0
   maxShield: 50
   armor: 0
@@ -1186,7 +1185,7 @@ MonoBehaviour:
   shootRate: 0.1
   shootDist: 100
   dashCooldown: 5
-  dashDuration: 0.25
+  dashDuration: 0.35
   dashCount: 0
   maxDashCount: 3
   hurtSound: {fileID: 8300000, guid: cf871d1d7eced6740ada2b9843f8a596, type: 3}
@@ -1208,6 +1207,20 @@ MonoBehaviour:
   isVisible: 0
   currentAmmo: 0
   meleeTrigger: {fileID: 6610158945768133450}
+--- !u!114 &4521463405882600580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3242214687390201362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fb795addcb1b2c4fa27ab4a7f679246, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 1731803897551244239}
+  pushForce: 10
 --- !u!114 &1101868098296262399
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2446,10 +2459,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   rb: {fileID: 3637059639718754489}
+  maxHomingAngle: 30
   damageAmount: 0
   damageRate: 0.1
   speed: 0
   destroyTime: 1
+  blastRadius: 0
+  homingDelay: 0.5
   impactPrefab: {fileID: 0}
   weaponDMG: 20
   currentStatus: 0
