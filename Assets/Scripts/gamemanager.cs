@@ -138,17 +138,6 @@ public class gamemanager : MonoBehaviour
                 stateUnpause();
             }
         }
-
-        if (isCreditsActive && creditsText != null)
-        {
-            creditsText.anchoredPosition += Vector2.up * creditsScrollSpeed * Time.unscaledDeltaTime;
-
-            if (creditsText.anchoredPosition.y >= Screen.height * 2) 
-            {
-                StopCredits();
-            }
-
-        }
     }
 
     public void statePause()
