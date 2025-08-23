@@ -16,9 +16,6 @@ public class gamemanager : MonoBehaviour
     [SerializeField] GameObject menuWin;
     [SerializeField] GameObject menuLose;
     [SerializeField] GameObject menuInventory;
-    [SerializeField] GameObject creditsPanel;
-    [SerializeField] RectTransform creditsText;
-    [SerializeField] float creditsScrollSpeed;
     [SerializeField] TMP_Text EnemiesRemaining;
 
     [SerializeField] private string nextLevelName;
@@ -36,7 +33,6 @@ public class gamemanager : MonoBehaviour
     public GameObject checkpointReached;
 
     public bool isPaused;
-    public bool isCreditsActive;
     public GameObject player;
     public playerController playerScript;
 
@@ -425,26 +421,4 @@ public class gamemanager : MonoBehaviour
         SetDifficulty((DifficultyLevels)index);
     }
 
-    public void StartCredits()
-    {
-        if (creditsPanel != null && creditsText != null)
-        {
-            statePause();
-            creditsPanel.SetActive(true);
-            isCreditsActive = true;
-
-            creditsText.anchoredPosition = 
-            new Vector2(creditsText.anchoredPosition.x, -Screen.height);
-        }
-    }
-
-    public void StopCredits()
-    {
-        if (creditsPanel != null)
-        {
-            creditsPanel.SetActive(false);
-        }
-        isCreditsActive = false;
-        stateUnpause();
-    }
 }
