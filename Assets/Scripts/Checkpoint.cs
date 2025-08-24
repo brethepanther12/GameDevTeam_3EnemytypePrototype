@@ -27,8 +27,8 @@ public class Checkpoint : MonoBehaviour
         if (pc == null) return;
 
         PlayerData data = new PlayerData();
-        data.health = pc.HP;
-        data.shield = pc.shield; 
+        data.health = pc.maxHP;
+        data.shield = pc.maxShield; 
         data.armor = pc.armor; 
 
         string json = JsonUtility.ToJson(data);
