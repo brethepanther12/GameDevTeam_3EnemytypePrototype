@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class EnemyWeakPoints : MonoBehaviour , IDamage
 {
-    [SerializeField]
+    [SerializeField] Enemy enemy;
+    [SerializeField] float bodyModifier;
 
     public void slowDown(float magnitude, float duration)
     {
@@ -12,11 +13,11 @@ public class EnemyWeakPoints : MonoBehaviour , IDamage
 
     public void takeDamage(int amount)
     {
-        throw new System.NotImplementedException();
+        enemy.takeDamage(Mathf.RoundToInt(amount * bodyModifier));
     }
 
     public void takeDamage(int amount, StatusEffectData effect)
     {
-        throw new System.NotImplementedException();
+        enemy.takeDamage(Mathf.RoundToInt(amount * bodyModifier), effect);
     }
 }
