@@ -73,7 +73,7 @@ public class Weapon : MonoBehaviour
 
     public void InitializeWeapon(WeaponSO data, bool refillMag = false)
     {
-        Debug.LogWarning("--- WEAPON INITIALIZED: " + data.weaponName + " at time " + Time.time + " ---");
+      //  Debug.LogWarning("--- WEAPON INITIALIZED: " + data.weaponName + " at time " + Time.time + " ---");
 
         weaponData = data;
 
@@ -292,7 +292,7 @@ public class Weapon : MonoBehaviour
         } else
         {
             wepDmg = FMData.damage;
-            Debug.Log($"<color=orange>STATS RESET:</color> ApplyFireModeStats ran. wepDmg reset to {wepDmg}");
+           // Debug.Log($"<color=orange>STATS RESET:</color> ApplyFireModeStats ran. wepDmg reset to {wepDmg}");
         }
             
         attackRate = FMData.fireRate;
@@ -334,7 +334,7 @@ public class Weapon : MonoBehaviour
 
     void Shoot()
     {
-        Debug.Log($"<color=cyan>FIRING:</color> Bullet is using {wepDmg} damage.");
+      //  Debug.Log($"<color=cyan>FIRING:</color> Bullet is using {wepDmg} damage.");
 
         ammoInMag--;
 
@@ -469,7 +469,7 @@ public class Weapon : MonoBehaviour
     }
     void CheckReticleTarget()
     {
-        Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * range, Color.red);
+      //  Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * range, Color.red);
         RaycastHit hit;
         bool aimingAtEnemy = false;
 
@@ -534,7 +534,7 @@ public class Weapon : MonoBehaviour
         {
             case WeaponStatType.Damage:
                 wepDmg += (int)upgrade.upgradeAmount;
-                Debug.Log($"<color=green>UPGRADE APPLIED:</color> wepDmg is now {wepDmg}");
+               // Debug.Log($"<color=green>UPGRADE APPLIED:</color> wepDmg is now {wepDmg}");
                 break;
             case WeaponStatType.MagSize:
                 magSize += (int)upgrade.upgradeAmount;

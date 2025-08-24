@@ -23,7 +23,7 @@ public class UnlockDoor : MonoBehaviour
         }
         else
         {
-            Debug.Log("You do not have the required items!");
+          //  Debug.Log("You do not have the required items!");
         }
         if (lockedDoorSound != null)
         {

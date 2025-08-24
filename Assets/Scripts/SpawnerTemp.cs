@@ -37,7 +37,7 @@ public class SpawnerTemp : MonoBehaviour
             totalSpawnAmount = GetSpawnAmountBasedOnDifficulty();
             // ensure we don't drop below already spawned
             totalSpawnAmount = Mathf.Max(totalSpawnAmount, spawnCount);
-            Debug.Log($"{gameObject.name} difficulty updated. New total to spawn: {totalSpawnAmount} (already spawned: {spawnCount})");
+          //  Debug.Log($"{gameObject.name} difficulty updated. New total to spawn: {totalSpawnAmount} (already spawned: {spawnCount})");
         }
     }
 
@@ -63,7 +63,7 @@ public class SpawnerTemp : MonoBehaviour
             // use difficulty-aware total
             totalSpawnAmount = GetSpawnAmountBasedOnDifficulty();
 
-            Debug.Log($"Spawning initiated. Total to spawn: {totalSpawnAmount}");
+          //  Debug.Log($"Spawning initiated. Total to spawn: {totalSpawnAmount}");
         }
     }
 
@@ -114,7 +114,7 @@ public class SpawnerTemp : MonoBehaviour
 
     public void ResetSpawner()
     {
-        Debug.Log(gameObject.name + " is resetting and destroying its children.");
+       // Debug.Log(gameObject.name + " is resetting and destroying its children.");
 
         foreach (GameObject enemy in spawnedEnemies)
         {

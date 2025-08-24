@@ -216,7 +216,7 @@ public class DroneBoss : MonoBehaviour, IDamage
 
     void Die()
     {
-        Debug.Log("Drone Boss defeated!");
+       // Debug.Log("Drone Boss defeated!");
         gamemanager.instance.updateGameGoal(-1);
 
         if (healthCanvas != null)

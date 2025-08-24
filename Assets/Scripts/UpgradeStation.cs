@@ -12,7 +12,7 @@ public class UpgradeStation : MonoBehaviour
         interactPrompt = GameObject.FindWithTag("InteractPrompt");
         if (interactPrompt == null)
         {
-            Debug.LogError("Upgrade Station could not find the InteractPrompt! Make sure it has the correct tag.");
+            //Debug.LogError("Upgrade Station could not find the InteractPrompt! Make sure it has the correct tag.");
         }
         else
         {
@@ -24,7 +24,7 @@ public class UpgradeStation : MonoBehaviour
     {
         if (playerIsNearby && Input.GetButtonDown("Interact"))
         {
-            Debug.Log("Interact pressed");
+          //  Debug.Log("Interact pressed");
 
             if (AbilityUIController.instance != null)
             {
@@ -35,7 +35,7 @@ public class UpgradeStation : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Something entered my trigger: " + other.name);
+       // Debug.Log("Something entered my trigger: " + other.name);
 
         if (other.CompareTag("Player"))
         {

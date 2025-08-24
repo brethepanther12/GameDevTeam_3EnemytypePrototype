@@ -14,7 +14,7 @@ public class TripWireVisual : MonoBehaviour
 
         if (postA == null || postB == null)
         {
-            Debug.LogError("PostA or PostB not assigned in TripWireVisual.");
+          //  Debug.LogError("PostA or PostB not assigned in TripWireVisual.");
             enabled = false;
             return;
         }

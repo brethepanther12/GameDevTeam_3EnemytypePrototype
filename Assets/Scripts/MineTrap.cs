@@ -10,7 +10,7 @@ public class MineTrap : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Mine triggered!");
+            //Debug.Log("Mine triggered!");
 
             playerController player = other.GetComponent<playerController>();
             if (player != null)
