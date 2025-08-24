@@ -1,16 +1,22 @@
 using UnityEngine;
 
-public class NewMonoBehaviourScript : MonoBehaviour
+public class EnemyWeakPoints : MonoBehaviour , IDamage
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField]
+
+    public void slowDown(float magnitude, float duration)
     {
-        
+        throw new System.NotImplementedException();
     }
 
-    // Update is called once per frame
-    void Update()
+
+    public void takeDamage(int amount)
     {
-        
+        throw new System.NotImplementedException();
+    }
+
+    public void takeDamage(int amount, StatusEffectData effect)
+    {
+        throw new System.NotImplementedException();
     }
 }
