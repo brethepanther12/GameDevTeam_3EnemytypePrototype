@@ -71,7 +71,8 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     bool hasKey;
     bool isPoweredUp;
     bool hasAmmo;
-
+    bool IsArmored;
+    bool IsShielded;
     int numKeys;
 
     Vector3 moveDir;
@@ -305,9 +306,9 @@ public class playerController : MonoBehaviour, IDamage, Visibility
             updatePlayerUI();
             StartCoroutine(ShieldDamageFlashScreen());
         }
-        if (shield <= 0)
+        if (!IsShielded)
         {
-            StartCoroutine(ShieldBreak());
+            gamemanager.instance.ShieldBreak.SetActive(true);
         }
         if (remainingDamage > 0 && armor > 0)
         {
@@ -318,9 +319,9 @@ public class playerController : MonoBehaviour, IDamage, Visibility
             updatePlayerUI();
             StartCoroutine(ArmorDamageFlashScreen());
         }
-        if (armor <= 0)
+        if (!IsArmored)
         {
-            StartCoroutine(ArmorBreak());
+            gamemanager.instance.ArmorBreak.SetActive(true);
         }
         if (remainingDamage > 0)
         {
@@ -446,7 +447,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         {
             armor = maxArmor;
         }
-
+        if (IsArmored)
+        {
+            gamemanager.instance.ArmorBreak.SetActive(false);
+        }
         updatePlayerUI();
     }
 
@@ -463,7 +467,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         {
             shield = maxShield;
         }
-
+        if(IsShielded)
+        {
+           gamemanager.instance.ShieldBreak.SetActive(false);
+        }
         updatePlayerUI();
     }
 
@@ -532,6 +539,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         return hasKey;
     }
 
+ 
     IEnumerator PowerUp(float duration)
     {
         isPoweredUp = true;
@@ -576,18 +584,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         }
 
     }
-    IEnumerator ShieldBreak()
-    {
-        gamemanager.instance.ShieldBreak.SetActive(true);
-        yield return new WaitForSeconds(.3f);
-        gamemanager.instance.ShieldBreak.SetActive(false);
-    }
-    IEnumerator ArmorBreak()
-    {
-        gamemanager.instance.ArmorBreak.SetActive(true);
-        yield return new WaitForSeconds(.3f);
-        gamemanager.instance.ArmorBreak.SetActive(false);
-    }
+    
     IEnumerator damageFlashScreen()
     {
         gamemanager.instance.playerDamagePanel.SetActive(true);

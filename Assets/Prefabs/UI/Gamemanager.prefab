@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4971679740936741418
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5821511559330378046}
+  - component: {fileID: 6222008820958148573}
+  m_Layer: 5
+  m_Name: Gamemanager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &5821511559330378046
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4971679740936741418}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 960, y: 540}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &6222008820958148573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4971679740936741418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4c4c1127fb45fb4eb76421d865c7e8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  menuActive: {fileID: 0}
+  menuPause: {fileID: 0}
+  menuOptions: {fileID: 0}
+  optionMenuUI: {fileID: 0}
+  menuWin: {fileID: 0}
+  menuLose: {fileID: 0}
+  menuInventory: {fileID: 0}
+  EnemiesRemaining: {fileID: 0}
+  nextLevelName: Travis-(Boss enemy)
+  levelNumber: 2
+  playerHPBar: {fileID: 0}
+  playerShieldBar: {fileID: 0}
+  playerArmorBar: {fileID: 0}
+  HurtImage: {fileID: 0}
+  ShieldBreak: {fileID: 0}
+  ArmorBreak: {fileID: 0}
+  playerDamagePanel: {fileID: 0}
+  playerShieldDamagePanel: {fileID: 0}
+  playerArmorDamagePanel: {fileID: 0}
+  PlayerSpawnPOS: {fileID: 0}
+  checkpointReached: {fileID: 0}
+  isPaused: 0
+  player: {fileID: 0}
+  playerScript: {fileID: 0}
+  dashCounter: {fileID: 0}
+  dashCounterText: {fileID: 0}
+  dashCounterCDImage: {fileID: 0}
+  playerHp: {fileID: 0}
+  playerShield: {fileID: 0}
+  playerArmor: {fileID: 0}
+  ammoText: {fileID: 0}
+  mutagenCountText: {fileID: 0}
+  componentCountText: {fileID: 0}
+  inventoryAmmo: {fileID: 0}
+  redKey: {fileID: 0}
+  blueKey: {fileID: 0}
+  yellowKey: {fileID: 0}
+  gunName: {fileID: 0}
+  fireModeText: {fileID: 0}
+  BossHealthBarUI: {fileID: 0}
+  BossHealthBarFill: {fileID: 0}
+  BossNameText: {fileID: 0}
+  currentDifficulty: 0
