@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering;
 
 public class playerController : MonoBehaviour, IDamage, Visibility
 {
@@ -21,8 +22,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] int jumpVel;
     [SerializeField] int jumpMax;
     [SerializeField] float gravity;
-    //[SerializeField] int magazineSize = 15;
-    //  [SerializeField] int reserveAmmo = 90;
     [SerializeField] public int shield;
     [SerializeField] int maxShield;
     [SerializeField] public int armor;
@@ -37,6 +36,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] int dashCount;
     [SerializeField] int maxDashCount;
     private bool isDashing;
+   
 
     [Header("--- Audio ---")]
     [SerializeField] private AudioClip hurtSound;
@@ -273,21 +273,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
             updatePlayerUI();
         }
     }
-
-    //void sprint()
-    //{
-    //    if (Input.GetButtonDown("Sprint"))
-    //    {
-
-    //     speed *= sprintMod;
-
-    //    }
-    //    else if (Input.GetButtonUp("Sprint"))
-    //    {
-    //        speed /= sprintMod;
-
-    //    }
-    //}
 
     public void takeDamage(int amount)
     {
