@@ -323,6 +323,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
         if (HP <= 0)
         {
+            isDead = true;
             gamemanager.instance.youLose();
         }
     }
@@ -572,7 +573,11 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     }
     IEnumerator HurtImage()
     {
-        gamemanager.instance.HurtImage.SetActive(true);
+        if (gamemanager.instance.HurtImage != null)
+        {
+            gamemanager.instance.HurtImage.SetActive(true);
+        }
+        yield return null;
 
     }
     IEnumerator damageFlashScreen()
@@ -775,13 +780,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     bool IDamage.isDead()
     {
-        if (HP <= 0)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        return isDead;
     }
 }
