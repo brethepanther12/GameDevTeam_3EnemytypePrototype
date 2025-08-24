@@ -477,6 +477,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2596800461759902934, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
+      propertyPath: levelEntries.Array.size
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 5970844855040321860, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 877.4075
@@ -522,7 +526,8 @@ PrefabInstance:
       value: MainMenuUI
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 7991404837074067552, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8aff4cb65114084a99d656fcbaaaea0, type: 3}

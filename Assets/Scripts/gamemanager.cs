@@ -25,7 +25,9 @@ public class gamemanager : MonoBehaviour
     public Image playerHPBar;
     public Image playerShieldBar;
     public Image playerArmorBar;
-    public RawImage HurtImage;
+    public GameObject HurtImage;
+    public GameObject ShieldBreak;
+    public GameObject ArmorBreak;
     public GameObject playerDamagePanel;
     public GameObject playerShieldDamagePanel;
     public GameObject playerArmorDamagePanel;
@@ -79,7 +81,7 @@ public class gamemanager : MonoBehaviour
     {
         if (scene.name != "Main Menu")
         {
-            Debug.Log("Game scene loaded. Finding references...");
+            //Debug.Log("Game scene loaded. Finding references...");
 
             player = GameObject.FindWithTag("Player");
             if (player != null)
@@ -225,7 +227,7 @@ public class gamemanager : MonoBehaviour
         ScoreManager.instance.AddScoreToLeaderboard();
 
         playerDeathCount++;
-        Debug.Log("Player death count:" + playerDeathCount);
+        //Debug.Log("Player death count:" + playerDeathCount);
     }
 
     public void TriggerWinScreen()
@@ -236,7 +238,7 @@ public class gamemanager : MonoBehaviour
         {
             PlayerPrefs.SetInt("LevelsUnlocked", levelNumber + 1);
             PlayerPrefs.Save();
-            Debug.Log("Final level complete! Progress saved.");
+            //Debug.Log("Final level complete! Progress saved.");
         }
 
         unlockNextDifficulty(currentDifficulty);
@@ -358,14 +360,14 @@ public class gamemanager : MonoBehaviour
             currentDifficulty = difficulty;
             PlayerPrefs.SetInt("CurrentDifficulty", (int)difficulty);
             PlayerPrefs.Save();
-            Debug.Log($"Difficulty set to {difficulty}");
+            //Debug.Log($"Difficulty set to {difficulty}");
 
             // NOTIFY listeners (spawners, UI, etc.)
             OnDifficultyChanged?.Invoke(currentDifficulty);
         }
         else
         {
-            Debug.LogWarning($"{difficulty} is locked");
+            //Debug.LogWarning($"{difficulty} is locked");
         }
     }
 
@@ -418,7 +420,7 @@ public class gamemanager : MonoBehaviour
 
     public void ResetGameState()
     {
-        Debug.Log("--- RESETTING GAME STATE ---");
+        //Debug.Log("--- RESETTING GAME STATE ---");
 
         isPaused = false;
         gameGoalCount = 0;
@@ -451,7 +453,7 @@ public class gamemanager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Could not find player script to respawn!");
+            //Debug.LogError("Could not find player script to respawn!");
         }
     }
 }
