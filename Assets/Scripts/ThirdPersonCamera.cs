@@ -30,10 +30,6 @@ public class ThirdPersonCamera : MonoBehaviour
             {
                 target = player.transform;
             }
-            else
-            {
-                Debug.LogError("Player not found! Please make sure your player GameObject has the 'Player' tag.");
-            }
         }
     }
 
