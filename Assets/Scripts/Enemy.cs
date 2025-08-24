@@ -65,7 +65,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
     public bool canBeGrappled => true;
     private float footstepTimer;
     private Coroutine reloadingRT;
-    private bool isDead;
+    public bool isDead;
     private int currentAmmo;
     private bool isReloading;
     bool playerInTrigger;
@@ -585,16 +585,16 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
     private void CallForHelp()
     {
         hasCalledForHelp = true;
-        Debug.Log(gameObject.name + " is calling for help!");
+        //Debug.Log(gameObject.name + " is calling for help!");
 
         Collider[] nearbyAllies = Physics.OverlapSphere(transform.position, helpRadius, enemyLayer);
 
-        Debug.Log("Found " + nearbyAllies.Length + " potential allies in range.");
+        //Debug.Log("Found " + nearbyAllies.Length + " potential allies in range.");
 
         foreach (Collider allyCollider in nearbyAllies)
         {
 
-            Debug.Log("Checking ally: " + allyCollider.name + " on layer: " + LayerMask.LayerToName(allyCollider.gameObject.layer));
+            //Debug.Log("Checking ally: " + allyCollider.name + " on layer: " + LayerMask.LayerToName(allyCollider.gameObject.layer));
 
             if (allyCollider.gameObject == this.gameObject) continue;
 
@@ -606,7 +606,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
             else
             {
 
-                Debug.LogWarning(allyCollider.name + " is on the Enemy layer but is missing the 'Enemy' script!");
+                //Debug.LogWarning(allyCollider.name + " is on the Enemy layer but is missing the 'Enemy' script!");
             }
         }
     }
@@ -619,7 +619,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
             return;
         }
 
-        Debug.Log(gameObject.name + " is responding to a help call!");
+        //Debug.Log(gameObject.name + " is responding to a help call!");
 
         playerTarget = target;
         hasCalledForHelp = true;
@@ -628,5 +628,10 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
         {
             agent.SetDestination(playerTarget.position);
         }
+    }
+
+    bool IDamage.isDead()
+    {
+        return isDead;
     }
 }

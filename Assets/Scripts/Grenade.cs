@@ -10,11 +10,12 @@ public class Grenade : MonoBehaviour
     [SerializeField] private int grenadeSpeed;
     [SerializeField] private int grenadeSpeedY;
     [SerializeField] private float destroyTimer;
-
-    [SerializeField] private GameObject explosionPrefab;
+    [SerializeField] private float maxHomingAngle = 30f;
+    [SerializeField] public GameObject explosionPrefab;
 
     [SerializeField] private bool OnStickyBomb;
     [SerializeField] private bool isTracking;
+    [SerializeField] public bool canTrack;
     [SerializeField] private bool isCooked;
     private Transform playerTarget;
     private damage damageStats;
@@ -23,39 +24,7 @@ public class Grenade : MonoBehaviour
     
     void Start()
     {
-        
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        if (enemies.Length > 0)
-        {
-            if (!isCooked && !OnStickyBomb)
-            {
-                isTracking = true;
-            }
-            
-
-            GameObject closest = enemies[0];
-            float minDist = Vector3.Distance(transform.position, closest.transform.position);
-
-            foreach (GameObject enemy in enemies)
-            {
-                float dist = Vector3.Distance(transform.position, enemy.transform.position);
-                if (dist < minDist)
-                {
-                    closest = enemy;
-                    minDist = dist;
-
-
-                }
-            }
-
-            playerTarget = closest.transform;
-        } else
-        {
-            isTracking = false;
-        }
-
-
-            damageStats = GetComponent<damage>();
+        damageStats = GetComponent<damage>();
 
         if (damageStats != null)
         {
@@ -64,25 +33,54 @@ public class Grenade : MonoBehaviour
             grenadeRigidB = damageStats.rb;
         }
 
-        
+        Transform player = gamemanager.instance.player.transform;
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
+        GameObject closest = null;
+        float minDist = Mathf.Infinity;
+
+        foreach (GameObject enemy in enemies)
+        {
+            IDamage isEnemyDead = enemy.GetComponent<IDamage>();
+            if (isEnemyDead != null && isEnemyDead.isDead()) continue;
+
+            Vector3 toEnemy = (enemy.transform.position - transform.position).normalized;
+            float angle = Vector3.Angle(transform.forward, toEnemy);
+            if (angle > maxHomingAngle) continue;
+
+            float dist = Vector3.Distance(transform.position, enemy.transform.position);
+            if (dist < minDist)
+            {
+                closest = enemy;
+                minDist = dist;
+            }
+        }
+
+        playerTarget = closest != null ? closest.transform : null;
+        isTracking = canTrack && playerTarget != null;
+
         if (!isTracking)
         {
             grenadeRigidB.useGravity = true;
-            grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed )  + (transform.up * grenadeSpeedY);
+            grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed) + (transform.up * grenadeSpeedY);
+        }
+        else
+        {
+            grenadeRigidB.useGravity = false;
+            grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed * 0.5f);
         }
 
-        
         StartCoroutine(explode());
-
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
         if (isTracking && !OnSurface && playerTarget != null)
         {
-            grenadeRigidB.linearVelocity = (playerTarget.position - transform.position) * grenadeSpeed;
+            Vector3 direction = (playerTarget.position - transform.position).normalized;
+            grenadeRigidB.linearVelocity = direction * grenadeSpeed;
 
             float proximity = Vector3.Distance(transform.position, playerTarget.transform.position);
 
@@ -117,7 +115,7 @@ public class Grenade : MonoBehaviour
 
             
         } 
-        else if (collision.transform.CompareTag("Breakable") || collision.transform.CompareTag("Untagged"))
+        else if (collision.transform.CompareTag("Breakable") || collision.transform.CompareTag("Enemy"))
         {
             if (!isCooked)
             {
@@ -135,7 +133,7 @@ public class Grenade : MonoBehaviour
     {
         yield return new WaitForSeconds(destroyTimer);
         if (explosionPrefab != null )
-        Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        Instantiate(explosionPrefab, transform.position, Quaternion.identity); 
         Destroy(gameObject);
     }
 

@@ -28,25 +28,28 @@ MonoBehaviour:
       statusTickRate: 0
       statusDuration: 0
       slowDownMagnitude: 0
-    damage: 50
+    damage: 70
     range: 20
     fireRate: 1
     burstCount: 0
     burstRate: 0
     chargeTime: 0
     detonateTime: 0
-    projectileCount: 5
-    projectileSpread: 0.8
+    projectileCount: 7
+    projectileSpread: 0.3
     blastRadius: 0
     energyRechargeRate: 0
-  availableUpgrades: []
+  availableUpgrades:
+  - {fileID: 11400000, guid: bf784c3f5cf84b3479f0b8c17988d42b, type: 2}
+  - {fileID: 11400000, guid: b79c609445af5884c916523c02ee6902, type: 2}
+  - {fileID: 11400000, guid: a6f2aee8772d8044fa32a24027d68454, type: 2}
   savedMode: 0
   wepDmg: 10
   attackRate: 1
   range: 20
   magSize: 5
   pelletCount: 5
-  pelletSpread: 0.8
+  pelletSpread: 0.3
   currentAmmoInMag: 3
   currentAmmoInReserve: 15
   bullet: {fileID: 7327530778466690349, guid: fc36680bdf45a5849923d47116ebf1de, type: 3}

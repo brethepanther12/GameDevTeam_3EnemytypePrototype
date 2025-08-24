@@ -25,7 +25,7 @@ public class gamemanager : MonoBehaviour
     public Image playerHPBar;
     public Image playerShieldBar;
     public Image playerArmorBar;
-    public RawImage HurtImage;
+    public GameObject HurtImage;
     public GameObject playerDamagePanel;
     public GameObject playerShieldDamagePanel;
     public GameObject playerArmorDamagePanel;
@@ -57,13 +57,12 @@ public class gamemanager : MonoBehaviour
     public TMPro.TextMeshProUGUI BossNameText;
     public static event Action<DifficultyLevels> OnDifficultyChanged;
 
-    public BossAI currentBoss;
 
     float timescaleOrig;
 
     int gameGoalCount;
 
-    public enum DifficultyLevels{easy,normal,hard}
+    public enum DifficultyLevels { easy, normal, hard }
     public DifficultyLevels currentDifficulty;
 
     private void OnEnable()
@@ -78,13 +77,31 @@ public class gamemanager : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        Debug.Log("New scene loaded: " + scene.name + ". Clearing checkpoint data.");
-        ClearCheckpointData();
-
-        player = GameObject.FindWithTag("Player");
-        if (player != null)
+        if (scene.name != "Main Menu")
         {
-            playerScript = player.GetComponent<playerController>();
+            //Debug.Log("Game scene loaded. Finding references...");
+
+            player = GameObject.FindWithTag("Player");
+            if (player != null)
+            {
+                playerScript = player.GetComponent<playerController>();
+            }
+
+            PlayerSpawnPOS = GameObject.FindWithTag("Player Spawn POS");
+
+            GameObject mainCanvas = GameObject.Find("UI (v4)");
+            if (mainCanvas != null)
+            {
+                Transform hpBarTransform = mainCanvas.transform.Find("PlayerHPBarBackground/PlayerHPBar");
+                if (hpBarTransform != null)
+                {
+                    playerHPBar = hpBarTransform.GetComponent<Image>();
+                }
+
+                EnemiesRemaining = GameObject.FindWithTag("EnemiesRemainingText").GetComponent<TMP_Text>();
+            }
+
+            Time.timeScale = 1f;
         }
     }
     void Awake()
@@ -157,7 +174,7 @@ public class gamemanager : MonoBehaviour
 
         if (menuActive.GetComponent<WeaponUIController>() != null)
         {
-            
+
             menuActive.GetComponent<WeaponUIController>().CloseMenu();
         }
         else
@@ -199,7 +216,7 @@ public class gamemanager : MonoBehaviour
     public void youLose()
     {
 
-        
+
         statePause();
         menuActive = menuLose;
         menuActive.SetActive(true);
@@ -208,7 +225,7 @@ public class gamemanager : MonoBehaviour
         ScoreManager.instance.AddScoreToLeaderboard();
 
         playerDeathCount++;
-        Debug.Log("Player death count:" + playerDeathCount);
+        //Debug.Log("Player death count:" + playerDeathCount);
     }
 
     public void TriggerWinScreen()
@@ -219,7 +236,7 @@ public class gamemanager : MonoBehaviour
         {
             PlayerPrefs.SetInt("LevelsUnlocked", levelNumber + 1);
             PlayerPrefs.Save();
-            Debug.Log("Final level complete! Progress saved.");
+            //Debug.Log("Final level complete! Progress saved.");
         }
 
         unlockNextDifficulty(currentDifficulty);
@@ -228,12 +245,6 @@ public class gamemanager : MonoBehaviour
         menuActive.SetActive(true);
     }
 
-    public void StartBossFight(BossAI boss)
-    {
-        currentBoss = boss;
-        BossHealthBarUI.SetActive(true);
-        BossNameText.text = boss.bossName;
-    }
     public void UpdateBossHealthBar(int currentHP, int maxHP)
     {
         if (BossHealthBarFill != null)
@@ -242,11 +253,6 @@ public class gamemanager : MonoBehaviour
         }
     }
 
-    public void EndBossFight()
-    {
-        BossHealthBarUI.SetActive(false);
-        currentBoss = null;
-    }
     public void updateInventoryUI()
     {
         if (playerScript == null)
@@ -302,7 +308,7 @@ public class gamemanager : MonoBehaviour
     {
         if (menuOptions != null && optionMenuUI != null)
         {
-            optionMenuUI.InitializeOptions(); 
+            optionMenuUI.InitializeOptions();
             menuPause.SetActive(false);
             menuOptions.SetActive(true);
             menuActive = menuOptions;
@@ -352,14 +358,14 @@ public class gamemanager : MonoBehaviour
             currentDifficulty = difficulty;
             PlayerPrefs.SetInt("CurrentDifficulty", (int)difficulty);
             PlayerPrefs.Save();
-            Debug.Log($"Difficulty set to {difficulty}");
+            //Debug.Log($"Difficulty set to {difficulty}");
 
             // NOTIFY listeners (spawners, UI, etc.)
             OnDifficultyChanged?.Invoke(currentDifficulty);
         }
         else
         {
-            Debug.LogWarning($"{difficulty} is locked");
+            //Debug.LogWarning($"{difficulty} is locked");
         }
     }
 
@@ -410,4 +416,42 @@ public class gamemanager : MonoBehaviour
         SetDifficulty((DifficultyLevels)index);
     }
 
+    public void ResetGameState()
+    {
+        //Debug.Log("--- RESETTING GAME STATE ---");
+
+        isPaused = false;
+        gameGoalCount = 0;
+        menuActive = null;
+
+        gamemanager.playerDeathCount = 0;
+
+        player = null;
+        playerScript = null;
+        PlayerSpawnPOS = null;
+    }
+
+    public void RespawnPlayer()
+    {
+
+        Time.timeScale = 1f;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        isPaused = false;
+
+        if (menuActive != null)
+        {
+            menuActive.SetActive(false);
+            menuActive = null;
+        }
+
+        if (playerScript != null)
+        {
+            playerScript.spawnPlayer();
+        }
+        else
+        {
+            //Debug.LogError("Could not find player script to respawn!");
+        }
+    }
 }

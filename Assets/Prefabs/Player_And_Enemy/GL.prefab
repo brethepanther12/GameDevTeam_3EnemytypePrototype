@@ -165,7 +165,7 @@ Transform:
   m_GameObject: {fileID: 6205341793117319699}
   serializedVersion: 2
   m_LocalRotation: {x: -0.71271205, y: -0, z: -0, w: 0.7014568}
-  m_LocalPosition: {x: 0.226, y: -0.22, z: 0.293}
+  m_LocalPosition: {x: 0.226, y: -0.146, z: 0.277}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -339,9 +339,10 @@ MonoBehaviour:
   attackRate: 0
   range: 0
   magSize: 5
-  ammoMax: 0
   pellets: 0
   spread: 0
+  blastRadius: 10
+  energyRecharge: 0
   ammoType: 6
   currentFireMode: 0
   fireModeIndex: 0
@@ -364,6 +365,8 @@ MonoBehaviour:
     detonateTime: 0
     projectileCount: 0
     projectileSpread: 0
+    blastRadius: 0
+    energyRechargeRate: 0
   leftHandGrip: {fileID: 4598664141482793094}
   bullet: {fileID: 3219972179486975252, guid: a9c34932f2cfc72418f04b1eb4970ab2, type: 3}
   shootPos: {fileID: 7574383898984838468}
@@ -374,6 +377,9 @@ MonoBehaviour:
   gunShotSound: {fileID: 0}
   gunAnim: {fileID: 6082018782808917041}
   muzzleFlash: {fileID: 0}
+  chargeEffectPrefab: {fileID: 0}
+  chargeSound: {fileID: 0}
+  chargeFinished: {fileID: 0}
 --- !u!95 &6082018782808917041
 Animator:
   serializedVersion: 7

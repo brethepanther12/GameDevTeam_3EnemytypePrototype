@@ -17,6 +17,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     [SerializeField] private float flyingSpeed;
     [SerializeField] private float rotationSpeed;
     private Vector3 playerDirection;
+    [SerializeField] private float personalSpaceRange = 2f;
     [SerializeField] private Rigidbody rigidBody;
 
     [Header("--- Damage ---")]
@@ -116,6 +117,7 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         currentHP = HP;
 		currentAmmo = maxAmmo;
         originalSpeed = flyingSpeed;
+        gamemanager.instance.updateGameGoal(1); //DO NOT REMOVE THIS FOR ANY REASON. IT HAS SINGLE-HANDEDLY MADE OUR LAST BUILD UNPLAYABLE AND ALMOST DID THE FIRST TIME TOO
 
         if (shield == 0)
         {
@@ -172,9 +174,24 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
         if (rigidBody.isKinematic) rigidBody.isKinematic = false;
 
         Vector3 direction = (target.position - transform.position);
-        Vector3 horizontalDir = new Vector3(direction.x, 0, direction.z).normalized;
+        float distanceToTarget = direction.magnitude;
 
-        Vector3 horizontalVelocity = horizontalDir * flyingSpeed + Strafing(horizontalDir);
+        Vector3 horizontalDir = new Vector3(direction.x, 0, direction.z).normalized;
+        Vector3 forwardMovement = Vector3.zero;
+
+        if (distanceToTarget > attackRange)
+        {
+            forwardMovement = horizontalDir * flyingSpeed;
+        }
+
+        Vector3 strafeMovement = Strafing(horizontalDir);
+
+        if (distanceToTarget < personalSpaceRange)
+        {
+            strafeMovement = Vector3.zero;
+        }
+
+        Vector3 horizontalVelocity = forwardMovement + strafeMovement;
         float verticalVelocity = rigidBody.linearVelocity.y;
 
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight * 2f))
@@ -680,5 +697,10 @@ public class FlyingAI : MonoBehaviour, IDamage, Visibility
     public void SetInvisible(bool state)
     {
        // throw new System.NotImplementedException();
+    }
+
+    bool IDamage.isDead()
+    {
+        return Dead;
     }
 }

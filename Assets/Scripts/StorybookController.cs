@@ -30,9 +30,12 @@ public class StorybookController : MonoBehaviour
 
     private int currentSlideIndex = 0;
     private bool isWaitingForInput = false;
+    private bool isTyping = false;
 
     public void StartStory()
     {
+        Time.timeScale = 1f;
+
         cutsceneImage.color = new Color(1, 1, 1, 0);
         mainPanel.SetActive(true);
         continuePrompt.SetActive(false);
@@ -43,18 +46,25 @@ public class StorybookController : MonoBehaviour
 
     void Update()
     {
-        if (isWaitingForInput && Input.GetButtonDown("Jump"))
+        if (Input.GetButtonDown("Jump"))
         {
-            isWaitingForInput = false;
-            currentSlideIndex++;
-
-            if (currentSlideIndex < slides.Count)
+            if (isTyping)
             {
-                StartCoroutine(ProcessSlide(slides[currentSlideIndex]));
+                isTyping = false;
             }
-            else
+            else if (isWaitingForInput)
             {
-                EndStory();
+                isWaitingForInput = false;
+                currentSlideIndex++;
+
+                if (currentSlideIndex < slides.Count)
+                {
+                    StartCoroutine(ProcessSlide(slides[currentSlideIndex]));
+                }
+                else
+                {
+                    EndStory();
+                }
             }
         }
     }
@@ -62,7 +72,7 @@ public class StorybookController : MonoBehaviour
     private IEnumerator ProcessSlide(NarrativeSlide slide)
     {
         continuePrompt.SetActive(false);
-        narrativeText.text = ""; 
+        narrativeText.text = "";
 
         cutsceneImage.sprite = slide.artwork;
         yield return StartCoroutine(FadeImage(1f, slide.fadeInTime));
@@ -75,11 +85,20 @@ public class StorybookController : MonoBehaviour
 
     private IEnumerator TypeText(string text, float speed)
     {
+        isTyping = true;
+
         foreach (char letter in text.ToCharArray())
         {
+            if (!isTyping)
+            {
+                break;
+            }
             narrativeText.text += letter;
             yield return new WaitForSeconds(speed);
         }
+
+        narrativeText.text = text;
+        isTyping = false;
     }
 
     private IEnumerator FadeImage(float targetAlpha, float duration)
@@ -100,7 +119,14 @@ public class StorybookController : MonoBehaviour
 
     private void EndStory()
     {
-        StartCoroutine(FadeImage(0f, 1.0f));
+        StartCoroutine(EndStoryAndLoadScene());
+    }
+
+    private IEnumerator EndStoryAndLoadScene()
+    {
+        Time.timeScale = 1f;
+
+        yield return StartCoroutine(FadeImage(0f, 1.0f));
 
         if (!string.IsNullOrEmpty(sceneToLoadAfter))
         {

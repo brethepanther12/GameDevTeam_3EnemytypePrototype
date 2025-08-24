@@ -2,202 +2,266 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class BossAI : EnemyAIBase, IGrapplable
+[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(Animator))]
+public class BossAI : MonoBehaviour, IDamage
 {
-    [Header("Boss Settings")]
-    [SerializeField] GameObject projectilePrefab;
-    [SerializeField] Transform projectileSpawnPoint;
-    [SerializeField] float attackRange = 30f;
-    [SerializeField] float attackCooldown = 2f;
-    [SerializeField] GameObject deathEffect;
-    [SerializeField] Animator bossAnimator;
-    [SerializeField] GameObject aoeEffectPrefab;
-    [SerializeField] float aoeRange = 6f;
-    [SerializeField] float aoeCooldown = 8f;
-    [SerializeField] float burstCooldown = 10f;
-    [SerializeField] int burstCount = 3;
+    [Header("Boss Info")]
+    public string bossName = "Mutant Boss";
+    public int maxHealth = 500;
 
-    [SerializeField] AudioSource bossRoarSource;
-    [SerializeField] AudioClip roarClip;
+    [Header("Targeting")]
+    public Transform player;
+    public float chaseRange = 40f;
+    public float attackRange = 18f;
+    public float stopDistance = 10f;
+    public float turnSpeed = 720f;
 
+    [Header("Phase 1")]
+    public float attackCooldownP1 = 1.5f;
+    public int shotDamageP1 = 20;
+    public float shotSpeedP1 = 14f;
+    public int burstCountP1 = 1;
+    public float burstSpacing = 0.12f;
 
+    [Header("Phase 2")]
+    public float attackCooldownP2 = 0.75f;
+    public int burstCountP2 = 4;
+    public float rampPerBurst = 0.12f;
+    public float maxRamp = 0.8f;
 
+    [Header("Projectile")]
+    public FireballProjectile fireballPrefab;
+    public Transform firePoint;
 
-    public string bossName = "Boss 1";
+    [Header("Projectile Timing")]
+    public float attackDelay = 0.5f; // delay to sync with throw animation
 
-    private float burstTimer = 0f;
-    private float aoeTimer = 0f;
-    private float attackTimer = 0f;
-    private bool isDead = false;
-    private bool isDodging = false;
-    private bool isRetreating = false;
-    private bool isPhaseTwo = false;
-    private float detectionRange = 60f;
+    int currentHealth;
+    bool isDeadFlag;
+    bool phase2;
+    float ramp;
+    float nextAttackTime;
 
-    private float phaseTwoHealthThreshold => enemyHealthPointsMax * 0.5f;
+    NavMeshAgent agent;
+    Animator anim;
 
-    public bool isBeingGrappled { get; set; }
-    public bool canBeGrappled => false;
+    bool isDodging;
+    bool isAttacking;
+    bool isBursting;
 
-    protected override void Start()
+    void Awake()
     {
-        base.Start();
-        bossAnimator.applyRootMotion = false;
-        //bossAnimator.applyRootMotion = false;
-        if (bossRoarSource && roarClip)
-            bossRoarSource.PlayOneShot(roarClip);
-
-        StartCoroutine(DelayedNavStart());
-
-        gamemanager.instance.updateGameGoal(+1);
+        agent = GetComponent<NavMeshAgent>();
+        anim = GetComponent<Animator>();
+        currentHealth = maxHealth;
+        agent.stoppingDistance = stopDistance;
+        agent.updateRotation = false;
     }
 
-    IEnumerator DelayedNavStart()
+    void Start()
     {
-        yield return null;
-        enemyNavAgent.enabled = true;
-        enemyNavAgent.updateRotation = false;
-    }
+        StartCoroutine(ShuffleRoutine());
 
-    protected override void Update()
-    {
-        if (isDead) return;
-
-        if (enemyPlayerObject == null)
+        if (player == null)
         {
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-            if (playerObj != null) enemyPlayerObject = playerObj.transform;
-            if (enemyPlayerObject == null) return;
+            var p = GameObject.FindGameObjectWithTag("Player");
+            if (p) player = p.transform;
         }
 
-        float distanceToPlayer = Vector3.Distance(transform.position, enemyPlayerObject.position);
-        SetPlayerInSight(distanceToPlayer <= detectionRange);
-
-        if (!isPhaseTwo && enemyCurrentHealthPoints <= phaseTwoHealthThreshold)
-            EnterPhaseTwo();
-
-        if (enemyPlayerInSight && !isDodging && !isRetreating)
+        if (gamemanager.instance != null)
         {
-            SmoothFacePlayer();
-            float desiredDistance = Mathf.Max(attackRange - 1.5f, 2f); // closes in better
+            if (gamemanager.instance.BossHealthBarUI)
+                gamemanager.instance.BossHealthBarUI.SetActive(true);
+            if (gamemanager.instance.BossNameText)
+                gamemanager.instance.BossNameText.text = bossName;
 
-            if (distanceToPlayer > desiredDistance)
+            gamemanager.instance.UpdateBossHealthBar(currentHealth, maxHealth);
+        }
+    }
+
+    void Update()
+    {
+        if (isDeadFlag || player == null) return;
+
+        if (!phase2 && currentHealth <= maxHealth / 2)
+            EnterPhase2();
+
+        float dist = Vector3.Distance(transform.position, player.position);
+
+        if (dist <= chaseRange)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(player.position);
+
+            if (dist <= stopDistance)
+                agent.isStopped = true;
+
+            anim.SetBool("isMoving", !agent.isStopped);
+
+            Vector3 to = (player.position - transform.position);
+            to.y = 0f;
+            if (to.sqrMagnitude > 0.001f)
             {
-                MoveTowardPlayer(desiredDistance);
+                Quaternion targetRot = Quaternion.LookRotation(to);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, turnSpeed * Time.deltaTime);
             }
-            else
-            {
-                bossAnimator.SetFloat("Speed", 0f); // stop running when attacking
-                if (attackTimer >= attackCooldown)
-                {
-                    BossAttack();
-                    attackTimer = 0f;
-                }
-                else if (Random.value < 0.05f)
-                {
-                    StartCoroutine(Dodge());
-                }
-            }
+            Debug.Log("Boss Speed: " + agent.velocity.magnitude); //debugger
         }
-
-        if (enemyNavAgent.enabled && enemyNavAgent.velocity.magnitude > 0.1f && !isDodging && !isRetreating)
+        else
         {
-            Quaternion targetRot = Quaternion.LookRotation(enemyNavAgent.velocity.normalized);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 7f);
+            agent.isStopped = true;
+            anim.SetBool("isMoving", false);
         }
 
-        bossAnimator.SetFloat("Speed", enemyNavAgent.velocity.magnitude); // makes idle/walk/run work
-
-        // Timers
-        attackTimer += Time.deltaTime;
-        aoeTimer += Time.deltaTime;
-        burstTimer += Time.deltaTime;
-
-        if (isPhaseTwo && distanceToPlayer < aoeRange && aoeTimer >= aoeCooldown)
+        // Attack logic
+        if (dist <= attackRange && Time.time >= nextAttackTime && !isDodging)
         {
-            StartCoroutine(PerformAOEAttack());
-            aoeTimer = 0f;
-        }
+            isAttacking = true;
+            anim.SetTrigger("Attack");
+            StartCoroutine(AttackWithDelay());
+            nextAttackTime = Time.time + (phase2 ? attackCooldownP2 : attackCooldownP1);
 
-        if (isPhaseTwo && !isRetreating && burstTimer >= burstCooldown)
+            // occasional dodge
+            if (Random.value < 0.25f)
+                StartCoroutine(DodgeRoutine());
+        }
+        else if (!isAttacking && !isDodging && dist <= chaseRange)
         {
-            StartCoroutine(RetreatAndBurst());
-            burstTimer = 0f;
+            StrafeMovement();
         }
     }
 
-    void EnterPhaseTwo()
+    private IEnumerator AttackWithDelay()
     {
-        isPhaseTwo = true;
-        attackCooldown *= 0.75f;
-        Debug.Log("Boss has entered Phase 2");
+        yield return new WaitForSeconds(attackDelay);
+
+        if (phase2)
+            StartCoroutine(DoBurstFire()); // handles phase 2 burst properly
+        else
+            StartCoroutine(DoBurstFire()); // still used for phase 1 (single fire)
     }
 
-    void MoveTowardPlayer(float desiredDistance)
+    IEnumerator DoBurstFire()
     {
-        if (enemyPlayerObject == null) return;
+        if (isBursting) yield break; // prevent stacking
+        isBursting = true;
 
-        enemyNavAgent.isStopped = false;
+        int shots = phase2 ? burstCountP2 : burstCountP1;
 
-        Vector3 targetPos = enemyPlayerObject.position - (enemyPlayerObject.position - transform.position).normalized * desiredDistance;
-        enemyNavAgent.SetDestination(targetPos);
-    }
-
-    void SmoothFacePlayer()
-    {
-        enemyNavAgent.isStopped = false;
-        Vector3 direction = enemyPlayerObject.position - transform.position;
-        direction.y = 0;
-
-        if (direction.sqrMagnitude > 0.1f)
+        for (int i = 0; i < shots; i++)
         {
-            Quaternion lookRot = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Time.deltaTime * 5f);
+            Vector3 dir = (player.position + Vector3.up * 1.2f - firePoint.position);
+            float power = phase2 ? Mathf.Clamp01(1f + ramp) : 1f;
+
+            int dmg = Mathf.RoundToInt(shotDamageP1 * power);
+            float spd = shotSpeedP1 * power;
+
+            SpawnFireball(dir, dmg, spd);
+
+            if (i < shots - 1)
+                yield return new WaitForSeconds(burstSpacing);
         }
+
+        if (phase2)
+            ramp = Mathf.Clamp(ramp + rampPerBurst, 0f, maxRamp);
+
+        isBursting = false;
+        isAttacking = false;
     }
 
-    protected void BossAttack()
+    void SpawnFireball(Vector3 dir, int damage, float speed)
     {
-        SmoothFacePlayer();
-        bossAnimator.SetTrigger("Attack");
-        FireProjectile(Random.value > 0.5f ? damage.damagetype.homing : damage.damagetype.moving);
+        if (fireballPrefab == null || firePoint == null) return;
+
+        var fb = Instantiate(fireballPrefab, firePoint.position, Quaternion.LookRotation(dir));
+        fb.Init(dir, damage, speed, transform);
     }
 
-    public void FireProjectile(damage.damagetype type)
+    void EnterPhase2()
     {
-        if (!projectilePrefab || !projectileSpawnPoint) return;
-
-        Vector3 target = enemyPlayerObject.GetComponent<Collider>()?.bounds.center ?? enemyPlayerObject.position;
-        Vector3 shootDir = (target - projectileSpawnPoint.position).normalized;
-        Quaternion rot = Quaternion.LookRotation(shootDir);
-
-        GameObject proj = Instantiate(projectilePrefab, projectileSpawnPoint.position, rot);
-        damage dmg = proj.GetComponent<damage>();
-        Rigidbody rb = proj.GetComponent<Rigidbody>();
-
-        if (dmg != null)
-        {
-            dmg.SetDamageType(type);
-            if (rb != null)
-                rb.AddForce(shootDir * dmg.speed, ForceMode.VelocityChange);
-        }
+        phase2 = true;
+        ramp = 0f;
     }
 
-    IEnumerator Dodge()
+    public void takeDamage(int amount)
     {
-        enemyNavAgent.isStopped = false;
+        if (isDeadFlag) return;
+
+        currentHealth -= amount;
+        if (gamemanager.instance != null)
+            gamemanager.instance.UpdateBossHealthBar(currentHealth, maxHealth);
+
+        if (currentHealth <= 0)
+            Die();
+    }
+
+    public void takeDamage(int amount, StatusEffectData effect)
+    {
+        takeDamage(amount);
+    }
+
+    public void slowDown(float magnitude, float duration)
+    {
+        if (isDeadFlag) return;
+        StopAllCoroutines();
+        StartCoroutine(SlowRoutine(magnitude, duration));
+    }
+
+    IEnumerator SlowRoutine(float magnitude, float duration)
+    {
+        float original = agent.speed;
+        agent.speed = original * Mathf.Clamp01(1f - magnitude);
+        yield return new WaitForSeconds(duration);
+        agent.speed = original;
+    }
+
+    public bool isDead()
+    {
+        return isDeadFlag;
+    }
+
+    void Die()
+    {
+        if (isDeadFlag) return;
+        isDeadFlag = true;
+
+        // stop everything so nothing can kick us out of Die
+        StopAllCoroutines();
+
+        agent.isStopped = true;
+
+        // freeze locomotion params so no transitions try to return to Locomotion
+        anim.ResetTrigger("Attack");
+        anim.SetBool("isMoving", false);
+        anim.SetFloat("MoveX", 0f);
+        anim.SetFloat("MoveZ", 0f);
+
+        anim.SetTrigger("Die");             // enter Die state
+        StartCoroutine(HandleDeath());
+    }
+
+    IEnumerator HandleDeath()
+    {
+        yield return new WaitForSeconds(3f); // set to your death clip length
+        if (gamemanager.instance != null)
+            gamemanager.instance.TriggerWinScreen();
+        Destroy(gameObject, 2f);
+    }
+
+    IEnumerator DodgeRoutine()
+    {
+        if (isDodging) yield break;
         isDodging = true;
 
-        Vector3 dodgeDir = Vector3.Cross((enemyPlayerObject.position - transform.position).normalized, Vector3.up) *
-                           (Random.value > 0.5f ? 1 : -1);
-        Vector3 dodgeTarget = transform.position + dodgeDir * 5f;
-
-        enemyNavAgent.SetDestination(dodgeTarget);
+        Vector3 dodgeDir = (Random.value > 0.5f ? transform.right : -transform.right);
+        float dodgeTime = 0.4f;
+        float dodgeSpeed = 15f;
 
         float t = 0f;
-        while (Vector3.Distance(transform.position, dodgeTarget) > 0.5f && t < 1.5f)
+        while (t < dodgeTime)
         {
-            SmoothFacePlayer();
+            transform.position += dodgeDir * dodgeSpeed * Time.deltaTime;
             t += Time.deltaTime;
             yield return null;
         }
@@ -205,131 +269,47 @@ public class BossAI : EnemyAIBase, IGrapplable
         isDodging = false;
     }
 
-    IEnumerator PerformAOEAttack()
+    void StrafeMovement()
     {
-        bossAnimator.SetTrigger("AOE");
-        yield return new WaitForSeconds(0.5f);
+        float strafeSpeed = 5f;
+        Vector3 toPlayer = (player.position - transform.position).normalized;
+        Vector3 strafeDir = Vector3.Cross(Vector3.up, toPlayer);
 
-        if (aoeEffectPrefab)
-            Instantiate(aoeEffectPrefab, transform.position, Quaternion.identity);
+        // alternate sides
+        if (Random.value > 0.5f)
+            strafeDir *= -1f;
+
+        transform.position += strafeDir * strafeSpeed * Time.deltaTime;
+
+        Quaternion lookRot = Quaternion.LookRotation(toPlayer);
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Time.deltaTime * 5f);
     }
 
-    IEnumerator RetreatAndBurst()
+    IEnumerator ShuffleRoutine()
     {
-        enemyNavAgent.isStopped = false;
-        isRetreating = true;
-
-        Vector3 retreatDir = -(enemyPlayerObject.position - transform.position).normalized;
-        Vector3 retreatTarget = transform.position + retreatDir * 5f;
-
-        enemyNavAgent.SetDestination(retreatTarget);
-
-        float t = 0f;
-        while (Vector3.Distance(transform.position, retreatTarget) > 0.5f && t < 2f)
+        while (!isDeadFlag)
         {
-            SmoothFacePlayer();
-            t += Time.deltaTime;
-            yield return null;
-        }
+            yield return new WaitForSeconds(Random.Range(2f, 4f));
 
-        for (int i = 0; i < burstCount; i++)
-        {
-            SmoothFacePlayer();
-            FireProjectile(Random.value > 0.5f ? damage.damagetype.homing : damage.damagetype.moving);
-            yield return new WaitForSeconds(0.5f);
-        }
+            Vector3 randomOffset = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f));
+            Vector3 target = transform.position + randomOffset;
 
-        isRetreating = false;
-    }
-
-    protected override void enemyDeath()
-    {
-        if (isDead) return;
-
-        isDead = true;
-        bossAnimator.SetTrigger("IsDead");
-        enemyNavAgent.isStopped = true;
-        GetComponent<Collider>().enabled = false;
-        StartCoroutine(DestroyAfterDeathAnim());
-
-        if (gamemanager.instance.currentBoss == this)
-            gamemanager.instance.EndBossFight();
-    }
-
-    IEnumerator DestroyAfterDeathAnim()
-    {
-        yield return new WaitForSeconds(3.5f);
-        gamemanager.instance.TriggerWinScreen();
-        Destroy(gameObject);
-    }
-
-    public void SetPlayerInSight(bool inSight) => enemyPlayerInSight = inSight;
-
-    public override void takeDamage(int amount)
-    {
-
-
-        if (shield > 0)
-        {
-            shield -= amount;
-            if (gamemanager.instance.currentBoss == this)
-                gamemanager.instance.UpdateBossHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
-
-            if (shield <= 0)
+            float t = 0f;
+            while (t < 0.5f)
             {
-                shield = 0;
-
-                shieldPrefab.SetActive(false);
-                armor -= amount;
-                if (gamemanager.instance.currentBoss == this)
-                    gamemanager.instance.UpdateBossHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
-            }
-
-        }
-
-        else if (armor > 0)
-        {
-            armor -= amount;
-            if (gamemanager.instance.currentBoss == this)
-                gamemanager.instance.UpdateBossHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
-
-            if (armor <= 0 && shield <= 0)
-            {
-
-                armor = 0;
-                shield = 0;
-                armorPrefab.SetActive(false);
-                if (gamemanager.instance.currentBoss == this)
-                    gamemanager.instance.UpdateBossHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
+                transform.position = Vector3.Lerp(transform.position, target, t / 0.5f);
+                t += Time.deltaTime;
+                yield return null;
             }
         }
-        else
-        {
-            enemyCurrentHealthPoints -= amount;
-            if (gamemanager.instance.currentBoss == this)
-                gamemanager.instance.UpdateBossHealthBar(enemyCurrentHealthPoints, enemyHealthPointsMax);
-        }
-
-        if (enemyCurrentHealthPoints <= 0)
-        {
-            bossAnimator.SetBool("IsDead", true);
-            enemyDeath();
-        }
-        else
-        {
-            bossAnimator.SetTrigger("Hit");
-            StartCoroutine(enemyFlashRead());
-        }
     }
 
-    protected override IEnumerator enemyFlashRead()
+    void OnDrawGizmosSelected()
     {
-        foreach (var part in enemyModel)
-            part.material.color = Color.red;
+        Gizmos.color = Color.yellow; Gizmos.DrawWireSphere(transform.position, chaseRange);
+        Gizmos.color = Color.red; Gizmos.DrawWireSphere(transform.position, attackRange);
+        Gizmos.color = Color.cyan; Gizmos.DrawWireSphere(transform.position, stopDistance);
 
-        yield return new WaitForSeconds(0.1f);
-
-        foreach (var part in enemyModel)
-            part.material.color = enemyColorOrigin;
     }
+
 }

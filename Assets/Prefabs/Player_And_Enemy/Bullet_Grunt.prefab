@@ -51,11 +51,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 3
   rb: {fileID: 7985116829360601856}
+  maxHomingAngle: 30
   damageAmount: 5
   damageRate: 0
-  speed: 625
-  destroyTime: 8
-  impactPrefab: {fileID: 0}
+  speed: 5
+  destroyTime: 5
+  blastRadius: 0
+  homingDelay: 0
+  impactPrefab: {fileID: 2408714428905375140, guid: ec2cd9d24f8932148ab9480fc3b65b15, type: 3}
   weaponDMG: 0
   currentStatus: 0
   currentStatusData:

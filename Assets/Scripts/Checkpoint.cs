@@ -3,12 +3,18 @@ using System.Collections;
 
 public class Checkpoint : MonoBehaviour
 {
+    [SerializeField] private AudioClip checkpointSound;
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player") && gamemanager.instance.PlayerSpawnPOS.transform.position != transform.position)
         {
             gamemanager.instance.PlayerSpawnPOS.transform.position = transform.position;
             gamemanager.instance.PlayerSpawnPOS.transform.localRotation = transform.localRotation;
+
+            if (checkpointSound != null)
+            {
+                AudioSource.PlayClipAtPoint(checkpointSound, transform.position);
+            }
 
             SavePlayerState(other.GetComponent<playerController>());
 
@@ -21,8 +27,8 @@ public class Checkpoint : MonoBehaviour
         if (pc == null) return;
 
         PlayerData data = new PlayerData();
-        data.health = pc.HP;
-        data.shield = pc.shield; 
+        data.health = pc.maxHP;
+        data.shield = pc.maxShield; 
         data.armor = pc.armor; 
 
         string json = JsonUtility.ToJson(data);

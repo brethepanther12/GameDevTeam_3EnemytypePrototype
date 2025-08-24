@@ -14,6 +14,10 @@ public class GrappleHook : MonoBehaviour
     [SerializeField] private float grappleCD = 5f;
     [SerializeField] private Image grappleCooldownUI;
 
+    [Header("--- Audio ---")]
+    [SerializeField] private AudioClip grappleHitSound;
+    [SerializeField] private AudioClip grappleMissSound;
+
     private Rigidbody grappledRigidbody;
     private GameObject grappledEnemy;
     private bool isPulling = false;
@@ -92,6 +96,12 @@ public class GrappleHook : MonoBehaviour
         if (hits.Length == 0)
         {
             Debug.Log("Grapple missed.");
+
+            if (grappleMissSound != null)
+            {
+                AudioSource.PlayClipAtPoint(grappleMissSound, transform.position);
+            }
+
             return;
         }
 
@@ -112,6 +122,11 @@ public class GrappleHook : MonoBehaviour
         }
 
         Debug.Log("No valid grapple target found.");
+
+        if (grappleMissSound != null)
+        {
+            AudioSource.PlayClipAtPoint(grappleMissSound, transform.position);
+        }
     }
 
     void PullEnemy()
@@ -198,6 +213,11 @@ public class GrappleHook : MonoBehaviour
 
     void StartGrapple(GameObject target, IGrapplable ai)
     {
+        if (grappleHitSound != null)
+        {
+            AudioSource.PlayClipAtPoint(grappleHitSound, transform.position);
+        }
+
         grappledEnemy = target;
         grappledAI = ai;
         grappledAI.isBeingGrappled = true;

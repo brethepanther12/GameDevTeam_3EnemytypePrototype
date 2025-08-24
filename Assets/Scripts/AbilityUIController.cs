@@ -125,12 +125,12 @@ public class AbilityUIController : MonoBehaviour
         if (hasEnoughMutagens)
         {
             ApplyUpgradeEffect(selectedUpgrade);
-            Debug.Log("Upgrade purchased: " + selectedUpgrade.upgradeName);
+            //Debug.Log("Upgrade purchased: " + selectedUpgrade.upgradeName);
             UpdateMutagenCountDisplay();
         }
         else
         {
-            Debug.Log("Not enough mutagens!");
+            //Debug.Log("Not enough mutagens!");
         }
     }
 
@@ -173,12 +173,12 @@ public class AbilityUIController : MonoBehaviour
 
         if (playerInventory == null)
         {
-            Debug.LogError("AbilityUIController could not find PlayerInventory!");
+            //Debug.LogError("AbilityUIController could not find PlayerInventory!");
             return;
         }
 
         UpdateMutagenCountDisplay();
-        Debug.Log("OpenMenu() was successfully called!");
+        //Debug.Log("OpenMenu() was successfully called!");
         gameObject.SetActive(true);
 
         if (upgradePanel != null)

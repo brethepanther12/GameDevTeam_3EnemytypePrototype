@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3020099037960048332}
   - component: {fileID: 4736609512819020620}
   - component: {fileID: 2195081644120192591}
-  m_Layer: 11
+  m_Layer: 9
   m_Name: Explosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -31,9 +31,9 @@ Transform:
   m_GameObject: {fileID: 8873835544158007701}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4, y: 2, z: -0.75}
-  m_LocalScale: {x: 3, y: 3, z: 3}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -51,14 +51,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 4
   rb: {fileID: 4736609512819020620}
+  maxHomingAngle: 30
   damageAmount: 50
   damageRate: 0
   speed: 0
   destroyTime: 0.25
-  projectileStraightPrefab: {fileID: 0}
-  projectileHomingPrefab: {fileID: 0}
+  blastRadius: 10
+  homingDelay: 0.5
   impactPrefab: {fileID: 0}
   weaponDMG: 0
+  currentStatus: 0
+  currentStatusData:
+    statusType: 0
+    statusDamage: 0
+    statusTickRate: 0
+    statusDuration: 0
+    slowDownMagnitude: 0
+  statusTarget: {fileID: 0}
 --- !u!33 &7472055187840015431
 MeshFilter:
   m_ObjectHideFlags: 0

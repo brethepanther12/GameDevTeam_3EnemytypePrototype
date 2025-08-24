@@ -53,6 +53,7 @@ MonoBehaviour:
   HP: 5
   isDestructible: 0
   model: {fileID: 6083670769907453646}
+  destroyPrefab: {fileID: 0}
 --- !u!33 &4441891649658923087
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -163,6 +164,8 @@ MonoBehaviour:
   requiredItems:
   - {fileID: 11400000, guid: 667ac773517f96d4ab677bc3e37307be, type: 2}
   doorObject: {fileID: 4893935152372168107}
+  lockedDoorSound: {fileID: 8300000, guid: fe1989c46c1ddd6429b36141dc9857d6, type: 3}
+  unlockSound: {fileID: 8300000, guid: ccf166b6c9452e24381348b64ec7be6d, type: 3}
 --- !u!1001 &3688503953263368866
 PrefabInstance:
   m_ObjectHideFlags: 0

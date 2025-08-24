@@ -116,39 +116,27 @@ public class Weapon : MonoBehaviour
 
         if (currentFireMode == FireMode.Semi)
         {
-
-            if (Input.GetButtonDown("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
+            if (Input.GetButtonDown("Fire1") && shootTimer >= attackRate && ammoInMag > 0 && !equippedPlayer.isReloading)
             {
                 shootTimer = 0f;
-                if (ammoType == AmmoType.Pistol || ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket || ammoType == AmmoType.Energy)
-                    Shoot();
-                else if (ammoType == AmmoType.Shell)
-                    ShootMultiple();
-
+                StartCoroutine(FireWhenReady());
             }
-        } 
+        }
         else if (currentFireMode == FireMode.Auto)
         {
-            if (Input.GetButton("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
+            if (Input.GetButton("Fire1") && shootTimer >= attackRate && ammoInMag > 0 && !equippedPlayer.isReloading)
             {
                 shootTimer = 0f;
-                if (ammoType == AmmoType.Pistol || ammoType == AmmoType.AR || ammoType == AmmoType.Grenade || ammoType == AmmoType.Rocket || ammoType == AmmoType.Energy)
-                    Shoot();
-                else if (ammoType == AmmoType.Shell)
-                    ShootMultiple();
-
+                StartCoroutine(FireWhenReady());
             }
-
         }
         else if (currentFireMode == FireMode.Burst)
         {
-
-            if (Input.GetButtonDown("Fire1") && shootTimer >= attackRate && ammoInMag > 0)
+            if (Input.GetButtonDown("Fire1") && shootTimer >= attackRate && ammoInMag > 0 && !isBursting && !equippedPlayer.isReloading)
             {
-                StartCoroutine(BurstFire());
-
+                shootTimer = 0f;
+                StartCoroutine(FireWhenReady());
             }
-
         }
         else if (currentFireMode == FireMode.Charge)
         {
@@ -219,10 +207,9 @@ public class Weapon : MonoBehaviour
 
         else if (currentFireMode == FireMode.Detonate)
         {
-
-            if (Input.GetButtonDown("Fire1") && ammoInMag > 0)
+            if (Input.GetButtonDown("Fire1") && ammoInMag > 0 && !equippedPlayer.isReloading)
             {
-                LaunchDetonateGrenade();
+                StartCoroutine(FireWhenReady());
             }
 
             if (Input.GetButtonUp("Fire1") && activeGrenade != null)
@@ -262,10 +249,27 @@ public class Weapon : MonoBehaviour
 
     private void LaunchDetonateGrenade()
     {
-        GameObject grenadeObj = Instantiate(FMData.projectile, shootPos.position, shootPos.rotation);
+        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        RaycastHit hit;
+        Vector3 targetPoint;
+
+        if (Physics.Raycast(ray, out hit, range))
+        {
+            targetPoint = hit.point;
+        }
+        else
+        {
+            targetPoint = ray.GetPoint(range);
+        }
+
+        Vector3 direction = (targetPoint - shootPos.position).normalized;
+
+        GameObject grenadeObj = Instantiate(FMData.projectile, shootPos.position, Quaternion.LookRotation(direction));
+
         activeGrenade = grenadeObj.GetComponent<Grenade>();
 
         ammoInMag--;
+        equippedPlayer.updatePlayerUI();
     }
 
     private void DetonateGrenade()
@@ -365,21 +369,15 @@ public class Weapon : MonoBehaviour
         GameObject bulletObj = Instantiate(bullet, shootPos.position, Quaternion.LookRotation(direction));
         damage dmgScript = bulletObj.GetComponent<damage>();
 
-        if (dmgScript.impactPrefab != null)
-        {
-            Transform explosionPrefab = dmgScript.impactPrefab.transform;
-
-            explosionPrefab.localScale = Vector3.one * FMData.blastRadius;
-        }
-        
         if (dmgScript != null)
-
-            if (FMData.effectData.statusType != DamageStatus.None)
+        {
+            if (FMData.effectData != null && FMData.effectData.statusType != DamageStatus.None)
             {
                 dmgScript.SetStatusData(FMData.effectData);
             }
             dmgScript.SetWeaponDamage(wepDmg);
-
+            dmgScript.SetBlastRadius(FMData.blastRadius);
+        }
         equippedPlayer.updatePlayerUI();
     }
 
@@ -551,6 +549,34 @@ public class Weapon : MonoBehaviour
             case WeaponStatType.MaxAmmo:
                 inventory.ApplyMaxAmmoUpgrade(this.ammoType, (int)upgrade.upgradeAmount);
                 break;
+        }
+    }
+
+    private IEnumerator FireWhenReady()
+    {
+        gunAnim.SetTrigger("Shooting");
+
+        yield return null;
+
+        while (gunAnim.IsInTransition(0))
+        {
+            yield return null;
+        }
+
+        if (currentFireMode == FireMode.Burst)
+        {
+            StartCoroutine(BurstFire());
+        }
+        else if(currentFireMode == FireMode.Detonate)
+        {
+            LaunchDetonateGrenade();
+        }
+        else
+        {
+            if (ammoType == AmmoType.Shell)
+                ShootMultiple();
+            else
+                Shoot();
         }
     }
 }

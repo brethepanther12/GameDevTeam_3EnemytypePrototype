@@ -2,19 +2,19 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DroneBoss : MonoBehaviour
+public class DroneBoss : MonoBehaviour, IDamage
 {
     [Header("Activation")]
-    public bool isActive = false; // Boss idle until activated
+    public bool isActive = false;
 
     [Header("Player")]
-    public Transform player; 
+    public Transform player;
 
     [Header("Movement")]
-    public float hoverHeight = 2f;       // Y position
-    public float floatAmplitude = 0.5f;  // Up/down float motion
-    public float floatSpeed = 2f;        // Float speed
-    public float rotationSpeed = 5f;     // Smooth rotation speed
+    public float hoverHeight = 2f;
+    public float floatAmplitude = 0.5f;
+    public float floatSpeed = 2f;
+    public float rotationSpeed = 5f;
     private Vector3 startPosition;
 
     [Header("Projectile Prefabs")]
@@ -25,36 +25,64 @@ public class DroneBoss : MonoBehaviour
     public float attackInterval = 2f;
 
     [Header("Health")]
-    public int maxHealth = 500;
+    public int maxHealth = 40;
     private int currentHealth;
     public Slider healthBar;
+    public Canvas healthCanvas;
+
+    [Header("Damage Feedback")]
+    public Renderer bossRenderer;
+    public Color damageFlashColor = Color.red;
+    public float flashDuration = 0.15f;
+    private Color originalColor;
+
+    [Header("Death Effect")]
+    public GameObject explosionPrefab;
 
     [System.Obsolete]
     void Start()
     {
         gamemanager.instance.updateGameGoal(1);
-        currentHealth = maxHealth;
-        if (healthBar != null)
-            healthBar.value = 1f;
 
-        startPosition = transform.position; // Save initial location
+        currentHealth = maxHealth;
+
+        if (healthBar != null)
+        {
+            healthBar.minValue = 0f;
+            healthBar.maxValue = 1f;
+            healthBar.value = 1f;
+        }
+
+        if (healthCanvas != null)
+            healthCanvas.enabled = false;
+
+        if (bossRenderer != null)
+            originalColor = bossRenderer.material.color;
+
+        startPosition = transform.position;
         StartCoroutine(AttackRoutine());
     }
 
-    [System.Obsolete]
     void Update()
     {
         Hover();
         FacePlayer();
+
+        // DEBUG kill key
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            takeDamage(5);
+        }
     }
 
-    [System.Obsolete]
     public void ActivateBoss()
     {
         if (isActive) return;
         isActive = true;
 
-        // Snap rotation immediately to player
+        if (healthCanvas != null)
+            healthCanvas.enabled = true;
+
         if (player != null)
         {
             Vector3 lookDir = player.position - transform.position;
@@ -64,22 +92,17 @@ public class DroneBoss : MonoBehaviour
         }
     }
 
-    [System.Obsolete]
     void Hover()
     {
         if (!isActive) return;
-
-        // Only adjust Y to prevent flipping
         Vector3 pos = transform.position;
         pos.y = hoverHeight + Mathf.Sin(Time.time * floatSpeed) * floatAmplitude;
         transform.position = pos;
     }
 
-    [System.Obsolete]
     void FacePlayer()
     {
         if (!isActive || player == null) return;
-
         Vector3 lookDir = player.position - transform.position;
         lookDir.y = 0;
         if (lookDir.sqrMagnitude < 0.001f) return;
@@ -113,10 +136,13 @@ public class DroneBoss : MonoBehaviour
     {
         Vector3 dir = (player.position - firePoint.position).normalized;
         firePoint.rotation = Quaternion.LookRotation(dir);
-
         GameObject proj = Instantiate(straightPrefab, firePoint.position, firePoint.rotation);
+
+        // Force projectile onto Enemy Bullet layer so it can't hit boss
+        proj.layer = LayerMask.NameToLayer("Enemy Bullet");
+
         Rigidbody rb = proj.GetComponent<Rigidbody>();
-        if (rb != null) rb.velocity = dir * 25f; // fire directly at player
+        if (rb != null) rb.velocity = dir * 25f;
         Destroy(proj, 5f);
     }
 
@@ -125,13 +151,14 @@ public class DroneBoss : MonoBehaviour
     {
         float angleStep = 15f;
         Vector3 dir = (player.position - firePoint.position).normalized;
-
         for (int i = -2; i <= 2; i++)
         {
             Quaternion rot = Quaternion.LookRotation(dir) * Quaternion.Euler(0, i * angleStep, 0);
             GameObject proj = Instantiate(spreadPrefab, firePoint.position, rot);
+            proj.layer = LayerMask.NameToLayer("Enemy Bullet");
+
             Rigidbody rb = proj.GetComponent<Rigidbody>();
-            if (rb != null) rb.velocity = rot * Vector3.forward * 20f; // fire spread toward player
+            if (rb != null) rb.velocity = rot * Vector3.forward * 20f;
             Destroy(proj, 5f);
         }
     }
@@ -142,30 +169,74 @@ public class DroneBoss : MonoBehaviour
         int bullets = 8;
         float angleStep = 360f / bullets;
         Vector3 dir = (player.position - firePoint.position).normalized;
-
         for (int i = 0; i < bullets; i++)
         {
             Quaternion rot = Quaternion.LookRotation(dir) * Quaternion.Euler(0, i * angleStep, 0);
             GameObject proj = Instantiate(spiralPrefab, firePoint.position, rot);
+            proj.layer = LayerMask.NameToLayer("Enemy Bullet");
+
             Rigidbody rb = proj.GetComponent<Rigidbody>();
-            if (rb != null) rb.velocity = rot * Vector3.forward * 15f; // fire spiral toward player
+            if (rb != null) rb.velocity = rot * Vector3.forward * 15f;
             Destroy(proj, 5f);
         }
     }
 
-    [System.Obsolete]
-    public void TakeDamage(int dmg)
+    // ---- DAMAGE SYSTEM ----
+    public void takeDamage(int amount)
     {
-        currentHealth -= dmg;
+        currentHealth -= amount;
+        if (currentHealth < 0) currentHealth = 0;
+
         if (healthBar != null)
             healthBar.value = (float)currentHealth / maxHealth;
 
-        if (currentHealth <= 0) Die();
+        StartCoroutine(DamageFlash());
+
+        if (currentHealth <= 0)
+            Die();
     }
 
-    [System.Obsolete]
+    public void takeDamage(int amount, StatusEffectData effect)
+    {
+        takeDamage(amount);
+    }
+
+    public void slowDown(float magnitude, float duration) { }
+    public bool isDead() { return currentHealth <= 0; }
+
+    IEnumerator DamageFlash()
+    {
+        if (bossRenderer != null)
+        {
+            bossRenderer.material.color = damageFlashColor;
+            yield return new WaitForSeconds(flashDuration);
+            bossRenderer.material.color = originalColor;
+        }
+    }
+
     void Die()
     {
+        Debug.Log("Drone Boss defeated!");
+        gamemanager.instance.updateGameGoal(-1);
+
+        if (healthCanvas != null)
+            healthCanvas.enabled = false;
+
+        StartCoroutine(HandleDeath());
+    }
+
+    IEnumerator HandleDeath()
+    {
+        if (explosionPrefab != null)
+        {
+            GameObject explosion = Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            Destroy(explosion, 3f);
+        }
+
+        // Wait for explosion duration before win screen
+        yield return new WaitForSeconds(3f);
+
+        gamemanager.instance.TriggerWinScreen();
         Destroy(gameObject);
     }
 }

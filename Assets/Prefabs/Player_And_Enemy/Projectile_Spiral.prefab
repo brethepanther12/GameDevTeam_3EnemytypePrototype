@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3252908572778254321}
   - component: {fileID: 2529440205336581686}
   - component: {fileID: 2250057740767863113}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Projectile_Spiral
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -134,7 +134,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 0
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!114 &2250057740767863113
@@ -149,19 +149,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a08e3e2a22e8a3249b0a8a55c9a74c1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 0
+  type: 3
   rb: {fileID: 2529440205336581686}
-  damageAmount: 6
+  maxHomingAngle: 30
+  damageAmount: 0
   damageRate: 0
-  speed: 40
-  destroyTime: 25
-  impactPrefab: {fileID: 0}
+  speed: 5
+  destroyTime: 5
+  blastRadius: 10
+  homingDelay: 0.5
+  impactPrefab: {fileID: 8873835544158007701, guid: b1c56f041e8796147afb5703381a8078, type: 3}
   weaponDMG: 0
   currentStatus: 0
   currentStatusData:
-    statusType: 0
-    statusDamage: 0
-    statusTickRate: 0
-    statusDuration: 0
+    statusType: 5
+    statusDamage: 6
+    statusTickRate: 0.1
+    statusDuration: 0.1
     slowDownMagnitude: 0
   statusTarget: {fileID: 0}
