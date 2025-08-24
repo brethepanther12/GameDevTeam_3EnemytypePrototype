@@ -27,11 +27,11 @@ public class DroneBoss : MonoBehaviour, IDamage
     [Header("Health")]
     public int maxHealth = 40;
     private int currentHealth;
-    public Slider healthBar;          // assign in inspector
-    public Canvas healthCanvas;       // assign in inspector
+    public Slider healthBar;
+    public Canvas healthCanvas;
 
     [Header("Damage Feedback")]
-    public Renderer bossRenderer;     // assign in inspector
+    public Renderer bossRenderer;
     public Color damageFlashColor = Color.red;
     public float flashDuration = 0.15f;
     private Color originalColor;
@@ -46,7 +46,6 @@ public class DroneBoss : MonoBehaviour, IDamage
 
         currentHealth = maxHealth;
 
-        // init health bar
         if (healthBar != null)
         {
             healthBar.minValue = 0f;
@@ -55,7 +54,7 @@ public class DroneBoss : MonoBehaviour, IDamage
         }
 
         if (healthCanvas != null)
-            healthCanvas.enabled = false; // hidden until boss activates
+            healthCanvas.enabled = false;
 
         if (bossRenderer != null)
             originalColor = bossRenderer.material.color;
@@ -68,6 +67,8 @@ public class DroneBoss : MonoBehaviour, IDamage
     {
         Hover();
         FacePlayer();
+
+        // DEBUG kill key
         if (Input.GetKeyDown(KeyCode.K))
         {
             takeDamage(5);
@@ -80,9 +81,8 @@ public class DroneBoss : MonoBehaviour, IDamage
         isActive = true;
 
         if (healthCanvas != null)
-            healthCanvas.enabled = true; // show health bar now
+            healthCanvas.enabled = true;
 
-        // snap rotation to face player immediately
         if (player != null)
         {
             Vector3 lookDir = player.position - transform.position;
@@ -137,6 +137,10 @@ public class DroneBoss : MonoBehaviour, IDamage
         Vector3 dir = (player.position - firePoint.position).normalized;
         firePoint.rotation = Quaternion.LookRotation(dir);
         GameObject proj = Instantiate(straightPrefab, firePoint.position, firePoint.rotation);
+
+        // Force projectile onto Enemy Bullet layer so it can't hit boss
+        proj.layer = LayerMask.NameToLayer("Enemy Bullet");
+
         Rigidbody rb = proj.GetComponent<Rigidbody>();
         if (rb != null) rb.velocity = dir * 25f;
         Destroy(proj, 5f);
@@ -151,6 +155,8 @@ public class DroneBoss : MonoBehaviour, IDamage
         {
             Quaternion rot = Quaternion.LookRotation(dir) * Quaternion.Euler(0, i * angleStep, 0);
             GameObject proj = Instantiate(spreadPrefab, firePoint.position, rot);
+            proj.layer = LayerMask.NameToLayer("Enemy Bullet");
+
             Rigidbody rb = proj.GetComponent<Rigidbody>();
             if (rb != null) rb.velocity = rot * Vector3.forward * 20f;
             Destroy(proj, 5f);
@@ -167,6 +173,8 @@ public class DroneBoss : MonoBehaviour, IDamage
         {
             Quaternion rot = Quaternion.LookRotation(dir) * Quaternion.Euler(0, i * angleStep, 0);
             GameObject proj = Instantiate(spiralPrefab, firePoint.position, rot);
+            proj.layer = LayerMask.NameToLayer("Enemy Bullet");
+
             Rigidbody rb = proj.GetComponent<Rigidbody>();
             if (rb != null) rb.velocity = rot * Vector3.forward * 15f;
             Destroy(proj, 5f);
@@ -179,35 +187,23 @@ public class DroneBoss : MonoBehaviour, IDamage
         currentHealth -= amount;
         if (currentHealth < 0) currentHealth = 0;
 
-        // update health bar
         if (healthBar != null)
             healthBar.value = (float)currentHealth / maxHealth;
 
-        // flash red
         StartCoroutine(DamageFlash());
 
         if (currentHealth <= 0)
             Die();
     }
 
-    // optional status effect version (not needed for simple damage, but must exist)
     public void takeDamage(int amount, StatusEffectData effect)
     {
         takeDamage(amount);
-        // you can add effect logic here later
     }
 
-    // slow down method (stub)
-    public void slowDown(float magnitude, float duration)
-    {
-        // not needed for boss unless you want slowdown effects
-    }
+    public void slowDown(float magnitude, float duration) { }
+    public bool isDead() { return currentHealth <= 0; }
 
-    // check dead
-    public bool isDead()
-    {
-        return currentHealth <= 0;
-    }
     IEnumerator DamageFlash()
     {
         if (bossRenderer != null)
@@ -221,14 +217,26 @@ public class DroneBoss : MonoBehaviour, IDamage
     void Die()
     {
         Debug.Log("Drone Boss defeated!");
-
-        if (explosionPrefab != null)
-            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        gamemanager.instance.updateGameGoal(-1);
 
         if (healthCanvas != null)
             healthCanvas.enabled = false;
 
-        Destroy(gameObject);
+        StartCoroutine(HandleDeath());
     }
 
+    IEnumerator HandleDeath()
+    {
+        if (explosionPrefab != null)
+        {
+            GameObject explosion = Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            Destroy(explosion, 3f);
+        }
+
+        // Wait for explosion duration before win screen
+        yield return new WaitForSeconds(3f);
+
+        gamemanager.instance.TriggerWinScreen();
+        Destroy(gameObject);
+    }
 }
