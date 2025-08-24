@@ -16,14 +16,14 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] LayerMask ignoreLayer;
 
     [SerializeField] public int HP;
-    [SerializeField] int maxHP;
+    [SerializeField] public int maxHP;
     [SerializeField] float speed;
     [SerializeField] int sprintMod;
     [SerializeField] int jumpVel;
     [SerializeField] int jumpMax;
     [SerializeField] float gravity;
     [SerializeField] public int shield;
-    [SerializeField] int maxShield;
+    [SerializeField] public int maxShield;
     [SerializeField] public int armor;
     [SerializeField] int maxArmor;
     [SerializeField] int shootDamage;
