@@ -16,11 +16,7 @@ public class buttonFunctions : MonoBehaviour
 
     public void quit()
     {
-#if !UNITY_EDITOR
-        Application.Quit();
-#else 
-        UnityEditor.EditorApplication.isPlaying = false;
-#endif
+        SceneManager.LoadScene("Main Menu");
     }
 
     public void respawnPlayer()
