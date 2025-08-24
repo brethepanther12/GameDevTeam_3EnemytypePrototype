@@ -31,12 +31,29 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] float shootRate;
     [SerializeField] int shootDist;
 
+    //dash
     [SerializeField] float dashCooldown;
     [SerializeField] float dashDuration;
     [SerializeField] int dashCount;
     [SerializeField] int maxDashCount;
     private bool isDashing;
-   
+
+    //shield
+    private Coroutine shieldRechargeRoutine;
+    [SerializeField] float shieldCooldown;
+    [SerializeField] float shieldRate;
+    [SerializeField] int shieldRecoverAmount;
+    private bool isShielding;
+
+    //health regen
+    private Coroutine healthRegenRoutine;
+    [SerializeField] float healthCooldown;
+    [SerializeField] float healthRate;
+    [SerializeField] int healthRecoverAmount;
+    private bool isRegening;
+
+    private bool canRechargeShield = true;
+    private bool canRegenHealth = true;
 
     [Header("--- Audio ---")]
     [SerializeField] private AudioClip hurtSound;
@@ -93,6 +110,8 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         shieldOrig = shield;
         dashCount = maxDashCount;
         StartCoroutine(RechargeDash());
+        shieldRechargeRoutine = StartCoroutine(RecoverShield());
+        healthRegenRoutine = StartCoroutine(RecoverHealth());
         spawnPlayer();
 
         inventory = GetComponent<PlayerInventory>();
@@ -196,8 +215,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         }
 
         controller.Move(moveDir * speed * Time.deltaTime + movePlatform * Time.deltaTime);
-
-        //float horizontalSpeed = new Vector3(controller.velocity.x, 0, controller.velocity.z).magnitude;
         float input = moveDir.magnitude;
         if (animator != null)
         {
@@ -223,7 +240,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     void HandleFootsteps()
     {
-        // float velocity = controller.velocity.magnitude;
 
         float input = moveDir.magnitude;
         if (input > 0.2f && IsGrounded())
@@ -288,7 +304,9 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
             updatePlayerUI();
             StartCoroutine(ShieldDamageFlashScreen());
+
         }
+
         if (remainingDamage > 0 && armor > 0)
         {
             int damageToArmor = Mathf.Min(remainingDamage, armor);
@@ -297,7 +315,9 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
             updatePlayerUI();
             StartCoroutine(ArmorDamageFlashScreen());
+
         }
+
         if (remainingDamage > 0)
         {
             HP -= remainingDamage;
@@ -306,11 +326,13 @@ public class playerController : MonoBehaviour, IDamage, Visibility
             AudioSource.PlayClipAtPoint(hurtSound, transform.position, hurtVol);
             updatePlayerUI();
             StartCoroutine(damageFlashScreen());
+
         }
-        if (HP <= maxHP/2)
-        {
-            gamemanager.instance.HurtImage.SetActive(true);
-        }
+
+        if (shieldRechargeRoutine != null)
+            StopCoroutine(shieldRechargeRoutine);
+
+        shieldRechargeRoutine = StartCoroutine(OnTakeDamage());
 
         if (HP <= 0)
         {
@@ -754,5 +776,61 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     bool IDamage.isDead()
     {
         return isDead;
+    }
+
+    private IEnumerator RecoverShield()
+    {
+        isShielding = true;
+
+        while (true)
+        {
+            if (canRechargeShield && shield < maxShield)
+            {
+                shield += shieldRecoverAmount;
+                shield = Mathf.Min(shield, maxShield);
+                updatePlayerUI();
+            }
+
+            yield return new WaitForSeconds(shieldRate);
+        }
+
+    }
+
+    private IEnumerator OnTakeDamage()
+    {
+        canRechargeShield = false;
+        canRegenHealth = false;
+
+        if (shieldRechargeRoutine != null)
+            StopCoroutine(shieldRechargeRoutine);
+
+        if (healthRegenRoutine != null)
+            StopCoroutine(healthRegenRoutine);
+
+        yield return new WaitForSeconds(shieldCooldown);
+
+        canRechargeShield = true;
+        canRegenHealth = true;
+
+        shieldRechargeRoutine = StartCoroutine(RecoverShield());
+        healthRegenRoutine = StartCoroutine(RecoverHealth());
+    }
+
+    private IEnumerator RecoverHealth()
+    {
+        isRegening = true;
+
+        while (true)
+        {
+            if (canRegenHealth && HP < maxHP / 2)
+            {
+                HP += healthRecoverAmount;
+                HP = Mathf.Min(HP, maxHP / 2);
+                updatePlayerUI();
+            }
+
+            yield return new WaitForSeconds(healthRate);
+        }
+
     }
 }
