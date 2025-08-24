@@ -20,4 +20,9 @@ public class EnemyWeakPoints : MonoBehaviour , IDamage
     {
         enemy.takeDamage(Mathf.RoundToInt(amount * bodyModifier), effect);
     }
+
+    bool IDamage.isDead()
+    {
+        throw new System.NotImplementedException();
+    }
 }
