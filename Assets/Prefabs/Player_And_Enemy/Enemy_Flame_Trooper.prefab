@@ -138,7 +138,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 382173325151328431}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.70710576, z: -0, w: 0.70710784}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 2.6216185, y: 1.1, z: 15.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -204,7 +204,6 @@ MonoBehaviour:
   ammoPickupPrefab: {fileID: 5257549024183734213, guid: 96e55ce566e615444b8cc0546399653a, type: 3}
   shieldPrefab: {fileID: 5057065830858927703}
   armorPrefab: {fileID: 6216592453822591530}
-  dropChance: 0.5
   bullet: {fileID: 7539981003205437294, guid: 2d3d1d8170884be40be7db9989da6969, type: 3}
   shootRate: 0.2
   statusEffectData:
@@ -217,6 +216,7 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
+  isDead: 0
 --- !u!195 &5247936634099910371
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -822,6 +822,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1770097420144411235}
   - component: {fileID: 4284238362969223798}
+  - component: {fileID: 7470715899587514573}
+  - component: {fileID: 7753430322286435363}
   m_Layer: 0
   m_Name: SK_Soldier_Torso
   m_TagString: Untagged
@@ -900,6 +902,43 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.39478835, y: -0.055331558, z: 0.0000008046627}
     m_Extent: {x: 0.567206, y: 0.3384009, z: 0.6884552}
   m_DirtyAABB: 0
+--- !u!136 &7470715899587514573
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6348191546078265893}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.45
+  m_Height: 0.6768018
+  m_Direction: 1
+  m_Center: {x: -0.39478835, y: -0.05533132, z: 0.0000008046611}
+--- !u!114 &7753430322286435363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6348191546078265893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aa33ec4c00d49748bbdeda21e8a6c9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemy: {fileID: 0}
+  bodyModifier: 1
 --- !u!1 &6567278768857985817
 GameObject:
   m_ObjectHideFlags: 0
@@ -910,6 +949,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3085002529714048272}
   - component: {fileID: 7846866143443217360}
+  - component: {fileID: 8342403501014814450}
+  - component: {fileID: 637134580397627471}
   m_Layer: 0
   m_Name: SK_Soldier_Head
   m_TagString: Untagged
@@ -988,6 +1029,41 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.39364445, y: 0.008824348, z: 0.000000074505806}
     m_Extent: {x: 0.17740639, y: 0.19346918, z: 0.13846613}
   m_DirtyAABB: 0
+--- !u!65 &8342403501014814450
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6567278768857985817}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.3, y: 0.3, z: 0.25}
+  m_Center: {x: -0.39364457, y: 0.008824098, z: 0.000000042865295}
+--- !u!114 &637134580397627471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6567278768857985817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aa33ec4c00d49748bbdeda21e8a6c9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemy: {fileID: 0}
+  bodyModifier: 5
 --- !u!1 &8937582413749360710
 GameObject:
   m_ObjectHideFlags: 0
@@ -998,6 +1074,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6571452222885112359}
   - component: {fileID: 8244858322508068309}
+  - component: {fileID: 3525515567418747979}
+  - component: {fileID: 8218411471599858206}
   m_Layer: 0
   m_Name: SK_Soldier_Legs
   m_TagString: Untagged
@@ -1076,3 +1154,38 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.41140884, y: 0.007928044, z: -0.0050857216}
     m_Extent: {x: 0.6760302, y: 0.2837049, z: 0.41879165}
   m_DirtyAABB: 0
+--- !u!65 &3525515567418747979
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8937582413749360710}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.3520604, y: 0.4, z: 0.7}
+  m_Center: {x: 0.41140884, y: 0.007928282, z: -0.0050857216}
+--- !u!114 &8218411471599858206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8937582413749360710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aa33ec4c00d49748bbdeda21e8a6c9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemy: {fileID: 0}
+  bodyModifier: 0.85
