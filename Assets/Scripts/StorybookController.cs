@@ -33,6 +33,8 @@ public class StorybookController : MonoBehaviour
 
     public void StartStory()
     {
+        Time.timeScale = 1f;
+
         cutsceneImage.color = new Color(1, 1, 1, 0);
         mainPanel.SetActive(true);
         continuePrompt.SetActive(false);
@@ -100,7 +102,20 @@ public class StorybookController : MonoBehaviour
 
     private void EndStory()
     {
-        StartCoroutine(FadeImage(0f, 1.0f));
+        StartCoroutine(EndStoryAndLoadScene());
+    }
+
+    private IEnumerator EndStoryAndLoadScene()
+    {
+
+        Time.timeScale = 1f;
+
+        if (gamemanager.instance != null)
+        {
+            gamemanager.instance.ResetGameState();
+        }
+
+        yield return StartCoroutine(FadeImage(0f, 1.0f));
 
         if (!string.IsNullOrEmpty(sceneToLoadAfter))
         {

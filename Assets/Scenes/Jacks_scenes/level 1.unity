@@ -292,6 +292,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 282958084298565393, guid: 7a94adfe369720e46ab324db01d4dfad, type: 3}
+      propertyPath: unlockSound
+      value: 
+      objectReference: {fileID: 8300000, guid: ccf166b6c9452e24381348b64ec7be6d, type: 3}
+    - target: {fileID: 282958084298565393, guid: 7a94adfe369720e46ab324db01d4dfad, type: 3}
+      propertyPath: lockedDoorSound
+      value: 
+      objectReference: {fileID: 8300000, guid: fe1989c46c1ddd6429b36141dc9857d6, type: 3}
     - target: {fileID: 4893935152372168107, guid: 7a94adfe369720e46ab324db01d4dfad, type: 3}
       propertyPath: m_Name
       value: REDDoor_Locked
@@ -19932,6 +19940,14 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 6df5b81390f2c8d4d967baea2b0a190e, type: 2}
+    - target: {fileID: 614656605168526864, guid: c47b02a9950a76e4cb8229e148a6c1d5, type: 3}
+      propertyPath: unlockSound
+      value: 
+      objectReference: {fileID: 8300000, guid: ccf166b6c9452e24381348b64ec7be6d, type: 3}
+    - target: {fileID: 614656605168526864, guid: c47b02a9950a76e4cb8229e148a6c1d5, type: 3}
+      propertyPath: lockedDoorSound
+      value: 
+      objectReference: {fileID: 8300000, guid: fe1989c46c1ddd6429b36141dc9857d6, type: 3}
     - target: {fileID: 1767374496277253058, guid: c47b02a9950a76e4cb8229e148a6c1d5, type: 3}
       propertyPath: m_LocalScale.x
       value: 4
@@ -57468,6 +57484,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: YellowDoor_Locked
       objectReference: {fileID: 0}
+    - target: {fileID: 887734346697876376, guid: 72012d3566b56284593aa778cd4a3cb5, type: 3}
+      propertyPath: unlockSound
+      value: 
+      objectReference: {fileID: 8300000, guid: ccf166b6c9452e24381348b64ec7be6d, type: 3}
+    - target: {fileID: 887734346697876376, guid: 72012d3566b56284593aa778cd4a3cb5, type: 3}
+      propertyPath: lockedDoorSound
+      value: 
+      objectReference: {fileID: 8300000, guid: fe1989c46c1ddd6429b36141dc9857d6, type: 3}
     - target: {fileID: 4473609337447582084, guid: 72012d3566b56284593aa778cd4a3cb5, type: 3}
       propertyPath: m_LocalScale.x
       value: 4
@@ -60852,7 +60876,7 @@ GameObject:
   - component: {fileID: 2479637337091664002}
   m_Layer: 5
   m_Name: Enemy count
-  m_TagString: Untagged
+  m_TagString: EnemiesRemainingText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -63977,7 +64001,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -300}
   m_SizeDelta: {x: 300, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2565418943578031644
@@ -65252,7 +65276,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Quit
+  m_text: Quit To Menu
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -67707,9 +67731,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3823963166627548595}
-        m_TargetAssemblyTypeName: buttonFunctions, Assembly-CSharp
-        m_MethodName: respawnPlayer
+      - m_Target: {fileID: 5261293417021952201}
+        m_TargetAssemblyTypeName: gamemanager, Assembly-CSharp
+        m_MethodName: RespawnPlayer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -68266,7 +68290,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Quit
+  m_text: Quit To Menu
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -68798,7 +68822,6 @@ MonoBehaviour:
   BossHealthBarUI: {fileID: 0}
   BossHealthBarFill: {fileID: 0}
   BossNameText: {fileID: 0}
-  currentBoss: {fileID: 0}
   currentDifficulty: 0
 --- !u!224 &5332638745838922911
 RectTransform:
@@ -73129,7 +73152,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87687a8d0d9d4e049a6963ea7ae6a9ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BossHealthBarFill: {fileID: 0}
 --- !u!224 &7978956511639237440
 RectTransform:
   m_ObjectHideFlags: 0

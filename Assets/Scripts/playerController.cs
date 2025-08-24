@@ -85,7 +85,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     float shootTimer;
     public GameObject meleeTrigger;
     bool isAttacking;
-
+    private bool isDead = false;
     void Start()
     {
         originalSpeed = this.speed;
@@ -122,7 +122,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
         if (Input.GetButtonDown("Interact"))
         {
-            Debug.Log("Interact pressed");
+            //Debug.Log("Interact pressed");
 
             if (AbilityUIController.instance != null)
             {
@@ -290,7 +290,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
             updatePlayerUI();
             StartCoroutine(ShieldDamageFlashScreen());
         }
-
+        if (shield <= 0)
+        {
+            StartCoroutine(ShieldBreak());
+        }
         if (remainingDamage > 0 && armor > 0)
         {
             int damageToArmor = Mathf.Min(remainingDamage, armor);
@@ -300,7 +303,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
             updatePlayerUI();
             StartCoroutine(ArmorDamageFlashScreen());
         }
-
+        if (armor <= 0)
+        {
+            StartCoroutine(ArmorBreak());
+        }
         if (remainingDamage > 0)
         {
             HP -= remainingDamage;
@@ -309,6 +315,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
             AudioSource.PlayClipAtPoint(hurtSound, transform.position, hurtVol);
             updatePlayerUI();
             StartCoroutine(damageFlashScreen());
+        }
+        if (HP <= 1/2)
+        {
+            StartCoroutine(HurtImage());
         }
 
         if (HP <= 0)
@@ -548,7 +558,23 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         }
 
     }
+    IEnumerator ShieldBreak()
+    {
+        gamemanager.instance.ShieldBreak.SetActive(true);
+        yield return new WaitForSeconds(.1f);
+        gamemanager.instance.ShieldBreak.SetActive(false);
+    }
+    IEnumerator ArmorBreak()
+    {
+        gamemanager.instance.ArmorBreak.SetActive(true);
+        yield return new WaitForSeconds(.1f);
+        gamemanager.instance.ArmorBreak.SetActive(false);
+    }
+    IEnumerator HurtImage()
+    {
+        gamemanager.instance.HurtImage.SetActive(true);
 
+    }
     IEnumerator damageFlashScreen()
     {
         gamemanager.instance.playerDamagePanel.SetActive(true);
@@ -572,6 +598,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     public void spawnPlayer()
     {
+        isDead = false;
         SpawnerTemp[] allSpawners = FindObjectsByType<SpawnerTemp>(FindObjectsSortMode.None);
         foreach (SpawnerTemp spawner in allSpawners)
         {

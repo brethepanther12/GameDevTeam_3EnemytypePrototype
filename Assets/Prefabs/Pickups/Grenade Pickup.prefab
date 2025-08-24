@@ -124,6 +124,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 2750318502371735381}
+  pickupSound: {fileID: 8300000, guid: 74df6f85a7f3b7343b766f8a59ac6078, type: 3}
   itemToGive: {fileID: 11400000, guid: 06b4b5d6e60aa55418d24593b0175a97, type: 2}
   weaponToGive: {fileID: 0}
 --- !u!114 &5975517313808958851
@@ -144,7 +145,6 @@ MonoBehaviour:
   maxBounceAmplitude: 0.25
   minBounceFrequency: 1.5
   maxBounceFrequency: 3
-  isBeingPulled: 0
 --- !u!54 &2750318502371735381
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -279,7 +279,6 @@ MonoBehaviour:
   maxBounceAmplitude: 0.25
   minBounceFrequency: 1.5
   maxBounceFrequency: 3
-  isBeingPulled: 0
 --- !u!114 &3444240724568694014
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -293,6 +292,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 4109150342777611958}
+  pickupSound: {fileID: 8300000, guid: 74df6f85a7f3b7343b766f8a59ac6078, type: 3}
   itemToGive: {fileID: 11400000, guid: ce05772806584a148a97621579f22888, type: 2}
   weaponToGive: {fileID: 0}
 --- !u!33 &7336329049591482456
