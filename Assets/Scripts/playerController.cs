@@ -331,9 +331,9 @@ public class playerController : MonoBehaviour, IDamage, Visibility
             updatePlayerUI();
             StartCoroutine(damageFlashScreen());
         }
-        if (HP <= 1/2)
+        if (HP <= maxHP/2)
         {
-            StartCoroutine(HurtImage());
+            gamemanager.instance.HurtImage.SetActive(true);
         }
 
         if (HP <= 0)
@@ -425,8 +425,11 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
             HP = maxHP;
         }
-
-        updatePlayerUI();
+        if (HP >= maxHP/2)
+        {
+            gamemanager.instance.HurtImage.SetActive(false);
+        }
+            updatePlayerUI();
 
     }
 
@@ -576,19 +579,14 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     IEnumerator ShieldBreak()
     {
         gamemanager.instance.ShieldBreak.SetActive(true);
-        yield return new WaitForSeconds(.1f);
+        yield return new WaitForSeconds(.3f);
         gamemanager.instance.ShieldBreak.SetActive(false);
     }
     IEnumerator ArmorBreak()
     {
         gamemanager.instance.ArmorBreak.SetActive(true);
-        yield return new WaitForSeconds(.1f);
+        yield return new WaitForSeconds(.3f);
         gamemanager.instance.ArmorBreak.SetActive(false);
-    }
-    IEnumerator HurtImage()
-    {
-        gamemanager.instance.HurtImage.SetActive(true);
-
     }
     IEnumerator damageFlashScreen()
     {
