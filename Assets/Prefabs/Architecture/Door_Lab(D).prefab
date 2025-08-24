@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 9145851313433206918}
   - component: {fileID: 4561512905331324613}
   - component: {fileID: 7533374398354337846}
+  - component: {fileID: 140903956901246156}
   m_Layer: 0
   m_Name: Door_Lab(D)
   m_TagString: Breakable
@@ -167,3 +168,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!208 &140903956901246156
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 635004453090149364}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
