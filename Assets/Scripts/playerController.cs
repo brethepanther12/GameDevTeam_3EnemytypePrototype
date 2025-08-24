@@ -71,8 +71,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     bool hasKey;
     bool isPoweredUp;
     bool hasAmmo;
-    bool IsArmored;
-    bool IsShielded;
     int numKeys;
 
     Vector3 moveDir;
@@ -291,10 +289,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
             updatePlayerUI();
             StartCoroutine(ShieldDamageFlashScreen());
         }
-        if (!IsShielded)
-        {
-            gamemanager.instance.ShieldBreak.SetActive(true);
-        }
         if (remainingDamage > 0 && armor > 0)
         {
             int damageToArmor = Mathf.Min(remainingDamage, armor);
@@ -303,10 +297,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
             updatePlayerUI();
             StartCoroutine(ArmorDamageFlashScreen());
-        }
-        if (!IsArmored)
-        {
-            gamemanager.instance.ArmorBreak.SetActive(true);
         }
         if (remainingDamage > 0)
         {
@@ -433,10 +423,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         {
             armor = maxArmor;
         }
-        if (IsArmored)
-        {
-            gamemanager.instance.ArmorBreak.SetActive(false);
-        }
         updatePlayerUI();
     }
 
@@ -452,10 +438,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         if (shield > maxShield)
         {
             shield = maxShield;
-        }
-        if(IsShielded)
-        {
-           gamemanager.instance.ShieldBreak.SetActive(false);
         }
         updatePlayerUI();
     }
