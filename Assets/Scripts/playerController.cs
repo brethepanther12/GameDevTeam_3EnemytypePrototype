@@ -71,8 +71,8 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     bool hasKey;
     bool isPoweredUp;
     bool hasAmmo;
-    bool IsArmored;
-    bool IsShielded;
+    bool isArmored;
+    bool isShielded;
     int numKeys;
 
     Vector3 moveDir;
@@ -290,11 +290,17 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
             updatePlayerUI();
             StartCoroutine(ShieldDamageFlashScreen());
+
+            if (shield <= 0)
+            {
+                isShielded = false;
+                gamemanager.instance.ShieldBreak.SetActive(true);
+            }
         }
-        if (!IsShielded)
-        {
-            gamemanager.instance.ShieldBreak.SetActive(true);
-        }
+        //if (!IsShielded)
+        //{
+        //    gamemanager.instance.ShieldBreak.SetActive(true);
+        //}
         if (remainingDamage > 0 && armor > 0)
         {
             int damageToArmor = Mathf.Min(remainingDamage, armor);
@@ -303,11 +309,17 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
             updatePlayerUI();
             StartCoroutine(ArmorDamageFlashScreen());
+
+            if (armor <= 0)
+            {
+                isArmored = false;
+                gamemanager.instance.ArmorBreak.SetActive(true);
+            }
         }
-        if (!IsArmored)
-        {
-            gamemanager.instance.ArmorBreak.SetActive(true);
-        }
+        //if (!IsArmored)
+        //{
+        //    gamemanager.instance.ArmorBreak.SetActive(true);
+        //}
         if (remainingDamage > 0)
         {
             HP -= remainingDamage;
@@ -316,11 +328,16 @@ public class playerController : MonoBehaviour, IDamage, Visibility
             AudioSource.PlayClipAtPoint(hurtSound, transform.position, hurtVol);
             updatePlayerUI();
             StartCoroutine(damageFlashScreen());
+
+            if (HP <= maxHP / 2)
+            {
+                gamemanager.instance.HurtImage.SetActive(true);
+            }
         }
-        if (HP <= maxHP/2)
-        {
-            gamemanager.instance.HurtImage.SetActive(true);
-        }
+        //if (HP <= maxHP/2)
+        //{
+        //    gamemanager.instance.HurtImage.SetActive(true);
+        //}
 
         if (HP <= 0)
         {
@@ -433,7 +450,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         {
             armor = maxArmor;
         }
-        if (IsArmored)
+        if (isArmored)
         {
             gamemanager.instance.ArmorBreak.SetActive(false);
         }
@@ -453,7 +470,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         {
             shield = maxShield;
         }
-        if(IsShielded)
+        if(isShielded)
         {
            gamemanager.instance.ShieldBreak.SetActive(false);
         }
