@@ -26,8 +26,6 @@ public class gamemanager : MonoBehaviour
     public Image playerShieldBar;
     public Image playerArmorBar;
     public GameObject HurtImage;
-    public GameObject ShieldBreak;
-    public GameObject ArmorBreak;
     public GameObject playerDamagePanel;
     public GameObject playerShieldDamagePanel;
     public GameObject playerArmorDamagePanel;
