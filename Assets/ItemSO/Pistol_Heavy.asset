@@ -17,7 +17,7 @@ MonoBehaviour:
     m_Bits: 0
   weaponName: Heavy Pistol
   ammoType: 0
-  availableFireModes: 00000000
+  availableFireModes: 0000000002000000
   fireModeDatas:
   - mode: 0
     projectileType: 0
@@ -28,16 +28,16 @@ MonoBehaviour:
       statusTickRate: 0
       statusDuration: 0
       slowDownMagnitude: 0
-    damage: 30
+    damage: 10
     range: 300
-    fireRate: 0.35
+    fireRate: 0.5
     burstCount: 0
     burstRate: 0
     chargeTime: 0
     detonateTime: 0
     projectileCount: 0
     projectileSpread: 0
-    blastRadius: 0
+    blastRadius: 5
     energyRechargeRate: 0
   - mode: 2
     projectileType: 0
@@ -48,7 +48,7 @@ MonoBehaviour:
       statusTickRate: 0
       statusDuration: 0
       slowDownMagnitude: 0
-    damage: 30
+    damage: 10
     range: 300
     fireRate: 0.35
     burstCount: 2
@@ -57,7 +57,7 @@ MonoBehaviour:
     detonateTime: 0
     projectileCount: 0
     projectileSpread: 0
-    blastRadius: 0
+    blastRadius: 5
     energyRechargeRate: 0
   availableUpgrades: []
   savedMode: 0

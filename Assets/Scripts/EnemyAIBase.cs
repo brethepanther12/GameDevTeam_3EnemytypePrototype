@@ -88,7 +88,7 @@ public class EnemyAIBase : MonoBehaviour, IDamage
     {
         //Debug will message the debugger that an enemy dies
         //by getting the string name of the gameObject
-        Debug.Log($"{gameObject.name} has died");
+        //Debug.Log($"{gameObject.name} has died");
         isDead = true;
         //Then it destroy 'this' object after
         Destroy(gameObject);

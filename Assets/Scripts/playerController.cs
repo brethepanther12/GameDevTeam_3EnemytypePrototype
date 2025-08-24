@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering;
 
 public class playerController : MonoBehaviour, IDamage, Visibility
 {
@@ -21,8 +22,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] int jumpVel;
     [SerializeField] int jumpMax;
     [SerializeField] float gravity;
-    //[SerializeField] int magazineSize = 15;
-    //  [SerializeField] int reserveAmmo = 90;
     [SerializeField] public int shield;
     [SerializeField] int maxShield;
     [SerializeField] public int armor;
@@ -37,6 +36,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] int dashCount;
     [SerializeField] int maxDashCount;
     private bool isDashing;
+   
 
     [Header("--- Audio ---")]
     [SerializeField] private AudioClip hurtSound;
@@ -71,7 +71,8 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     bool hasKey;
     bool isPoweredUp;
     bool hasAmmo;
-
+    bool IsArmored;
+    bool IsShielded;
     int numKeys;
 
     Vector3 moveDir;
@@ -85,7 +86,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     float shootTimer;
     public GameObject meleeTrigger;
     bool isAttacking;
-
+    private bool isDead = false;
     void Start()
     {
         originalSpeed = this.speed;
@@ -122,7 +123,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
         if (Input.GetButtonDown("Interact"))
         {
-            Debug.Log("Interact pressed");
+            //Debug.Log("Interact pressed");
 
             if (AbilityUIController.instance != null)
             {
@@ -274,21 +275,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         }
     }
 
-    //void sprint()
-    //{
-    //    if (Input.GetButtonDown("Sprint"))
-    //    {
-
-    //     speed *= sprintMod;
-
-    //    }
-    //    else if (Input.GetButtonUp("Sprint"))
-    //    {
-    //        speed /= sprintMod;
-
-    //    }
-    //}
-
     public void takeDamage(int amount)
     {
         if (amount <= 0)
@@ -305,7 +291,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
             updatePlayerUI();
             StartCoroutine(ShieldDamageFlashScreen());
         }
-
+        if (!IsShielded)
+        {
+            gamemanager.instance.ShieldBreak.SetActive(true);
+        }
         if (remainingDamage > 0 && armor > 0)
         {
             int damageToArmor = Mathf.Min(remainingDamage, armor);
@@ -315,7 +304,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
             updatePlayerUI();
             StartCoroutine(ArmorDamageFlashScreen());
         }
-
+        if (!IsArmored)
+        {
+            gamemanager.instance.ArmorBreak.SetActive(true);
+        }
         if (remainingDamage > 0)
         {
             HP -= remainingDamage;
@@ -325,9 +317,14 @@ public class playerController : MonoBehaviour, IDamage, Visibility
             updatePlayerUI();
             StartCoroutine(damageFlashScreen());
         }
+        if (HP <= maxHP/2)
+        {
+            gamemanager.instance.HurtImage.SetActive(true);
+        }
 
         if (HP <= 0)
         {
+            isDead = true;
             gamemanager.instance.youLose();
         }
     }
@@ -415,8 +412,11 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
             HP = maxHP;
         }
-
-        updatePlayerUI();
+        if (HP >= maxHP/2)
+        {
+            gamemanager.instance.HurtImage.SetActive(false);
+        }
+            updatePlayerUI();
 
     }
 
@@ -433,7 +433,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         {
             armor = maxArmor;
         }
-
+        if (IsArmored)
+        {
+            gamemanager.instance.ArmorBreak.SetActive(false);
+        }
         updatePlayerUI();
     }
 
@@ -450,7 +453,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         {
             shield = maxShield;
         }
-
+        if(IsShielded)
+        {
+           gamemanager.instance.ShieldBreak.SetActive(false);
+        }
         updatePlayerUI();
     }
 
@@ -519,6 +525,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         return hasKey;
     }
 
+ 
     IEnumerator PowerUp(float duration)
     {
         isPoweredUp = true;
@@ -563,7 +570,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         }
 
     }
-
+    
     IEnumerator damageFlashScreen()
     {
         gamemanager.instance.playerDamagePanel.SetActive(true);
@@ -587,6 +594,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     public void spawnPlayer()
     {
+        isDead = false;
         SpawnerTemp[] allSpawners = FindObjectsByType<SpawnerTemp>(FindObjectsSortMode.None);
         foreach (SpawnerTemp spawner in allSpawners)
         {
@@ -763,13 +771,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     bool IDamage.isDead()
     {
-        if (HP <= 0)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        return isDead;
     }
 }

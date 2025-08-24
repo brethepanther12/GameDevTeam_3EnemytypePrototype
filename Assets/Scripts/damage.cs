@@ -123,7 +123,7 @@ public class damage : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"Trigger entered by {other.name}");
+        //Debug.Log($"Trigger entered by {other.name}");
         if (other.isTrigger)
             return;
 
@@ -277,7 +277,7 @@ public class damage : MonoBehaviour
             }
         }
 
-        Debug.Log($"Explosion triggered at {transform.position} with radius {blastRadius}");
+        //Debug.Log($"Explosion triggered at {transform.position} with radius {blastRadius}");
     }
 
     public void SetHomingTarget(Transform target)

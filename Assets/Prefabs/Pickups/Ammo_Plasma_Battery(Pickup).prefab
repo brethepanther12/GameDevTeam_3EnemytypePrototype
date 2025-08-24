@@ -23794,10 +23794,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   rb: {fileID: 6834283441930942743}
+  maxHomingAngle: 30
   damageAmount: 1
   damageRate: 0
   speed: 50
   destroyTime: 3
+  blastRadius: 0
+  homingDelay: 0
   impactPrefab: {fileID: 2408714428905375140, guid: ec2cd9d24f8932148ab9480fc3b65b15, type: 3}
   weaponDMG: 0
   currentStatus: 0
@@ -24024,10 +24027,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   rb: {fileID: 7386910699756654338}
+  maxHomingAngle: 30
   damageAmount: 1
   damageRate: 0
   speed: 50
   destroyTime: 3
+  blastRadius: 0
+  homingDelay: 0
   impactPrefab: {fileID: 2408714428905375140, guid: ec2cd9d24f8932148ab9480fc3b65b15, type: 3}
   weaponDMG: 0
   currentStatus: 0
@@ -38517,6 +38523,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 3726085615248125467}
+  pickupSound: {fileID: 8300000, guid: 74df6f85a7f3b7343b766f8a59ac6078, type: 3}
   itemToGive: {fileID: 11400000, guid: bd4605b17be7b7d4eb064aa7e8b3555b, type: 2}
   weaponToGive: {fileID: 0}
 --- !u!33 &4536201565332478950
@@ -38671,10 +38678,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   rb: {fileID: 5707133048527951972}
+  maxHomingAngle: 30
   damageAmount: 1
   damageRate: 0
   speed: 50
   destroyTime: 3
+  blastRadius: 0
+  homingDelay: 0
   impactPrefab: {fileID: 2408714428905375140, guid: ec2cd9d24f8932148ab9480fc3b65b15, type: 3}
   weaponDMG: 0
   currentStatus: 0

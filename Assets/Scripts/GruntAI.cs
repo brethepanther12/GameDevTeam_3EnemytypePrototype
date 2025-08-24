@@ -155,7 +155,7 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable, IEnemyAI
         }
         else
         {
-            Debug.LogWarning("Failed to find valid NavMesh position or agent is not on NavMesh.");
+            //Debug.LogWarning("Failed to find valid NavMesh position or agent is not on NavMesh.");
         }
     }
 
@@ -550,7 +550,7 @@ public class GruntAi : MonoBehaviour, IDamage, IGrapplable, IEnemyAI
             return;
         }
 
-        Debug.Log(gameObject.name + " is responding to a help call!");
+        //Debug.Log(gameObject.name + " is responding to a help call!");
 
         hasBeenAlerted = true;
 
