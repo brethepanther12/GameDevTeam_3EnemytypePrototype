@@ -3,7 +3,7 @@ using UnityEngine;
 public class ItemPickup : MonoBehaviour, IGrapplable
 {
     [SerializeField] public Rigidbody rb;
-
+    [SerializeField] private AudioClip pickupSound;
     public ItemSO itemToGive;
     public WeaponSO weaponToGive;
 
@@ -47,6 +47,12 @@ public class ItemPickup : MonoBehaviour, IGrapplable
 
         inventory.UpdateMutagenDisplay();
         inventory.UpdateComponentDisplay();
+
+        if (pickupSound != null)
+        {
+            AudioSource.PlayClipAtPoint(pickupSound, transform.position);
+        }
+
 
         Destroy(gameObject);
 
