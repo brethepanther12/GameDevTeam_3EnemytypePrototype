@@ -68,6 +68,10 @@ public class DroneBoss : MonoBehaviour, IDamage
     {
         Hover();
         FacePlayer();
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            takeDamage(5);
+        }
     }
 
     public void ActivateBoss()
@@ -226,4 +230,5 @@ public class DroneBoss : MonoBehaviour, IDamage
 
         Destroy(gameObject);
     }
+
 }
