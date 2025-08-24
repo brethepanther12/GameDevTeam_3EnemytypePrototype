@@ -88,8 +88,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     bool hasKey;
     bool isPoweredUp;
     bool hasAmmo;
-    bool isArmored;
-    bool isShielded;
     int numKeys;
 
     Vector3 moveDir;
@@ -447,10 +445,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         {
             armor = maxArmor;
         }
-        if (isArmored)
-        {
-            gamemanager.instance.ArmorBreak.SetActive(false);
-        }
         updatePlayerUI();
     }
 
@@ -466,10 +460,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         if (shield > maxShield)
         {
             shield = maxShield;
-        }
-        if(isShielded)
-        {
-           gamemanager.instance.ShieldBreak.SetActive(false);
         }
         updatePlayerUI();
     }
