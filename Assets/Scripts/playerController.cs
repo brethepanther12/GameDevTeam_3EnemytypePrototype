@@ -85,7 +85,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     float shootTimer;
     public GameObject meleeTrigger;
     bool isAttacking;
-
+    private bool isDead = false;
     void Start()
     {
         originalSpeed = this.speed;
@@ -587,6 +587,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     public void spawnPlayer()
     {
+        isDead = false;
         SpawnerTemp[] allSpawners = FindObjectsByType<SpawnerTemp>(FindObjectsSortMode.None);
         foreach (SpawnerTemp spawner in allSpawners)
         {

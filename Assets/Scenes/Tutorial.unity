@@ -20424,7 +20424,7 @@ GameObject:
   - component: {fileID: 2479637337419273254}
   m_Layer: 5
   m_Name: Enemy count
-  m_TagString: Untagged
+  m_TagString: EnemiesRemainingText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -27341,9 +27341,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3823963165210472727}
-        m_TargetAssemblyTypeName: buttonFunctions, Assembly-CSharp
-        m_MethodName: respawnPlayer
+      - m_Target: {fileID: 5261293417232526445}
+        m_TargetAssemblyTypeName: gamemanager, Assembly-CSharp
+        m_MethodName: RespawnPlayer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
