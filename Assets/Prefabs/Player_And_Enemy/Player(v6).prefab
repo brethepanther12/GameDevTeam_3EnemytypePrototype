@@ -1142,9 +1142,9 @@ MonoBehaviour:
   jumpVel: 6
   jumpMax: 1
   gravity: 10
-  shield: 0
+  shield: 5
   maxShield: 50
-  armor: 0
+  armor: 5
   maxArmor: 50
   shootDamage: 1
   meleeDamage: 1
@@ -1154,6 +1154,12 @@ MonoBehaviour:
   dashDuration: 0.35
   dashCount: 0
   maxDashCount: 3
+  shieldCooldown: 3
+  shieldRate: 0.2
+  shieldRecoverAmount: 1
+  healthCooldown: 5
+  healthRate: 1
+  healthRecoverAmount: 1
   hurtSound: {fileID: 8300000, guid: cf871d1d7eced6740ada2b9843f8a596, type: 3}
   hurtVol: 10
   footstepVol: 0.15
