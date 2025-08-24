@@ -297,10 +297,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 gamemanager.instance.ShieldBreak.SetActive(true);
             }
         }
-        //if (!IsShielded)
-        //{
-        //    gamemanager.instance.ShieldBreak.SetActive(true);
-        //}
+
         if (remainingDamage > 0 && armor > 0)
         {
             int damageToArmor = Mathf.Min(remainingDamage, armor);
@@ -316,10 +313,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 gamemanager.instance.ArmorBreak.SetActive(true);
             }
         }
-        //if (!IsArmored)
-        //{
-        //    gamemanager.instance.ArmorBreak.SetActive(true);
-        //}
+
         if (remainingDamage > 0)
         {
             HP -= remainingDamage;
@@ -334,10 +328,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 gamemanager.instance.HurtImage.SetActive(true);
             }
         }
-        //if (HP <= maxHP/2)
-        //{
-        //    gamemanager.instance.HurtImage.SetActive(true);
-        //}
 
         if (HP <= 0)
         {
