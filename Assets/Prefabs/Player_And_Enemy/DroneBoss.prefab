@@ -80,7 +80,7 @@ GameObject:
   - component: {fileID: 5251987286990528339}
   - component: {fileID: 2337221854057886262}
   - component: {fileID: 8804218449776172185}
-  - component: {fileID: 6645816461318848687}
+  - component: {fileID: -4748633579235920334}
   m_Layer: 0
   m_Name: DroneBoss
   m_TagString: Untagged
@@ -181,7 +181,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -210,8 +210,12 @@ MonoBehaviour:
   attackInterval: 1
   maxHealth: 100
   healthBar: {fileID: 0}
---- !u!65 &6645816461318848687
-BoxCollider:
+  healthCanvas: {fileID: 0}
+  bossRenderer: {fileID: 0}
+  damageFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.15
+--- !u!135 &-4748633579235920334
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -229,8 +233,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Radius: 0.36904484
+  m_Center: {x: 0, y: 0.22370403, z: 0}
 --- !u!1 &5154591127734085806
 GameObject:
   m_ObjectHideFlags: 0
