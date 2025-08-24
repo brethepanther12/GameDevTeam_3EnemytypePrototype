@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DroneBoss : MonoBehaviour
+public class DroneBoss : MonoBehaviour, IDamage
 {
     [Header("Activation")]
     public bool isActive = false;
@@ -35,6 +35,9 @@ public class DroneBoss : MonoBehaviour
     public Color damageFlashColor = Color.red;
     public float flashDuration = 0.15f;
     private Color originalColor;
+
+    [Header("Death Effect")]
+    public GameObject explosionPrefab;
 
     [System.Obsolete]
     void Start()
@@ -167,23 +170,40 @@ public class DroneBoss : MonoBehaviour
     }
 
     // ---- DAMAGE SYSTEM ----
-    public void TakeDamage(int dmg)
+    public void takeDamage(int amount)
     {
-        currentHealth -= dmg;
+        currentHealth -= amount;
         if (currentHealth < 0) currentHealth = 0;
 
-        // update health bar (normalized value)
+        // update health bar
         if (healthBar != null)
             healthBar.value = (float)currentHealth / maxHealth;
 
-        // play damage feedback
+        // flash red
         StartCoroutine(DamageFlash());
 
-        // check death
         if (currentHealth <= 0)
             Die();
     }
 
+    // optional status effect version (not needed for simple damage, but must exist)
+    public void takeDamage(int amount, StatusEffectData effect)
+    {
+        takeDamage(amount);
+        // you can add effect logic here later
+    }
+
+    // slow down method (stub)
+    public void slowDown(float magnitude, float duration)
+    {
+        // not needed for boss unless you want slowdown effects
+    }
+
+    // check dead
+    public bool isDead()
+    {
+        return currentHealth <= 0;
+    }
     IEnumerator DamageFlash()
     {
         if (bossRenderer != null)
@@ -197,18 +217,13 @@ public class DroneBoss : MonoBehaviour
     void Die()
     {
         Debug.Log("Drone Boss defeated!");
+
+        if (explosionPrefab != null)
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+
         if (healthCanvas != null)
             healthCanvas.enabled = false;
-        Destroy(gameObject);
-    }
 
-    // ---- COLLISION WITH PLAYER PROJECTILES ----
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("PlayerProjectile"))
-        {
-            TakeDamage(10); // damage per bullet
-            Destroy(other.gameObject); // remove projectile
-        }
+        Destroy(gameObject);
     }
 }
