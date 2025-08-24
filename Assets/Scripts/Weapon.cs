@@ -554,7 +554,7 @@ public class Weapon : MonoBehaviour
 
     private IEnumerator FireWhenReady()
     {
-        gunAnim.SetTrigger("Shooting");
+        //gunAnim.SetTrigger("Shoot");
 
         yield return null;
 
