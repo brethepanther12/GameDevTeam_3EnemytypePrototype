@@ -106,7 +106,7 @@ public class BossAI : MonoBehaviour, IDamage
                 Quaternion targetRot = Quaternion.LookRotation(to);
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, turnSpeed * Time.deltaTime);
             }
-            Debug.Log("Boss Speed: " + agent.velocity.magnitude); //debugger
+           // Debug.Log("Boss Speed: " + agent.velocity.magnitude); //debugger
         }
         else
         {

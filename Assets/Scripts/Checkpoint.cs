@@ -36,7 +36,7 @@ public class Checkpoint : MonoBehaviour
         PlayerPrefs.SetString("CheckpointPlayerData", json);
         PlayerPrefs.Save();
 
-        Debug.Log("Player state saved at checkpoint!");
+       // Debug.Log("Player state saved at checkpoint!");
     }
 
     IEnumerator checkpointFeedback()

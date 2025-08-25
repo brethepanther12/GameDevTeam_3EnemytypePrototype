@@ -83,7 +83,7 @@ public class GrappleHook : MonoBehaviour
     {
         Vector3 rayStart = grappleOrigin.position + Camera.main.transform.forward * 0.5f;
 
-        Debug.DrawRay(rayStart, Camera.main.transform.forward * grappleRange, Color.cyan, 1f);
+      //  Debug.DrawRay(rayStart, Camera.main.transform.forward * grappleRange, Color.cyan, 1f);
 
         RaycastHit[] hits = Physics.RaycastAll(
             rayStart,
@@ -95,7 +95,7 @@ public class GrappleHook : MonoBehaviour
 
         if (hits.Length == 0)
         {
-            Debug.Log("Grapple missed.");
+          //  Debug.Log("Grapple missed.");
 
             if (grappleMissSound != null)
             {
@@ -121,7 +121,7 @@ public class GrappleHook : MonoBehaviour
             }
         }
 
-        Debug.Log("No valid grapple target found.");
+        //Debug.Log("No valid grapple target found.");
 
         if (grappleMissSound != null)
         {
@@ -135,7 +135,7 @@ public class GrappleHook : MonoBehaviour
 
         if (Physics.Linecast(grappleOrigin.position, grappledEnemy.transform.position, wallLayer))
         {
-            Debug.Log("Line of sight to grappled target was broken!");
+           // Debug.Log("Line of sight to grappled target was broken!");
 
             StartCoroutine(ResumeEnemyAI());
             return;
@@ -230,6 +230,6 @@ public class GrappleHook : MonoBehaviour
         if (target.TryGetComponent<NavMeshAgent>(out grappledAgent))
             grappledAgent.enabled = false;
 
-        Debug.Log("Grapple hit: " + target.name);
+       // Debug.Log("Grapple hit: " + target.name);
     }
 }

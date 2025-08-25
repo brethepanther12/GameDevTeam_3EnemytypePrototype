@@ -79,11 +79,11 @@ public class ScoreManager : MonoBehaviour
         {
             levelScore += pts;
             totalScore += pts;
-            Debug.Log($"Added {pts} points for {enemyTag}. Level Score: {levelScore}, Total Score: {totalScore}");
+           // Debug.Log($"Added {pts} points for {enemyTag}. Level Score: {levelScore}, Total Score: {totalScore}");
         }
         else
         {
-            Debug.LogWarning($"No point value assigned for enemy tag: {enemyTag}");
+           // Debug.LogWarning($"No point value assigned for enemy tag: {enemyTag}");
         }
     }
     public int GetLevelScore() => levelScore;

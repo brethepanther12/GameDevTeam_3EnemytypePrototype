@@ -27,13 +27,13 @@ public class ItemPickup : MonoBehaviour, IGrapplable
         {
             inventory.AddWeapon(weaponToGive);
             GlobalInventory.instance.AddWeapon(weaponToGive);
-            Debug.Log($"Picked up weapon: {weaponToGive.weaponName}");
+           // Debug.Log($"Picked up weapon: {weaponToGive.weaponName}");
         }
 
         if (itemToGive != null)
         {
             inventory.AddItem(itemToGive);
-            Debug.Log($"Picked up item: {itemToGive.itemName}");
+          //  Debug.Log($"Picked up item: {itemToGive.itemName}");
 
             if (itemToGive.itemName == "Weapon Component")
             {

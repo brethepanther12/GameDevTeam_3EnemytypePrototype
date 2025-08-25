@@ -7,8 +7,27 @@ public class MainMenuUI : MonoBehaviour
     [Header("Panels")]
     [SerializeField] OptionsMenuUI optionMenuUI;
     [SerializeField] GameObject optionsPanel;
+
     [SerializeField] GameObject creditsPanel;
+    [SerializeField] RectTransform creditsContainer;
+    [SerializeField] float scrollSpeed;
+    bool isScrolling;
+
     [SerializeField] GameObject mainMenuPanel;
+
+    private void Update()
+    {
+        if (isScrolling && creditsContainer != null)
+        {
+            creditsContainer.anchoredPosition +=
+            Vector2.up * scrollSpeed * Time.unscaledDeltaTime;
+
+            if (creditsContainer.anchoredPosition.y > Screen.height * 2)
+            {
+                closeCredits();
+            }
+        }
+    }
 
     public void startGame()
     {
@@ -41,11 +60,16 @@ public class MainMenuUI : MonoBehaviour
     {
         creditsPanel.SetActive(true);
         mainMenuPanel.SetActive(false);
+
+        isScrolling = true;
+        creditsContainer.anchoredPosition = 
+        new Vector2 (creditsContainer.anchoredPosition.x,-Screen.height);
     }
 
     public void closeCredits()
     {
         creditsPanel.SetActive(false);
         mainMenuPanel.SetActive(true);
+        isScrolling = false;
     }
 }
