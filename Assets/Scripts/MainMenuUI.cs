@@ -62,8 +62,11 @@ public class MainMenuUI : MonoBehaviour
         mainMenuPanel.SetActive(false);
 
         isScrolling = true;
-        creditsContainer.anchoredPosition = 
-        new Vector2 (creditsContainer.anchoredPosition.x,-Screen.height);
+        float fix = creditsPanel.GetComponent<RectTransform>().rect.height;
+        creditsContainer.anchoredPosition = new Vector2(
+            creditsContainer.anchoredPosition.x,
+            -fix);
+            
     }
 
     public void closeCredits()
