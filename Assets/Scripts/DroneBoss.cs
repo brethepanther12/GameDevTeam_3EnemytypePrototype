@@ -43,7 +43,7 @@ public class DroneBoss : MonoBehaviour, IDamage
     void Start()
     {
         gamemanager.instance.updateGameGoal(1);
-        //player = gamemanager.instance.player.transform;
+        player = gamemanager.instance.player.transform;
         currentHealth = maxHealth;
 
         if (healthBar != null)
