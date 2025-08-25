@@ -16,6 +16,12 @@ public class Turret : MonoBehaviour
     private float fireCooldown = 0f;
 
     [System.Obsolete]
+
+    private void Start()
+    {
+        target = gamemanager.instance.player.transform;
+    }
+    [System.Obsolete]
     void Update()
     {
         if (target == null) return;
