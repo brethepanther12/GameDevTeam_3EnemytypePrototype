@@ -11,12 +11,12 @@ public class SmokeCloud : MonoBehaviour
     {
         if(smokePrefab == null)
         {
-            Debug.LogWarning("Smoke prefab is null!");
+           // Debug.LogWarning("Smoke prefab is null!");
             return;
         }
 
         GameObject smoke = Instantiate(smokePrefab, transform.position, Quaternion.identity);
-        Debug.Log("Smoke instantiated: " + smoke.name);
+       // Debug.Log("Smoke instantiated: " + smoke.name);
 
         damage smokeDamage = smoke.GetComponent<damage>();
         float duration = smokeDuration;

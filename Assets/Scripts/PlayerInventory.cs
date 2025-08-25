@@ -221,7 +221,7 @@ public class PlayerInventory : MonoBehaviour
 
         weaponListPos = weaponHolster.Count - 1;
         EquipWeapon();
-        Debug.Log("Picked up: " + newWeapon.name);
+      //  Debug.Log("Picked up: " + newWeapon.name);
     }
 
     public bool HasWeapon(WeaponSO weapon)
@@ -348,7 +348,7 @@ public class PlayerInventory : MonoBehaviour
         if (ammoLookup.TryGetValue(type, out string ammoName))
             return ammoName;
 
-        Debug.LogWarning("AmmoType not found in lookup: " + type);
+       // Debug.LogWarning("AmmoType not found in lookup: " + type);
         return string.Empty;
     }
 
@@ -370,7 +370,7 @@ public class PlayerInventory : MonoBehaviour
         }
 
         bonusAmmoCapacity[ammoType] += amount;
-        Debug.Log($"Max ammo for {ammoType} increased by {amount}. New bonus is {bonusAmmoCapacity[ammoType]}.");
+        //Debug.Log($"Max ammo for {ammoType} increased by {amount}. New bonus is {bonusAmmoCapacity[ammoType]}.");
     }
 
     public int GetMaxAmmoForType(AmmoType ammoType)

@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -1.1, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6360116116719051010}
@@ -280,6 +280,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6282269280689664514}
   - component: {fileID: 2130122346110493476}
+  - component: {fileID: 4991758175704899611}
+  - component: {fileID: 3994281433369516769}
   m_Layer: 0
   m_Name: SK_Soldier_Torso
   m_TagString: Untagged
@@ -358,6 +360,43 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.39478835, y: -0.055331558, z: 0.0000008046627}
     m_Extent: {x: 0.567206, y: 0.3384009, z: 0.6884552}
   m_DirtyAABB: 0
+--- !u!136 &4991758175704899611
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 663674931818468764}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.45
+  m_Height: 0.6768018
+  m_Direction: 1
+  m_Center: {x: -0.39478835, y: -0.05533132, z: 0.0000008046611}
+--- !u!114 &3994281433369516769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 663674931818468764}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aa33ec4c00d49748bbdeda21e8a6c9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemy: {fileID: 0}
+  bodyModifier: 1
 --- !u!1 &675110745737325981
 GameObject:
   m_ObjectHideFlags: 0
@@ -445,7 +484,6 @@ MonoBehaviour:
   mutagenPickupPrefab: {fileID: 8778012921625836679, guid: 67a34a4775b535748a2b3d268b6df2f3, type: 3}
   healthPickupPrefab: {fileID: 812925201868858803, guid: 671bd7c77f7ef0b41be0c80e67f11eee, type: 3}
   ammoPickupPrefab: {fileID: 3852054919859103683, guid: 2e95976944b5a4b45ad78f834ffd796e, type: 3}
-  dropChance: 0.5
   HP: 50
   shield: 25
   armor: 25
@@ -749,6 +787,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6360116116719051010}
   - component: {fileID: 8701133642749450758}
+  - component: {fileID: 4711976506318509287}
+  - component: {fileID: 6863453616147093956}
   m_Layer: 0
   m_Name: SK_Soldier_Head
   m_TagString: Untagged
@@ -827,6 +867,41 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.39364445, y: 0.008824348, z: 0.000000074505806}
     m_Extent: {x: 0.17740639, y: 0.19346918, z: 0.13846613}
   m_DirtyAABB: 0
+--- !u!65 &4711976506318509287
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3427110995695167524}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.3, y: 0.3, z: 0.25}
+  m_Center: {x: -0.39364457, y: 0.008824098, z: 0.000000042865295}
+--- !u!114 &6863453616147093956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3427110995695167524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aa33ec4c00d49748bbdeda21e8a6c9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemy: {fileID: 0}
+  bodyModifier: 5
 --- !u!1 &3910504275227022556
 GameObject:
   m_ObjectHideFlags: 0
@@ -855,7 +930,7 @@ Transform:
   m_GameObject: {fileID: 3910504275227022556}
   serializedVersion: 2
   m_LocalRotation: {x: -0.0000992054, y: 0.9999619, z: -0.008727196, w: -0.0000050663944}
-  m_LocalPosition: {x: -0.0000006631017, y: 1.2154895, z: 0.29999995}
+  m_LocalPosition: {x: -0.0000006631017, y: 1.2154895, z: 0.397}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1144,6 +1219,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3020768956198439501}
   - component: {fileID: 2544301397361445740}
+  - component: {fileID: 4700431080133624581}
+  - component: {fileID: 8545660687713513840}
   m_Layer: 0
   m_Name: SK_Soldier_Legs
   m_TagString: Untagged
@@ -1222,6 +1299,41 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.41140884, y: 0.007928044, z: -0.0050857216}
     m_Extent: {x: 0.6760302, y: 0.2837049, z: 0.41879165}
   m_DirtyAABB: 0
+--- !u!65 &4700431080133624581
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5337316301356470804}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.3520604, y: 0.4, z: 0.7}
+  m_Center: {x: 0.41140884, y: 0.007928282, z: -0.0050857216}
+--- !u!114 &8545660687713513840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5337316301356470804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aa33ec4c00d49748bbdeda21e8a6c9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemy: {fileID: 0}
+  bodyModifier: 0.85
 --- !u!1 &5359671165441715283
 GameObject:
   m_ObjectHideFlags: 0
@@ -1250,7 +1362,7 @@ Transform:
   m_GameObject: {fileID: 5359671165441715283}
   serializedVersion: 2
   m_LocalRotation: {x: 0.00019833534, y: -0.9998477, z: 0.017453711, w: 0.0000021311284}
-  m_LocalPosition: {x: -0.000028264925, y: 0.04188895, z: 2.3996348}
+  m_LocalPosition: {x: -0.000038417307, y: 0.056824658, z: 3.2552364}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

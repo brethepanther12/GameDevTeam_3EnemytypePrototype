@@ -42,7 +42,7 @@ public class WeaponUIController : MonoBehaviour
 
         if (playerInventory == null)
         {
-            Debug.LogError("WeaponUIController could not find PlayerInventory!");
+          //  Debug.LogError("WeaponUIController could not find PlayerInventory!");
             return;
         }
 
@@ -78,7 +78,7 @@ public class WeaponUIController : MonoBehaviour
 
         if (currentWeapon == null)
         {
-            Debug.LogWarning("No weapon equipped. Cannot show upgrades.");
+          //  Debug.LogWarning("No weapon equipped. Cannot show upgrades.");
 
             detailNameText.text = "No Weapon Equipped";
             detailDescriptionText.text = "Equip a weapon to see its available upgrades.";
@@ -128,7 +128,7 @@ public class WeaponUIController : MonoBehaviour
 
             playerInventory.RecordUpgradeForWeapon(currentWeapon, selectedUpgrade);
 
-            Debug.Log($"Purchased '{selectedUpgrade.upgradeName}' for {activeWeapon.weaponData.weaponName}");
+          //  Debug.Log($"Purchased '{selectedUpgrade.upgradeName}' for {activeWeapon.weaponData.weaponName}");
 
             PopulateUpgrades();
             UpdateComponentCount();
@@ -136,7 +136,7 @@ public class WeaponUIController : MonoBehaviour
         }
         else
         {
-            Debug.Log("Not enough Weapon Components!");
+           // Debug.Log("Not enough Weapon Components!");
         }
     }
 
@@ -148,7 +148,7 @@ public class WeaponUIController : MonoBehaviour
         }
 
         int count = playerInventory.GetWeaponComponentCount();
-        Debug.Log("UpdateComponentCount called. Player has " + count + " components.");
+       // Debug.Log("UpdateComponentCount called. Player has " + count + " components.");
 
         if (componentCountText != null)
         {
@@ -156,7 +156,7 @@ public class WeaponUIController : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("componentCountText is not assigned in the inspector!");
+           // Debug.LogWarning("componentCountText is not assigned in the inspector!");
         }
     }
 

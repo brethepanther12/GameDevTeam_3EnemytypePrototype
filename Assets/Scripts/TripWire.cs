@@ -22,7 +22,7 @@ public class TripWire : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Tripwire triggered!");
+           // Debug.Log("Tripwire triggered!");
 
             playerController player = other.GetComponent<playerController>();
             if (player != null)
