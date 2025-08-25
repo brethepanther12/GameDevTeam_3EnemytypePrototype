@@ -2,26 +2,33 @@ using UnityEngine;
 
 public class EnemyWeakPoints : MonoBehaviour , IDamage
 {
-    [SerializeField] Enemy enemy;
+    [SerializeField] MonoBehaviour enemyScript;
     [SerializeField] float bodyModifier;
-
-    public void slowDown(float magnitude, float duration)
+     IDamage enemy;
+    private void Awake()
     {
-        throw new System.NotImplementedException();
+        enemy = enemyScript as IDamage;
+       
     }
-
 
     public void takeDamage(int amount)
     {
+        if (enemy == null) return;
         enemy.takeDamage(Mathf.RoundToInt(amount * bodyModifier));
     }
 
     public void takeDamage(int amount, StatusEffectData effect)
     {
+        if (enemy == null) return;
         enemy.takeDamage(Mathf.RoundToInt(amount * bodyModifier), effect);
     }
 
-    bool IDamage.isDead()
+    public bool isDead()
+    {
+        return enemy != null && enemy.isDead();
+    }
+
+    public void slowDown(float magnitude, float duration)
     {
         throw new System.NotImplementedException();
     }
