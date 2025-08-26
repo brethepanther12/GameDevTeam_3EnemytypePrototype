@@ -58,10 +58,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [Header("--- Audio ---")]
     [SerializeField] private AudioClip hurtSound;
     [SerializeField] private float hurtVol;
-    [SerializeField] private float footstepVol = 1f;
+    [SerializeField] private float footstepVol = 0.5f;
     [SerializeField] private AudioSource footstepSource;
     [SerializeField] private AudioClip[] footstepClips;
-    [SerializeField] private float walkStepDelay = 0.5f;
+    [SerializeField] private float walkStepDelay = 0.35f;
     [SerializeField] private float sprintStepDelay = 0.3f;
 
     [Header("--- Game Objects & Systems ---")]

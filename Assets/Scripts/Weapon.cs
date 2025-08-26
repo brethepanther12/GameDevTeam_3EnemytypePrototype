@@ -31,13 +31,14 @@ public class Weapon : MonoBehaviour
 
     //Gun Audio
     public AudioClip impactSound;
-    public float impactVolume = 1f;
+    public float impactVolume;
     public AudioClip reloadSound;
     public AudioSource gunAudio;
     public AudioClip gunShotSound;
 
     playerController equippedPlayer;
     PlayerInventory inventory;
+    public float reloadVolume;
 
     float shootTimer;
     bool isBursting;
@@ -83,6 +84,7 @@ public class Weapon : MonoBehaviour
 
         impactSound = weaponData.impactSound;
         impactVolume = weaponData.impactVolume;
+        reloadVolume = weaponData.reloadVolume;
         reloadSound = weaponData.reloadSound;
         gunShotSound = weaponData.gunShotSound;
 
@@ -173,6 +175,7 @@ public class Weapon : MonoBehaviour
                     if (chargeFinished != null)
                     {
                         gunAudio.Stop();
+                        gunAudio.volume = impactVolume;
                         gunAudio.PlayOneShot(chargeFinished);
                     }
                 }
@@ -343,6 +346,7 @@ public class Weapon : MonoBehaviour
             muzzleFlash.Play();
 
         if (gunAudio != null && gunShotSound != null)
+            gunAudio.volume = impactVolume;
             gunAudio.PlayOneShot(gunShotSound);
 
         // --- Camera-Aiming Logic ---
@@ -391,6 +395,7 @@ public class Weapon : MonoBehaviour
             muzzleFlash.Play();
 
         if (gunAudio != null && gunShotSound != null)
+            gunAudio.volume = impactVolume;
             gunAudio.PlayOneShot(gunShotSound);
 
         // --- Camera-Aiming Logic (Done once for all pellets) ---
@@ -442,6 +447,7 @@ public class Weapon : MonoBehaviour
         equippedPlayer.isReloading = true;
 
         if (reloadSound != null)
+            gunAudio.volume = reloadVolume;
             gunAudio.PlayOneShot(reloadSound);
 
         yield return new WaitForSeconds(1f);

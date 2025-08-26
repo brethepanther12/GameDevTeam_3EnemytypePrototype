@@ -84,9 +84,8 @@ public class Grenade : MonoBehaviour
             float proximity = Vector3.Distance(transform.position, playerTarget.position);
             if (proximity <= 1f && !hasExploded)
             {
-                destroyTimer = 0;
                 if (explosionRoutine != null) StopCoroutine(explosionRoutine);
-                explosionRoutine = StartCoroutine(Explode());
+                ExplodeImmediate();
             }
         }
     }
