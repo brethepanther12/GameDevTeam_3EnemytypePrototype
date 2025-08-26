@@ -277,6 +277,7 @@ public class Weapon : MonoBehaviour
         if (activeGrenade != null)
         {
             activeGrenade.RemoteDetonate();
+            
             activeGrenade = null;
         }
     }

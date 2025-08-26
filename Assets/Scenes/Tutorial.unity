@@ -2409,7 +2409,9 @@ PrefabInstance:
       value: Room_Small_No_Floors_Or_Ceiling (12)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4209298292895591216, guid: 345300fcbf281784e91bcf60a58aa38b, type: 3}
+    - {fileID: 6535501852719448520, guid: 345300fcbf281784e91bcf60a58aa38b, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 345300fcbf281784e91bcf60a58aa38b, type: 3}
@@ -13311,6 +13313,10 @@ PrefabInstance:
     - target: {fileID: 7865336806544203660, guid: a8b62428df55cde4f883aca78b4fd500, type: 3}
       propertyPath: m_Name
       value: Wall_Lab(D)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7865336806544203660, guid: a8b62428df55cde4f883aca78b4fd500, type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
