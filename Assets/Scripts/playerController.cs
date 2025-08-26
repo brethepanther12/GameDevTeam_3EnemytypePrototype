@@ -89,6 +89,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     bool isPoweredUp;
     bool hasAmmo;
     int numKeys;
+    public bool canReload;
 
     Vector3 moveDir;
     Vector3 playerVel;
@@ -137,7 +138,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         if (gamemanager.instance.isPaused)
             return;
 
-
         if (Input.GetButtonDown("Interact"))
         {
             //Debug.Log("Interact pressed");
@@ -153,18 +153,21 @@ public class playerController : MonoBehaviour, IDamage, Visibility
             StartCoroutine(UpdateDashCooldown());
         }
 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R) || inventory.GetActiveWeapon().IsEmpty())
         {
-            if (animator != null)
-            {
-                animator.SetTrigger("Reloading");
-            }
-
+            
             Weapon currentWeapon = inventory.GetActiveWeapon();
 
-            if (currentWeapon != null)
+            if (currentWeapon != null && currentWeapon.CanReload())
             {
+                
+                if (animator != null)
+                {
+                    animator.SetTrigger("Reloading");
+                }
+
                 currentWeapon.StartReload();
+
             }
         }
 

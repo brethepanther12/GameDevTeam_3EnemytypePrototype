@@ -45,7 +45,7 @@ public class Weapon : MonoBehaviour
     int ammoInReserve;
     public Animator gunAnim;
     public ParticleSystem muzzleFlash;
-
+    
     private bool isCharging;
     private float chargeTimer;
     public GameObject chargeEffectPrefab;
@@ -578,6 +578,28 @@ public class Weapon : MonoBehaviour
                 ShootMultiple();
             else
                 Shoot();
+        }
+    }
+
+    public bool CanReload()
+    {
+        if (ammoInMag < magSize && equippedPlayer.isReloading == false && ammoInReserve > 0)
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    public bool IsEmpty()
+    {
+        if (ammoInMag == 0)
+        {
+            return true;
+        } else
+        {
+            return false;
         }
     }
 }
