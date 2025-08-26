@@ -25,7 +25,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] public int shield;
     [SerializeField] public int maxShield;
     [SerializeField] public int armor;
-    [SerializeField] int maxArmor;
+    [SerializeField] public int maxArmor;
     [SerializeField] int shootDamage;
     [SerializeField] int meleeDamage;
     [SerializeField] float shootRate;
@@ -79,6 +79,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     private float originalSpeed;
     private Coroutine slowRoutine;
+    
 
     private enum powerUpType
     {
@@ -167,6 +168,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 }
 
                 currentWeapon.StartReload();
+
             }
         }
 
@@ -412,58 +414,87 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     }
 
-    public void Heal(int amount, bool doesIncreaseMax)
+    public bool Heal(int amount, bool doesIncreaseMax)
     {
-        HP += amount;
+        if (amount <= 0) return false;
+
+        bool healed = false;
+        int oldHP = HP;
 
         if (doesIncreaseMax)
         {
             maxHP += amount;
-
+            HP += amount;
+            healed = true;
         }
-        else if (HP >= maxHP && !doesIncreaseMax)
+        else
         {
+            HP += amount;
+            if (HP > maxHP)
+                HP = maxHP;
 
-            HP = maxHP;
+            healed = HP > oldHP;
         }
-        if (HP >= maxHP/2)
+
+        if (HP >= maxHP / 2)
         {
             gamemanager.instance.HurtImage.SetActive(false);
         }
-            updatePlayerUI();
+
+        updatePlayerUI();
+        return healed;
 
     }
 
-    public void GainArmor(int amount, bool doesIncreaseMax)
+    public bool GainArmor(int amount, bool doesIncreaseMax)
     {
+        if (amount <= 0) return false;
+
+        bool increased = false;
+        int oldArmor = armor;
+
         if (doesIncreaseMax)
         {
             maxArmor += amount;
+            armor += amount;
+            increased = true;
         }
-
-        armor += amount;
-
-        if (armor > maxArmor)
+        else
         {
-            armor = maxArmor;
+            armor += amount;
+            if (armor > maxArmor)
+                armor = maxArmor;
+
+            increased = armor > oldArmor;
         }
+
         updatePlayerUI();
+        return increased;
     }
 
-    public void GainShield(int amount, bool doesIncreaseMax)
+    public bool GainShield(int amount, bool doesIncreaseMax)
     {
+        if (amount <= 0) return false;
+
+        bool increased = false;
+        int oldShield = shield;
+
         if (doesIncreaseMax)
         {
             maxShield += amount;
+            shield += amount;
+            increased = true;
         }
-
-        shield += amount;
-
-        if (shield > maxShield)
+        else
         {
-            shield = maxShield;
+            shield += amount;
+            if (shield > maxShield)
+                shield = maxArmor;
+
+            increased = shield > oldShield;
         }
         updatePlayerUI();
+        return increased;
     }
 
     public void IncreaseDamage(int amount, int magnitude)
@@ -841,4 +872,5 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         }
 
     }
+
 }

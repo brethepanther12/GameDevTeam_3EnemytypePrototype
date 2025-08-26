@@ -55,6 +55,7 @@ public class Weapon : MonoBehaviour
     public AudioClip chargeFinished;
     private bool hasPlayedChargeCompleteSound;
     private Grenade activeGrenade;
+    private Coroutine reloading;
 
 
     private void Awake()
@@ -443,14 +444,14 @@ public class Weapon : MonoBehaviour
     }
     IEnumerator Reload()
     {
-
+        
         equippedPlayer.isReloading = true;
 
         if (reloadSound != null)
             gunAudio.volume = reloadVolume;
             gunAudio.PlayOneShot(reloadSound);
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.5f);
 
         int ammoNeeded = magSize - ammoInMag;
 
@@ -503,7 +504,19 @@ public class Weapon : MonoBehaviour
     public void StartReload()
     {
         if (ammoInMag < magSize)
-            StartCoroutine(Reload());
+            reloading = StartCoroutine(Reload());
+    }
+
+    public void EndReload()
+    {
+        if (reloading != null)
+        {
+            
+            StopCoroutine(reloading);
+            equippedPlayer.isReloading = false;
+        }
+           
+
     }
 
     private IEnumerator RechargeEnergy()

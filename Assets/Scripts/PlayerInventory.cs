@@ -282,6 +282,10 @@ public class PlayerInventory : MonoBehaviour
             return;
         }
 
+        if (playerRef.isReloading)
+        {
+            currentWeaponScript.EndReload();
+        }
         weaponListPos += direction;
 
         if (weaponListPos < 0)
