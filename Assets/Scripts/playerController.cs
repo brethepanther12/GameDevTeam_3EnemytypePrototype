@@ -131,7 +131,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     void Update()
     {
-        //sprint();
         movement();
         HandleWeaponSwitching();
 
@@ -147,27 +146,27 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 AbilityUIController.instance.OpenMenu();
             }
         }
-        if (Input.GetButtonDown("Sprint") && dashCount > 0 && !isDashing)
+
+        Vector3 moveInput = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+
+        if (Input.GetButtonDown("Sprint") && dashCount > 0 && !isDashing && moveInput.magnitude > 0.1f)
         {
             StartCoroutine(Dash());
             StartCoroutine(UpdateDashCooldown());
         }
 
-        if (Input.GetKeyDown(KeyCode.R) || inventory.GetActiveWeapon().IsEmpty())
-        {
-            
-            Weapon currentWeapon = inventory.GetActiveWeapon();
+        Weapon currentWeapon = inventory.GetActiveWeapon();
 
+        if (Input.GetKeyDown(KeyCode.R) || (currentWeapon != null && currentWeapon.IsEmpty()))
+        {
             if (currentWeapon != null && currentWeapon.CanReload())
             {
-                
                 if (animator != null)
                 {
                     animator.SetTrigger("Reloading");
                 }
 
                 currentWeapon.StartReload();
-
             }
         }
 
@@ -543,7 +542,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     void HandleWeaponSwitching()
     {
         if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+        {
             inventory.SwitchWeapon(1);
+        }
+            
         else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
             inventory.SwitchWeapon(-1);
 
@@ -702,6 +704,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     private IEnumerator Dash()
     {
+        
         isDashing = true;
         dashCount--;
 
@@ -721,6 +724,8 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         {
             if (dashCount < maxDashCount)
             {
+                StartCoroutine(UpdateDashCooldown());
+
                 yield return new WaitForSeconds(dashCooldown);
                 dashCount++;
             }
