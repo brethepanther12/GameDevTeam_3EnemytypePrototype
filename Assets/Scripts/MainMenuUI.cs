@@ -15,14 +15,29 @@ public class MainMenuUI : MonoBehaviour
 
     [SerializeField] GameObject mainMenuPanel;
 
+    private float startY;   
+    private float endY;    
+
+    private void Start()
+    {
+        if (creditsContainer != null)
+        {
+            float screenHeight = ((RectTransform)creditsPanel.transform).rect.height;
+            float creditsHeight = creditsContainer.rect.height;
+
+            startY = -screenHeight;
+            endY = creditsHeight;               
+        }
+    }
+
     private void Update()
     {
         if (isScrolling && creditsContainer != null)
-        {
+        { 
             creditsContainer.anchoredPosition +=
-            Vector2.up * scrollSpeed * Time.unscaledDeltaTime;
+                Vector2.up * scrollSpeed * Time.unscaledDeltaTime;
 
-            if (creditsContainer.anchoredPosition.y > Screen.height * 2)
+            if (creditsContainer.anchoredPosition.y >= endY)
             {
                 closeCredits();
             }
@@ -62,11 +77,11 @@ public class MainMenuUI : MonoBehaviour
         mainMenuPanel.SetActive(false);
 
         isScrolling = true;
-        float fix = creditsPanel.GetComponent<RectTransform>().rect.height;
+
         creditsContainer.anchoredPosition = new Vector2(
             creditsContainer.anchoredPosition.x,
-            -fix);
-            
+            startY
+        );
     }
 
     public void closeCredits()
