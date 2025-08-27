@@ -395,7 +395,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aa33ec4c00d49748bbdeda21e8a6c9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemy: {fileID: 0}
+  enemyScript: {fileID: 0}
   bodyModifier: 1
 --- !u!1 &675110745737325981
 GameObject:
@@ -489,7 +489,7 @@ MonoBehaviour:
   armor: 25
   shieldPrefab: {fileID: 1657312650247799688}
   armorPrefab: {fileID: 3910504275227022556}
-  fov: 90
+  fov: 115
   faceTargetSpeed: 5
   roamDistance: 20
   roamPauseTime: 4
@@ -900,7 +900,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aa33ec4c00d49748bbdeda21e8a6c9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemy: {fileID: 0}
+  enemyScript: {fileID: 0}
   bodyModifier: 5
 --- !u!1 &3910504275227022556
 GameObject:
@@ -1332,7 +1332,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aa33ec4c00d49748bbdeda21e8a6c9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemy: {fileID: 0}
+  enemyScript: {fileID: 0}
   bodyModifier: 0.85
 --- !u!1 &5359671165441715283
 GameObject:
