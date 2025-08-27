@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine.UI;
-using Unity.VisualScripting;
 
 public class AbilityUIController : MonoBehaviour
 {
@@ -167,11 +166,6 @@ public class AbilityUIController : MonoBehaviour
 
     public void OpenMenu()
     {
-        if (gamemanager.instance.menuActive != null)
-        {
-            return;
-        }
-
         if (playerController == null)
             playerController = gamemanager.instance.playerScript;
         if (playerInventory == null)

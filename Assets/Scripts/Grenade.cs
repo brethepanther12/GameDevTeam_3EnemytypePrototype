@@ -12,8 +12,7 @@ public class Grenade : MonoBehaviour
     [SerializeField] private float destroyTimer;
     [SerializeField] private float maxHomingAngle = 30f;
     [SerializeField] public GameObject explosionPrefab;
-    [SerializeField] public AudioClip explosionAudio;
-    [SerializeField] public AudioSource grenadeAudio;
+
     [SerializeField] private bool OnStickyBomb;
     [SerializeField] private bool isTracking;
     [SerializeField] public bool canTrack;
@@ -22,9 +21,7 @@ public class Grenade : MonoBehaviour
     private damage damageStats;
     
     bool OnSurface;
-    private bool hasExploded = false;
-    private Coroutine explosionRoutine;
-
+    
     void Start()
     {
         damageStats = GetComponent<damage>();
@@ -36,7 +33,9 @@ public class Grenade : MonoBehaviour
             grenadeRigidB = damageStats.rb;
         }
 
+        Transform player = gamemanager.instance.player.transform;
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
         GameObject closest = null;
         float minDist = Mathf.Infinity;
 
@@ -71,85 +70,79 @@ public class Grenade : MonoBehaviour
             grenadeRigidB.linearVelocity = (transform.forward * grenadeSpeed * 0.5f);
         }
 
-        explosionRoutine = StartCoroutine(Explode());
+        StartCoroutine(explode());
     }
 
+    // Update is called once per frame
     void Update()
     {
+
         if (isTracking && !OnSurface && playerTarget != null)
         {
             Vector3 direction = (playerTarget.position - transform.position).normalized;
             grenadeRigidB.linearVelocity = direction * grenadeSpeed;
 
-            float proximity = Vector3.Distance(transform.position, playerTarget.position);
-            if (proximity <= 1f && !hasExploded)
+            float proximity = Vector3.Distance(transform.position, playerTarget.transform.position);
+
+            if (proximity <= 1f)
             {
-                if (explosionRoutine != null) StopCoroutine(explosionRoutine);
-                ExplodeImmediate();
+                destroyTimer = 0;
+                StartCoroutine(explode());
             }
         }
+
     }
+    
 
     private void OnCollisionEnter(Collision collision)
     {
         if (OnStickyBomb && !OnSurface)
-        {
+        {   
+            //Making it stationary
             if (!collision.transform.CompareTag("Weapon"))
             {
                 grenadeRigidB.linearVelocity = Vector3.zero;
                 grenadeRigidB.angularVelocity = Vector3.zero;
+
                 grenadeRigidB.isKinematic = true;
+
+                //Making it stick to a surface; Moving with the object it parents
                 transform.SetParent(collision.transform);
+
+                //Setting it true that it is on a surface
                 OnSurface = true;
             }
-        }
-        else if ((collision.transform.CompareTag("Breakable") || collision.transform.CompareTag("Enemy")) && !isCooked && !hasExploded)
+
+            
+        } 
+        else if (collision.transform.CompareTag("Breakable") || collision.transform.CompareTag("Enemy"))
         {
-            destroyTimer = 0;
-            if (explosionRoutine != null) StopCoroutine(explosionRoutine);
-            explosionRoutine = StartCoroutine(Explode());
+            if (!isCooked)
+            {
+                destroyTimer = 0;
+                StartCoroutine(explode());
+            }
+            
+            
         }
+
+        
     }
 
-    IEnumerator Explode()
+    IEnumerator explode()
     {
         yield return new WaitForSeconds(destroyTimer);
-
-        if (hasExploded) yield break;
-        hasExploded = true;
-
-        if (explosionPrefab != null)
-            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-
-        if (explosionAudio != null)
-            AudioSource.PlayClipAtPoint(explosionAudio, transform.position);
-
+        if (explosionPrefab != null )
+        Instantiate(explosionPrefab, transform.position, Quaternion.identity); 
         Destroy(gameObject);
     }
 
     public void RemoteDetonate()
     {
-        if (hasExploded) return;
-
-        if (explosionRoutine != null)
-            StopCoroutine(explosionRoutine);
-
-        ExplodeImmediate();
+        destroyTimer = 0;
+        StartCoroutine(explode());
     }
 
-    private void ExplodeImmediate()
-    {
-        if (hasExploded) return;
-        hasExploded = true;
-
-        if (explosionPrefab != null)
-            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-
-        if (explosionAudio != null)
-            AudioSource.PlayClipAtPoint(explosionAudio, transform.position);
-
-        Destroy(gameObject);
-    }
 
 }
 
