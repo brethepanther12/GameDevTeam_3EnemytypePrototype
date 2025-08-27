@@ -25,7 +25,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] public int shield;
     [SerializeField] public int maxShield;
     [SerializeField] public int armor;
-    [SerializeField] public int maxArmor;
+    [SerializeField] int maxArmor;
     [SerializeField] int shootDamage;
     [SerializeField] int meleeDamage;
     [SerializeField] float shootRate;
@@ -58,10 +58,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [Header("--- Audio ---")]
     [SerializeField] private AudioClip hurtSound;
     [SerializeField] private float hurtVol;
-    [SerializeField] private float footstepVol = 0.5f;
+    [SerializeField] private float footstepVol = 1f;
     [SerializeField] private AudioSource footstepSource;
     [SerializeField] private AudioClip[] footstepClips;
-    [SerializeField] private float walkStepDelay = 0.35f;
+    [SerializeField] private float walkStepDelay = 0.5f;
     [SerializeField] private float sprintStepDelay = 0.3f;
 
     [Header("--- Game Objects & Systems ---")]
@@ -79,7 +79,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     private float originalSpeed;
     private Coroutine slowRoutine;
-    
 
     private enum powerUpType
     {
@@ -90,7 +89,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     bool isPoweredUp;
     bool hasAmmo;
     int numKeys;
-    public bool canReload;
 
     Vector3 moveDir;
     Vector3 playerVel;
@@ -133,11 +131,13 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     void Update()
     {
+        //sprint();
         movement();
         HandleWeaponSwitching();
 
         if (gamemanager.instance.isPaused)
             return;
+
 
         if (Input.GetButtonDown("Interact"))
         {
@@ -148,28 +148,24 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 AbilityUIController.instance.OpenMenu();
             }
         }
-
-        Vector3 moveInput = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-
-        if (Input.GetButtonDown("Sprint") && dashCount > 0 && !isDashing && moveInput.magnitude > 0.1f)
+        if (Input.GetButtonDown("Sprint") && dashCount > 0 && !isDashing)
         {
             StartCoroutine(Dash());
             StartCoroutine(UpdateDashCooldown());
         }
 
-        Weapon currentWeapon = inventory.GetActiveWeapon();
-
-        if (Input.GetKeyDown(KeyCode.R) || (currentWeapon != null && currentWeapon.IsEmpty()))
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            if (currentWeapon != null && currentWeapon.CanReload())
+            if (animator != null)
             {
-                if (animator != null)
-                {
-                    animator.SetTrigger("Reloading");
-                }
+                animator.SetTrigger("Reloading");
+            }
 
+            Weapon currentWeapon = inventory.GetActiveWeapon();
+
+            if (currentWeapon != null)
+            {
                 currentWeapon.StartReload();
-
             }
         }
 
@@ -415,87 +411,58 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     }
 
-    public bool Heal(int amount, bool doesIncreaseMax)
+    public void Heal(int amount, bool doesIncreaseMax)
     {
-        if (amount <= 0) return false;
-
-        bool healed = false;
-        int oldHP = HP;
+        HP += amount;
 
         if (doesIncreaseMax)
         {
             maxHP += amount;
-            HP += amount;
-            healed = true;
+
         }
-        else
+        else if (HP >= maxHP && !doesIncreaseMax)
         {
-            HP += amount;
-            if (HP > maxHP)
-                HP = maxHP;
 
-            healed = HP > oldHP;
+            HP = maxHP;
         }
-
-        if (HP >= maxHP / 2)
+        if (HP >= maxHP/2)
         {
             gamemanager.instance.HurtImage.SetActive(false);
         }
-
-        updatePlayerUI();
-        return healed;
+            updatePlayerUI();
 
     }
 
-    public bool GainArmor(int amount, bool doesIncreaseMax)
+    public void GainArmor(int amount, bool doesIncreaseMax)
     {
-        if (amount <= 0) return false;
-
-        bool increased = false;
-        int oldArmor = armor;
-
         if (doesIncreaseMax)
         {
             maxArmor += amount;
-            armor += amount;
-            increased = true;
         }
-        else
+
+        armor += amount;
+
+        if (armor > maxArmor)
         {
-            armor += amount;
-            if (armor > maxArmor)
-                armor = maxArmor;
-
-            increased = armor > oldArmor;
+            armor = maxArmor;
         }
-
         updatePlayerUI();
-        return increased;
     }
 
-    public bool GainShield(int amount, bool doesIncreaseMax)
+    public void GainShield(int amount, bool doesIncreaseMax)
     {
-        if (amount <= 0) return false;
-
-        bool increased = false;
-        int oldShield = shield;
-
         if (doesIncreaseMax)
         {
             maxShield += amount;
-            shield += amount;
-            increased = true;
         }
-        else
-        {
-            shield += amount;
-            if (shield > maxShield)
-                shield = maxArmor;
 
-            increased = shield > oldShield;
+        shield += amount;
+
+        if (shield > maxShield)
+        {
+            shield = maxShield;
         }
         updatePlayerUI();
-        return increased;
     }
 
     public void IncreaseDamage(int amount, int magnitude)
@@ -574,10 +541,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     void HandleWeaponSwitching()
     {
         if (Input.GetAxis("Mouse ScrollWheel") > 0f)
-        {
             inventory.SwitchWeapon(1);
-        }
-            
         else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
             inventory.SwitchWeapon(-1);
 
@@ -736,7 +700,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     private IEnumerator Dash()
     {
-        
         isDashing = true;
         dashCount--;
 
@@ -756,8 +719,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         {
             if (dashCount < maxDashCount)
             {
-                StartCoroutine(UpdateDashCooldown());
-
                 yield return new WaitForSeconds(dashCooldown);
                 dashCount++;
             }
@@ -873,5 +834,4 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         }
 
     }
-
 }

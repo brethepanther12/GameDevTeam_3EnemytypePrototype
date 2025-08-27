@@ -1,57 +1,65 @@
 using UnityEngine;
 
-[RequireComponent(typeof(SphereCollider))]
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(Rigidbody), typeof(Collider))]
 public class FireballProjectile : MonoBehaviour
 {
-    [Header("Runtime (set by spawner)")]
     public int damage;
     public float speed;
     public Transform owner;
 
-    [Header("Tuning")]
-    public float lifeTime = 6f;
-    public GameObject hitVFX;
+    private Rigidbody rb;
 
-    Vector3 dir;
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
 
+        rb.useGravity = false;
+        rb.isKinematic = false;
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+
+        var col = GetComponent<Collider>();
+        col.isTrigger = false; // <-- real collision now
+    }
+
+    [System.Obsolete]
     public void Init(Vector3 direction, int dmg, float spd, Transform ownerRoot)
     {
-        dir = direction.normalized;
         damage = dmg;
         speed = spd;
         owner = ownerRoot;
+
+        direction.Normalize();
+        rb.velocity = direction * speed; // <-- use velocity
+        // Debug.Log($"Fireball launched! Vel: {rb.velocity}");
     }
 
     void Start()
     {
-        // Ensure physics setup
-        var rb = GetComponent<Rigidbody>();
-        rb.isKinematic = true;
-        GetComponent<SphereCollider>().isTrigger = true;
-
-        Destroy(gameObject, lifeTime);
+        Destroy(gameObject, 10f);
     }
 
+    [System.Obsolete]
     void Update()
     {
-        transform.position += dir * speed * Time.deltaTime;
-        transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
+        if (rb.velocity.sqrMagnitude > 0.01f)
+        {
+            transform.rotation = Quaternion.LookRotation(rb.velocity.normalized, Vector3.up);
+        }
     }
 
-    void OnTriggerEnter(Collider other)
+    void OnCollisionEnter(Collision collision)
     {
         // Ignore the owner & its children
-        if (owner != null && (other.transform == owner || other.transform.IsChildOf(owner))) return;
+        if (owner != null && (collision.transform == owner || collision.transform.IsChildOf(owner)))
+            return;
 
-        // Apply damage if the hit target supports IDamage
-        var d = other.GetComponent<IDamage>();
-        if (d != null)
+        var health = collision.gameObject.GetComponent<IDamage>();
+        if (health != null)
         {
-            d.takeDamage(damage);
+            health.takeDamage(damage);
         }
 
-        if (hitVFX) Instantiate(hitVFX, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
 }

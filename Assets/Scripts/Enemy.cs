@@ -24,7 +24,6 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
     [SerializeField] private AudioSource footstepSource;
     [SerializeField] private AudioClip footstepClip;
     [SerializeField] private float footstepDelay = 0.5f;
-    [SerializeField] private float footstepVolume = 0.5f;
 
     [SerializeField] private AudioClip reloadSound;
     [SerializeField] private float reloadVolume = 1f;
@@ -32,7 +31,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
     [SerializeField] private AudioClip deathSound;
     [SerializeField] private float deathVolume;
     [SerializeField] private AudioClip hitSound;
-    [SerializeField] private float hitVolume = 0.75f;
+    [SerializeField] private float hitVolume = 1f;
 
     [SerializeField] int HP;
     [SerializeField] int shield;
@@ -154,7 +153,7 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
         if (footstepClip != null && footstepSource != null)
         {
             footstepSource.pitch = Random.Range(0.95f, 1.05f);
-            footstepSource.PlayOneShot(footstepClip, footstepVolume);
+            footstepSource.PlayOneShot(footstepClip);
         }
     }
 
