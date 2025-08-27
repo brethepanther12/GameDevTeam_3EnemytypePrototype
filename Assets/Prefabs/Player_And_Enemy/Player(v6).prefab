@@ -1154,8 +1154,8 @@ MonoBehaviour:
   dashDuration: 0.35
   dashCount: 0
   maxDashCount: 3
-  shieldCooldown: 3
-  shieldRate: 0.2
+  shieldCooldown: 5
+  shieldRate: 0.1
   shieldRecoverAmount: 1
   healthCooldown: 5
   healthRate: 1
@@ -1178,6 +1178,7 @@ MonoBehaviour:
   isReloading: 0
   isVisible: 0
   currentAmmo: 0
+  canReload: 0
   meleeTrigger: {fileID: 6610158945768133450}
 --- !u!114 &4521463405882600580
 MonoBehaviour:

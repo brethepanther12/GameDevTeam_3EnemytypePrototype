@@ -25,7 +25,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [SerializeField] public int shield;
     [SerializeField] public int maxShield;
     [SerializeField] public int armor;
-    [SerializeField] int maxArmor;
+    [SerializeField] public int maxArmor;
     [SerializeField] int shootDamage;
     [SerializeField] int meleeDamage;
     [SerializeField] float shootRate;
@@ -58,10 +58,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     [Header("--- Audio ---")]
     [SerializeField] private AudioClip hurtSound;
     [SerializeField] private float hurtVol;
-    [SerializeField] private float footstepVol = 1f;
+    [SerializeField] private float footstepVol = 0.5f;
     [SerializeField] private AudioSource footstepSource;
     [SerializeField] private AudioClip[] footstepClips;
-    [SerializeField] private float walkStepDelay = 0.5f;
+    [SerializeField] private float walkStepDelay = 0.35f;
     [SerializeField] private float sprintStepDelay = 0.3f;
 
     [Header("--- Game Objects & Systems ---")]
@@ -79,6 +79,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     private float originalSpeed;
     private Coroutine slowRoutine;
+    
 
     private enum powerUpType
     {
@@ -89,6 +90,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     bool isPoweredUp;
     bool hasAmmo;
     int numKeys;
+    public bool canReload;
 
     Vector3 moveDir;
     Vector3 playerVel;
@@ -102,6 +104,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     public GameObject meleeTrigger;
     bool isAttacking;
     private bool isDead = false;
+
     void Start()
     {
         originalSpeed = this.speed;
@@ -130,13 +133,11 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     void Update()
     {
-        //sprint();
         movement();
         HandleWeaponSwitching();
 
         if (gamemanager.instance.isPaused)
             return;
-
 
         if (Input.GetButtonDown("Interact"))
         {
@@ -147,24 +148,28 @@ public class playerController : MonoBehaviour, IDamage, Visibility
                 AbilityUIController.instance.OpenMenu();
             }
         }
-        if (Input.GetButtonDown("Sprint") && dashCount > 0 && !isDashing)
+
+        Vector3 moveInput = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+
+        if (Input.GetButtonDown("Sprint") && dashCount > 0 && !isDashing && moveInput.magnitude > 0.1f)
         {
             StartCoroutine(Dash());
             StartCoroutine(UpdateDashCooldown());
         }
 
-        if (Input.GetKeyDown(KeyCode.R))
+        Weapon currentWeapon = inventory.GetActiveWeapon();
+
+        if (Input.GetKeyDown(KeyCode.R) || (currentWeapon != null && currentWeapon.IsEmpty()))
         {
-            if (animator != null)
+            if (currentWeapon != null && currentWeapon.CanReload())
             {
-                animator.SetTrigger("Reloading");
-            }
+                if (animator != null)
+                {
+                    animator.SetTrigger("Reloading");
+                }
 
-            Weapon currentWeapon = inventory.GetActiveWeapon();
-
-            if (currentWeapon != null)
-            {
                 currentWeapon.StartReload();
+
             }
         }
 
@@ -410,58 +415,87 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     }
 
-    public void Heal(int amount, bool doesIncreaseMax)
+    public bool Heal(int amount, bool doesIncreaseMax)
     {
-        HP += amount;
+        if (amount <= 0) return false;
+
+        bool healed = false;
+        int oldHP = HP;
 
         if (doesIncreaseMax)
         {
             maxHP += amount;
-
+            HP += amount;
+            healed = true;
         }
-        else if (HP >= maxHP && !doesIncreaseMax)
+        else
         {
+            HP += amount;
+            if (HP > maxHP)
+                HP = maxHP;
 
-            HP = maxHP;
+            healed = HP > oldHP;
         }
-        if (HP >= maxHP/2)
+
+        if (HP >= maxHP / 2)
         {
             gamemanager.instance.HurtImage.SetActive(false);
         }
-            updatePlayerUI();
+
+        updatePlayerUI();
+        return healed;
 
     }
 
-    public void GainArmor(int amount, bool doesIncreaseMax)
+    public bool GainArmor(int amount, bool doesIncreaseMax)
     {
+        if (amount <= 0) return false;
+
+        bool increased = false;
+        int oldArmor = armor;
+
         if (doesIncreaseMax)
         {
             maxArmor += amount;
+            armor += amount;
+            increased = true;
         }
-
-        armor += amount;
-
-        if (armor > maxArmor)
+        else
         {
-            armor = maxArmor;
+            armor += amount;
+            if (armor > maxArmor)
+                armor = maxArmor;
+
+            increased = armor > oldArmor;
         }
+
         updatePlayerUI();
+        return increased;
     }
 
-    public void GainShield(int amount, bool doesIncreaseMax)
+    public bool GainShield(int amount, bool doesIncreaseMax)
     {
+        if (amount <= 0) return false;
+
+        bool increased = false;
+        int oldShield = shield;
+
         if (doesIncreaseMax)
         {
             maxShield += amount;
+            shield += amount;
+            increased = true;
         }
-
-        shield += amount;
-
-        if (shield > maxShield)
+        else
         {
-            shield = maxShield;
+            shield += amount;
+            if (shield > maxShield)
+                shield = maxArmor;
+
+            increased = shield > oldShield;
         }
         updatePlayerUI();
+        return increased;
     }
 
     public void IncreaseDamage(int amount, int magnitude)
@@ -540,7 +574,10 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     void HandleWeaponSwitching()
     {
         if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+        {
             inventory.SwitchWeapon(1);
+        }
+            
         else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
             inventory.SwitchWeapon(-1);
 
@@ -628,7 +665,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
             shield = shieldOrig;
             armor = armorOrig;
         }
-
+        
         PlayerInventory inventory = GetComponent<PlayerInventory>();
         if (inventory != null)
         {
@@ -699,6 +736,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
     private IEnumerator Dash()
     {
+        
         isDashing = true;
         dashCount--;
 
@@ -718,6 +756,8 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         {
             if (dashCount < maxDashCount)
             {
+                StartCoroutine(UpdateDashCooldown());
+
                 yield return new WaitForSeconds(dashCooldown);
                 dashCount++;
             }
@@ -833,4 +873,5 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         }
 
     }
+
 }

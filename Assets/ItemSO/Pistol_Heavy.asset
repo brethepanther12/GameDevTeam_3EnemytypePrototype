@@ -28,9 +28,9 @@ MonoBehaviour:
       statusTickRate: 0
       statusDuration: 0
       slowDownMagnitude: 0
-    damage: 10
+    damage: 25
     range: 300
-    fireRate: 0.5
+    fireRate: 1
     burstCount: 0
     burstRate: 0
     chargeTime: 0
@@ -41,7 +41,7 @@ MonoBehaviour:
     energyRechargeRate: 0
   - mode: 2
     projectileType: 0
-    projectile: {fileID: 7539981003205437294, guid: 97a4c4b329aa6bc4c8a68940aaff17f4, type: 3}
+    projectile: {fileID: 7539981003205437294, guid: 3d0c0b08f0872d046bd051ea3d3159fd, type: 3}
     effectData:
       statusType: 0
       statusDamage: 0
@@ -52,7 +52,7 @@ MonoBehaviour:
     range: 300
     fireRate: 0.35
     burstCount: 2
-    burstRate: 0.5
+    burstRate: 0.2
     chargeTime: 0
     detonateTime: 0
     projectileCount: 0
@@ -76,6 +76,7 @@ MonoBehaviour:
   impactPrefab: {fileID: 2408714428905375140, guid: ec2cd9d24f8932148ab9480fc3b65b15, type: 3}
   weaponModel: {fileID: 6497052294914583884, guid: 25d8ea083617dc84c9f2ca3d1693ad81, type: 3}
   impactSound: {fileID: 8300000, guid: 11d2c33e5fadfb242a05c51e9fb058b1, type: 3}
-  impactVolume: 1
+  impactVolume: 0.75
+  reloadVolume: 0.5
   reloadSound: {fileID: 8300000, guid: a40641150cd218c49a68a971c7304757, type: 3}
   gunShotSound: {fileID: 8300000, guid: cb26d32b4d23a314493d288c2c2dfe2e, type: 3}
