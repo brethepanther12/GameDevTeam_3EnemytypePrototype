@@ -8,6 +8,7 @@ public class buttonFunctions : MonoBehaviour
     public void resume()
     {
         gamemanager.instance.stateUnpause();
+        if(pauseMenuUI != null)
         pauseMenuUI.SetActive(false);
     }
 

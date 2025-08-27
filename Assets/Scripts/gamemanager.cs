@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using Unity.VisualScripting;
 using System;
+using Unity.Collections.LowLevel.Unsafe;
 //using static System.Net.Mime.MediaTypeNames;
 //using static UnityEditor.Progress;
 public class gamemanager : MonoBehaviour
@@ -77,6 +78,8 @@ public class gamemanager : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        stateUnpause();
+
         if (scene.name != "Main Menu")
         {
             //Debug.Log("Game scene loaded. Finding references...");
@@ -100,8 +103,11 @@ public class gamemanager : MonoBehaviour
 
                 EnemiesRemaining = GameObject.FindWithTag("EnemiesRemainingText").GetComponent<TMP_Text>();
             }
-
+            isPaused = false;
             Time.timeScale = 1f;
+            menuActive = null;
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
         }
     }
     void Awake()
@@ -159,7 +165,8 @@ public class gamemanager : MonoBehaviour
 
     public void statePause()
     {
-        isPaused = !isPaused;
+        if (isPaused) return;
+        isPaused = true;
         Time.timeScale = 0;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
@@ -167,8 +174,9 @@ public class gamemanager : MonoBehaviour
 
     public void stateUnpause()
     {
-        isPaused = !isPaused;
-        Time.timeScale = timescaleOrig;
+        if (!isPaused) return;
+        isPaused = false;
+        Time.timeScale = 1f;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
@@ -405,10 +413,7 @@ public class gamemanager : MonoBehaviour
 
         menuActive.SetActive(false);
 
-        isPaused = false;
-        Time.timeScale = timescaleOrig;
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+        if (isPaused) stateUnpause();
         menuActive = null;
     }
     public void SetDifficultyByIndex(int index)
