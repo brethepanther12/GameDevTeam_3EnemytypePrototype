@@ -14,8 +14,8 @@ GameObject:
   - component: {fileID: 8622053792556917185}
   - component: {fileID: 3822635172781339324}
   - component: {fileID: 8207744021673627751}
-  m_Layer: 11
-  m_Name: Rocket(Homing)
+  m_Layer: 8
+  m_Name: Rocket(Homing)(E)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -50,10 +50,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grenadeRigidB: {fileID: 8207744021673627751}
-  grenadeSpeed: 100
+  grenadeSpeed: 25
   grenadeSpeedY: 0
   destroyTimer: 1
-  maxHomingAngle: 60
+  fovThreshold: 0.5
   explosionPrefab: {fileID: 8873835544158007701, guid: 839fc8c390fb97949bd18e9bf0bd4398, type: 3}
   OnStickyBomb: 0
   isTracking: 0
