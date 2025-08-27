@@ -76,7 +76,8 @@ public class WeaponSO : ScriptableObject
 
     //Gun Audio
     public AudioClip impactSound;
-    public float impactVolume = 1f;
+    public float impactVolume = 0.5f;
+    public float reloadVolume = 0.5f;
     public AudioClip reloadSound;
     public AudioClip gunShotSound;
 
