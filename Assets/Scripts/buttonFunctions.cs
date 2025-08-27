@@ -3,9 +3,12 @@ using UnityEngine.SceneManagement;
 
 public class buttonFunctions : MonoBehaviour
 {
+    public GameObject pauseMenuUI;
+
     public void resume()
     {
         gamemanager.instance.stateUnpause();
+        pauseMenuUI.SetActive(false);
     }
 
     public void restart()
@@ -23,6 +26,10 @@ public class buttonFunctions : MonoBehaviour
     {
         gamemanager.instance.playerScript.spawnPlayer();
         gamemanager.instance.stateUnpause();
+        if (pauseMenuUI != null)
+        {
+            pauseMenuUI.SetActive(false);
+        }
     }
 }
 
