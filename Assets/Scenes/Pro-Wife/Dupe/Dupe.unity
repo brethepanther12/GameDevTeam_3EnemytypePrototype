@@ -523,6 +523,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Drone
       objectReference: {fileID: 0}
+    - target: {fileID: 2445293334335662302, guid: 554e5d68fb6b9b949b7d834fc0ea54a1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1518,7 +1522,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8223420741560371461, guid: cc131ef6d9bc2bf45aa642b37955788b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -8.25
+      value: -7.99
       objectReference: {fileID: 0}
     - target: {fileID: 8223420741560371461, guid: cc131ef6d9bc2bf45aa642b37955788b, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1526,7 +1530,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8223420741560371461, guid: cc131ef6d9bc2bf45aa642b37955788b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -7.25
+      value: -11.17
       objectReference: {fileID: 0}
     - target: {fileID: 8223420741560371461, guid: cc131ef6d9bc2bf45aa642b37955788b, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2560,21 +2564,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 224688789765342569, guid: 1f030d9eca4a7c54f869ae9da667bbb5, type: 3}
-      propertyPath: spawnRate
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 224688789765342569, guid: 1f030d9eca4a7c54f869ae9da667bbb5, type: 3}
-      propertyPath: objectToSpawn.Array.size
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6361413876788669622, guid: 1f030d9eca4a7c54f869ae9da667bbb5, type: 3}
       propertyPath: m_Name
       value: SpawnerTemp
-      objectReference: {fileID: 0}
-    - target: {fileID: 6361413876788669622, guid: 1f030d9eca4a7c54f869ae9da667bbb5, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7225094096572899891, guid: 1f030d9eca4a7c54f869ae9da667bbb5, type: 3}
       propertyPath: m_LocalPosition.x
