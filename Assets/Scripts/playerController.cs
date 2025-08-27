@@ -102,7 +102,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
     public GameObject meleeTrigger;
     bool isAttacking;
     private bool isDead = false;
-
     void Start()
     {
         originalSpeed = this.speed;
@@ -629,7 +628,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
             shield = shieldOrig;
             armor = armorOrig;
         }
-        
+
         PlayerInventory inventory = GetComponent<PlayerInventory>();
         if (inventory != null)
         {

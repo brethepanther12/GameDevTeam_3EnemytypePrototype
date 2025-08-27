@@ -79,13 +79,6 @@ public class PlayerInventory : MonoBehaviour
         UpdateMutagenDisplay();
     }
 
-    void Awake()
-    {
-        playerRef = GetComponentInParent<playerController>();
-
-        
-    }
-
     public void RecordUpgradeForWeapon(WeaponSO weaponType, WeaponUpgradeSO upgrade)
     {
         if (weaponData.ContainsKey(weaponType))
@@ -231,7 +224,6 @@ public class PlayerInventory : MonoBehaviour
       //  Debug.Log("Picked up: " + newWeapon.name);
     }
 
-
     public bool HasWeapon(WeaponSO weapon)
     {
         return weaponHolster.Contains(weapon);
@@ -289,6 +281,11 @@ public class PlayerInventory : MonoBehaviour
         {
             return;
         }
+
+        if (playerRef.isReloading)
+        {
+            currentWeaponScript.EndReload();
+        }
         weaponListPos += direction;
 
         if (weaponListPos < 0)
@@ -300,6 +297,7 @@ public class PlayerInventory : MonoBehaviour
         {
             weaponListPos = 0;
         }
+            //weaponListPos = Mathf.Clamp(weaponListPos, 0, weaponInventory.Count - 1);
             EquipWeapon();
 
         

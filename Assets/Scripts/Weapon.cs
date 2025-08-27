@@ -469,7 +469,7 @@ public class Weapon : MonoBehaviour
     }
     void CheckReticleTarget()
     {
-        Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * range, Color.red);
+      //  Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * range, Color.red);
         RaycastHit hit;
         bool aimingAtEnemy = false;
 

@@ -77,7 +77,6 @@ MonoBehaviour:
   footstepSource: {fileID: 112731645853325575}
   footstepClip: {fileID: 8300000, guid: 2fa5785b2389a7842ac9405a6d182a8c, type: 3}
   footstepDelay: 0.5
-  footstepVolume: 0.5
   reloadSound: {fileID: 8300000, guid: a40641150cd218c49a68a971c7304757, type: 3}
   reloadVolume: 10
   shootSound: {fileID: 8300000, guid: 0e62edad5075cf547ad4869c8bfdf834, type: 3}
@@ -88,7 +87,7 @@ MonoBehaviour:
   HP: 30
   shield: 10
   armor: 10
-  fov: 115
+  fov: 90
   faceTargetSpeed: 5
   roamDistance: 25
   roamPauseTime: 3
@@ -110,7 +109,6 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
-  isDead: 0
 --- !u!195 &7785100596418267582
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -412,7 +410,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aa33ec4c00d49748bbdeda21e8a6c9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyScript: {fileID: 0}
+  enemy: {fileID: 2200018932441696591}
   bodyModifier: 5
 --- !u!1 &813655578722230025 stripped
 GameObject:
@@ -452,7 +450,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aa33ec4c00d49748bbdeda21e8a6c9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyScript: {fileID: 0}
+  enemy: {fileID: 2200018932441696591}
   bodyModifier: 0.85
 --- !u!1 &813655578722407305 stripped
 GameObject:
@@ -513,7 +511,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aa33ec4c00d49748bbdeda21e8a6c9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyScript: {fileID: 0}
+  enemy: {fileID: 2200018932441696591}
   bodyModifier: 1
 --- !u!4 &813655578722578825 stripped
 Transform:
