@@ -13,14 +13,14 @@ public class BossAI : MonoBehaviour, IDamage
     [Header("Targeting")]
     public Transform player;
     public float chaseRange = 40f;
-    public float attackRange = 18f;
-    public float stopDistance = 10f;
+    public float attackRange = 30f;
+    public float stopDistance = 20f;
     public float turnSpeed = 720f;
 
     [Header("Phase 1")]
     public float attackCooldownP1 = 1.5f;
     public int shotDamageP1 = 20;
-    public float shotSpeedP1 = 14f;
+    public float shotSpeedP1 = 20f;
     public int burstCountP1 = 1;
     public float burstSpacing = 0.12f;
 
@@ -80,6 +80,7 @@ public class BossAI : MonoBehaviour, IDamage
         }
     }
 
+    [System.Obsolete]
     void Update()
     {
         if (isDeadFlag || player == null) return;
@@ -98,6 +99,9 @@ public class BossAI : MonoBehaviour, IDamage
                 agent.isStopped = true;
 
             anim.SetBool("isMoving", !agent.isStopped);
+            Vector3 localVel = transform.InverseTransformDirection(agent.velocity);
+            anim.SetFloat("MoveX", localVel.x);
+            anim.SetFloat("MoveZ", localVel.z);
 
             Vector3 to = (player.position - transform.position);
             to.y = 0f;
@@ -132,6 +136,7 @@ public class BossAI : MonoBehaviour, IDamage
         }
     }
 
+    [System.Obsolete]
     private IEnumerator AttackWithDelay()
     {
         yield return new WaitForSeconds(attackDelay);
@@ -142,6 +147,7 @@ public class BossAI : MonoBehaviour, IDamage
             StartCoroutine(DoBurstFire()); // still used for phase 1 (single fire)
     }
 
+    [System.Obsolete]
     IEnumerator DoBurstFire()
     {
         if (isBursting) yield break; // prevent stacking
@@ -170,12 +176,28 @@ public class BossAI : MonoBehaviour, IDamage
         isAttacking = false;
     }
 
+    [System.Obsolete]
     void SpawnFireball(Vector3 dir, int damage, float speed)
     {
         if (fireballPrefab == null || firePoint == null) return;
 
-        var fb = Instantiate(fireballPrefab, firePoint.position, Quaternion.LookRotation(dir));
-        fb.Init(dir, damage, speed, transform);
+        // Offset forward so it doesn’t spawn inside boss collider
+        Vector3 spawnPos = firePoint.position + firePoint.forward * 0.6f;
+        Vector3 normalizedDir = dir.normalized;
+
+        // Add spread only in phase 2
+        if (phase2)
+        {
+            float spreadAngle = Random.Range(-8f, 8f); // tweakable in inspector if you want
+            Quaternion spreadRot = Quaternion.AngleAxis(spreadAngle, Vector3.up);
+            normalizedDir = spreadRot * normalizedDir;
+
+            // increase speed
+            speed *= 1.3f; // 30% faster in P2
+        }
+
+        var fb = Instantiate(fireballPrefab, spawnPos, Quaternion.LookRotation(normalizedDir));
+        fb.Init(normalizedDir, damage, speed, transform);
     }
 
     void EnterPhase2()
