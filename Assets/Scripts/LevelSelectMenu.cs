@@ -22,6 +22,8 @@ public class LevelSelectMenu : MonoBehaviour
         {
             entry.levelButton.interactable = true;
 
+            string levelName = entry.sceneName;
+
             entry.levelButton.onClick.AddListener(() => LoadLevel(entry.sceneName));
         }
     }
