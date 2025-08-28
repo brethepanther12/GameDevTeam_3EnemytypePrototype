@@ -16,6 +16,7 @@ public class Pickup : MonoBehaviour
     //make sure to choose the right pickup type in the editor
 
     [SerializeField] UpgradeType pickup;
+    [SerializeField] AudioClip pickupSound;
 
     bool canUse;
 
@@ -36,7 +37,6 @@ public class Pickup : MonoBehaviour
         playerController pc = gamemanager.instance.playerScript;
         PlayerInventory inv = pc.inventory;
 
-        bool used = false;
 
         if (pc == null)
         {
@@ -48,49 +48,44 @@ public class Pickup : MonoBehaviour
             switch (type)
             {
                 case UpgradeType.Health:
-
-                    used = pc.Heal(quantity, increaseMax);
-
+                    if (pc.HP < pc.maxHP || increaseMax)
+                        canUse = pc.Heal(quantity, increaseMax);
                     break;
 
                 case UpgradeType.Shield:
-
-                    used = pc.GainShield(quantity, increaseMax);
-
+                    if (pc.shield < pc.maxShield || increaseMax)
+                        canUse = pc.GainShield(quantity, increaseMax);
                     break;
 
                 case UpgradeType.Armor:
-
-                    used = pc.GainArmor(quantity, increaseMax);
-
+                    if (pc.armor < pc.maxArmor || increaseMax)
+                        canUse = pc.GainArmor(quantity, increaseMax);
                     break;
 
                 case UpgradeType.Damage:
-
                     pc.IncreaseDamage(quantity, magnitude);
-                    used = true;
+                    canUse = true;
                     break;
 
                 case UpgradeType.Speed:
-
                     pc.IncreaseSpeed(quantity, magnitude);
-                    used = true;
+                    canUse = true;
                     break;
 
                 case UpgradeType.Jump:
-
                     pc.IncreaseJumpMaxCount(quantity, magnitude);
-                    used = true;
-                    break;
-
-                default:
-
+                    canUse = true;
                     break;
             }
-            if (used)
+           
+        }
+        if (canUse)
+        {
+            if (pickupSound != null)
             {
-                Destroy(gameObject);
+                AudioSource.PlayClipAtPoint(pickupSound, transform.position);
             }
+            Destroy(gameObject);
         }
 
     }
@@ -101,7 +96,7 @@ public class Pickup : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             HandlePickup(pickup);
-
+           
             //Destroy(gameObject);
         }
         

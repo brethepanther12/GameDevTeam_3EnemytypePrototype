@@ -468,7 +468,6 @@ public class playerController : MonoBehaviour, IDamage, Visibility
 
             increased = armor > oldArmor;
         }
-
         updatePlayerUI();
         return increased;
     }
