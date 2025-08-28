@@ -36,6 +36,8 @@ public class Pickup : MonoBehaviour
         playerController pc = gamemanager.instance.playerScript;
         PlayerInventory inv = pc.inventory;
 
+        bool used = false;
+
         if (pc == null)
         {
             return;
@@ -47,43 +49,47 @@ public class Pickup : MonoBehaviour
             {
                 case UpgradeType.Health:
 
-                    pc.Heal(quantity, increaseMax);
+                    used = pc.Heal(quantity, increaseMax);
 
                     break;
 
                 case UpgradeType.Shield:
 
-                    pc.GainShield(quantity, increaseMax);
+                    used = pc.GainShield(quantity, increaseMax);
 
                     break;
 
                 case UpgradeType.Armor:
 
-                    pc.GainArmor(quantity, increaseMax);
+                    used = pc.GainArmor(quantity, increaseMax);
 
                     break;
 
                 case UpgradeType.Damage:
 
                     pc.IncreaseDamage(quantity, magnitude);
-
+                    used = true;
                     break;
 
                 case UpgradeType.Speed:
 
                     pc.IncreaseSpeed(quantity, magnitude);
-
+                    used = true;
                     break;
 
                 case UpgradeType.Jump:
 
                     pc.IncreaseJumpMaxCount(quantity, magnitude);
-
+                    used = true;
                     break;
 
                 default:
 
                     break;
+            }
+            if (used)
+            {
+                Destroy(gameObject);
             }
         }
 
@@ -96,7 +102,7 @@ public class Pickup : MonoBehaviour
         {
             HandlePickup(pickup);
 
-            Destroy(gameObject);
+            //Destroy(gameObject);
         }
         
     }
