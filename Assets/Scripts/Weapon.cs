@@ -97,8 +97,14 @@ public class Weapon : MonoBehaviour
         reloadSound = weaponData.reloadSound;
         gunShotSound = weaponData.gunShotSound;
 
+
         if (refillMag)
             ammoInMag = magSize;
+
+        if (inventory == null && equippedPlayer != null)
+            inventory = equippedPlayer.GetComponent<PlayerInventory>();
+        if (inventory != null && inventory.TryGetAmmoAmount(ammoType, out int reserve))
+            ammoInReserve = reserve;
 
         shootTimer = 0f;
 
@@ -332,7 +338,7 @@ public class Weapon : MonoBehaviour
             wepDmg = FMData.damage;
            // Debug.Log($"<color=orange>STATS RESET:</color> ApplyFireModeStats ran. wepDmg reset to {wepDmg}");
         }
-            
+
         attackRate = FMData.fireRate;
         range = FMData.range;
         pellets = FMData.projectileCount;
@@ -639,13 +645,16 @@ public class Weapon : MonoBehaviour
 
     public bool CanReload()
     {
-        if (ammoInMag < magSize && equippedPlayer.isReloading == false && ammoInReserve > 0)
-        {
-            return true;
-        } else
-        {
-            return false;
-        }
+        if (inventory == null && equippedPlayer != null)
+            inventory = equippedPlayer.GetComponent<PlayerInventory>();
+
+        if (inventory != null && inventory.TryGetAmmoAmount(ammoType, out int reserve))
+            ammoInReserve = reserve;
+
+        if (equippedPlayer != null && equippedPlayer.isReloading) return false;
+        if (ammoInMag >= magSize) return false;
+
+        return ammoInReserve > 0;
     }
 
     public bool IsEmpty()
