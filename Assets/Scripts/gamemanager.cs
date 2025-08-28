@@ -58,6 +58,13 @@ public class gamemanager : MonoBehaviour
     public TMPro.TextMeshProUGUI BossNameText;
     public static event Action<DifficultyLevels> OnDifficultyChanged;
 
+    [Header("Input Resume Debounce")]
+    [SerializeField] float resumeDebounceSeconds = 0.2f;
+    float _resumeBlockUntil = -999f;
+
+    [Header("Player Animator")]
+    public Animator playerAnimator;
+
 
     float timescaleOrig;
 
@@ -65,6 +72,8 @@ public class gamemanager : MonoBehaviour
 
     public enum DifficultyLevels { easy, normal, hard }
     public DifficultyLevels currentDifficulty;
+
+    public bool IsInputLocked() => isPaused || Time.unscaledTime < _resumeBlockUntil;
 
     private void OnEnable()
     {
@@ -82,13 +91,14 @@ public class gamemanager : MonoBehaviour
 
         if (scene.name != "Main Menu")
         {
-            //Debug.Log("Game scene loaded. Finding references...");
 
             player = GameObject.FindWithTag("Player");
             if (player != null)
             {
                 playerScript = player.GetComponent<playerController>();
             }
+
+            playerAnimator = playerScript != null ? playerScript.animator : null;
 
             PlayerSpawnPOS = GameObject.FindWithTag("Player Spawn POS");
 
@@ -127,6 +137,7 @@ public class gamemanager : MonoBehaviour
 
         player = GameObject.FindWithTag("Player");
         playerScript = player.GetComponent<playerController>();
+        playerAnimator = playerScript != null ? playerScript.animator : null;
         timescaleOrig = Time.timeScale;
         PlayerSpawnPOS = GameObject.FindWithTag("Player Spawn POS");
         currentDifficulty = DifficultyLevels.easy;
@@ -170,27 +181,39 @@ public class gamemanager : MonoBehaviour
         Time.timeScale = 0;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+
+        if (playerAnimator) playerAnimator.SetBool("InputLocked", true);
+
+        BroadcastMessage("CancelPendingFire", SendMessageOptions.DontRequireReceiver);
     }
 
     public void stateUnpause()
     {
         if (!isPaused) return;
+
         isPaused = false;
         Time.timeScale = 1f;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
-        if (menuActive.GetComponent<WeaponUIController>() != null)
+        if (playerAnimator)
         {
-
-            menuActive.GetComponent<WeaponUIController>().CloseMenu();
-        }
-        else
-        {
-            menuActive.SetActive(false);
+            playerAnimator.ResetTrigger("Shoot");
+            playerAnimator.SetBool("InputLocked", true);
         }
 
-        menuActive = null;
+        _resumeBlockUntil = Time.unscaledTime + resumeDebounceSeconds;
+
+        StartCoroutine(ClearResumeClickNextFrame());
+
+        if (menuActive != null)
+        {
+            var wui = menuActive.GetComponent<WeaponUIController>();
+            if (wui != null) wui.CloseMenu(); else menuActive.SetActive(false);
+            menuActive = null;
+        }
+
+        StartCoroutine(UnlockInputAfterDebounce());
     }
 
     public void updateGameGoal(int amount)
@@ -458,5 +481,24 @@ public class gamemanager : MonoBehaviour
         {
             //Debug.LogError("Could not find player script to respawn!");
         }
+    }
+    private System.Collections.IEnumerator UnlockInputAfterDebounce()
+    {
+        while (Time.unscaledTime < _resumeBlockUntil) yield return null;
+        if (playerAnimator) playerAnimator.SetBool("InputLocked", false);
+    }
+    public bool InputBlocked()
+    {
+        return isPaused || Time.unscaledTime < _resumeBlockUntil;
+    }
+
+    private System.Collections.IEnumerator ClearResumeClickNextFrame()
+    {
+        yield return null;
+
+        Input.ResetInputAxes();
+
+        while (Input.GetMouseButton(0))
+            yield return null;
     }
 }

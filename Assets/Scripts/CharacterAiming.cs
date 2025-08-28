@@ -31,14 +31,6 @@ public class CharacterAiming : MonoBehaviour
         {
             leftHandTarget = null;
         }
-
-        if (Input.GetButtonDown("Fire1"))
-        {
-            if (animator != null)
-            {
-                animator.SetTrigger("Shoot");
-            }
-        }
     }
 
     void LateUpdate()

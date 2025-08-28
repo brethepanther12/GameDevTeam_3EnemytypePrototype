@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 public class Weapon : MonoBehaviour
 {
@@ -57,6 +58,8 @@ public class Weapon : MonoBehaviour
     private Grenade activeGrenade;
     private Coroutine reloading;
 
+    bool _wasBlockedLastFrame = true;
+    bool _waitingForCleanReleaseFrame = false;
 
     private void Awake()
     {
@@ -71,6 +74,11 @@ public class Weapon : MonoBehaviour
         if(weaponData !=null)
         InitializeWeapon(weaponData);
         
+    }
+
+    private bool IsPointerOnUI()
+    {
+        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
     }
 
     public void InitializeWeapon(WeaponSO data, bool refillMag = false)
@@ -108,6 +116,31 @@ public class Weapon : MonoBehaviour
 
     private void Update()
     {
+        var gm = gamemanager.instance;
+
+        if (gm != null && gm.InputBlocked())
+        {
+            _wasBlockedLastFrame = true;
+            _waitingForCleanReleaseFrame = false;
+            return;
+        }
+
+        if (_wasBlockedLastFrame)
+        {
+            if (Input.GetButton("Fire1") || Input.GetMouseButton(0) || IsPointerOnUI())
+                return;
+
+            _wasBlockedLastFrame = false;
+            _waitingForCleanReleaseFrame = true;
+            return;
+        }
+
+        if (_waitingForCleanReleaseFrame)
+        {
+            _waitingForCleanReleaseFrame = false;
+            return;
+        }
+
         shootTimer += Time.deltaTime;
 
         CheckReticleTarget();
@@ -339,7 +372,10 @@ public class Weapon : MonoBehaviour
 
     void Shoot()
     {
-      //  Debug.Log($"<color=cyan>FIRING:</color> Bullet is using {wepDmg} damage.");
+        if (gamemanager.instance != null && gamemanager.instance.InputBlocked())
+            return;
+
+        //  Debug.Log($"<color=cyan>FIRING:</color> Bullet is using {wepDmg} damage.");
 
         ammoInMag--;
 
@@ -385,6 +421,7 @@ public class Weapon : MonoBehaviour
             dmgScript.SetBlastRadius(FMData.blastRadius);
         }
         equippedPlayer.updatePlayerUI();
+
     }
 
     void ShootMultiple()
