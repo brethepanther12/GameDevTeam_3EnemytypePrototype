@@ -490,7 +490,7 @@ public class playerController : MonoBehaviour, IDamage, Visibility
         {
             shield += amount;
             if (shield > maxShield)
-                shield = maxArmor;
+                shield = maxShield;
 
             increased = shield > oldShield;
         }
