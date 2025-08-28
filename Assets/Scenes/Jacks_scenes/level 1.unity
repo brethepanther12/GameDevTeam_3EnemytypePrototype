@@ -26471,6 +26471,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8398576690876076377, guid: 1f030d9eca4a7c54f869ae9da667bbb5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -5.28
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -68998,6 +69002,8 @@ MonoBehaviour:
   BossHealthBarUI: {fileID: 0}
   BossHealthBarFill: {fileID: 0}
   BossNameText: {fileID: 0}
+  resumeDebounceSeconds: 0.2
+  playerAnimator: {fileID: 0}
   currentDifficulty: 0
 --- !u!224 &5332638745838922911
 RectTransform:
