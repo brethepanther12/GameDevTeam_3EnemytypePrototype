@@ -68,5 +68,16 @@ public class ThirdPersonCamera : MonoBehaviour
         {
             transform.position = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed * Time.deltaTime);
         }
+
+        if (Physics.Raycast(target.position, Vector3.up, out hit, height, collisionLayers))
+        {
+            Vector3 ceilingAdjustedPos = transform.position;
+            float ceilingY = hit.point.y - collisionOffset;
+            if (ceilingAdjustedPos.y > ceilingY)
+            {
+                ceilingAdjustedPos.y = ceilingY;
+                transform.position = ceilingAdjustedPos;
+            }
+        }
     }
 }
