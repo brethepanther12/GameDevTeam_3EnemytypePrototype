@@ -2804,6 +2804,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Door_Openable
       objectReference: {fileID: 0}
+    - target: {fileID: 2054941806008648760, guid: 40f63be03505ef348a4dd59a250e34e8, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.649189
+      objectReference: {fileID: 0}
     - target: {fileID: 4228290631689136753, guid: 40f63be03505ef348a4dd59a250e34e8, type: 3}
       propertyPath: m_LocalPosition.z
       value: -0.100811005
@@ -2818,11 +2822,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7467737355999123525, guid: 40f63be03505ef348a4dd59a250e34e8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.00064611435
+      value: -0.0006462574
       objectReference: {fileID: 0}
     - target: {fileID: 7467737355999123525, guid: 40f63be03505ef348a4dd59a250e34e8, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.4537199
+      value: -1.2500182
       objectReference: {fileID: 0}
     - target: {fileID: 8561923181570760929, guid: 40f63be03505ef348a4dd59a250e34e8, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3081,6 +3085,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: bf7cdb0b39d11ab42b443d37ec1e5e9d, type: 2}
+    - target: {fileID: 8725599547635765354, guid: 208c9060d029e3f4da20756398c4e341, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 10.675863
+      objectReference: {fileID: 0}
     - target: {fileID: 8939440915547356544, guid: 208c9060d029e3f4da20756398c4e341, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -30381,6 +30389,8 @@ MonoBehaviour:
   BossHealthBarUI: {fileID: 0}
   BossHealthBarFill: {fileID: 0}
   BossNameText: {fileID: 0}
+  resumeDebounceSeconds: 0.2
+  playerAnimator: {fileID: 0}
   currentDifficulty: 0
 --- !u!224 &5332638747240009787
 RectTransform:

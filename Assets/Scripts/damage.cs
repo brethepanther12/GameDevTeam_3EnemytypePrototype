@@ -138,8 +138,8 @@ public class damage : MonoBehaviour
             // Parent to the enemy if valid
             if (other.CompareTag("Enemy"))
             {
-                impact.transform.SetParent(other.transform, true); // true keeps world position
-                impact.transform.position += hitNormal * 0.01f; // slight offset to avoid z-fighting
+                impact.transform.SetParent(other.transform, true);
+                impact.transform.position += hitNormal * 0.01f;
             }
 
             // Assign status duration

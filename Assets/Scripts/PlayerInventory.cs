@@ -118,6 +118,7 @@ public class PlayerInventory : MonoBehaviour
 
             int amountToAdd = Mathf.Min(item.quantityToPickup, availableSpace);
             slot.AddQuantity(amountToAdd);
+
         }
         else
         {
