@@ -87,6 +87,8 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        ApplyDifficultyStats(gamemanager.instance.currentDifficulty);
+
         originalSpeed = agent.speed;
         shootTimer = 0f;
         currentAmmo = maxAmmo;
@@ -634,5 +636,45 @@ public class Enemy : MonoBehaviour, IDamage, IGrapplable, Visibility, IEnemyAI
     bool IDamage.isDead()
     {
         return isDead;
+    }
+
+    private void OnEnable()
+    {
+        gamemanager.OnDifficultyChanged += ApplyDifficultyStats;
+    }
+
+    private void OnDisable()
+    {
+        gamemanager.OnDifficultyChanged -= ApplyDifficultyStats;
+    }
+
+    private void ApplyDifficultyStats(gamemanager.DifficultyLevels difficulty)
+    {
+        switch (difficulty)
+        {
+            case gamemanager.DifficultyLevels.easy:
+                HP = 50;
+                shield = 0;
+                armor = 0;
+                agent.speed = 2f;
+                shootRate = 2f;
+                break;
+
+            case gamemanager.DifficultyLevels.normal:
+                HP = 100;
+                shield = 20;
+                armor = 10;
+                agent.speed = 3f;
+                shootRate = 1.5f;
+                break;
+
+            case gamemanager.DifficultyLevels.hard:
+                HP = 150;
+                shield = 40;
+                armor = 20;
+                agent.speed = 4f;
+                shootRate = 1.0f;
+                break;
+        }
     }
 }

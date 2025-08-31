@@ -20,7 +20,7 @@ public class BossAI : MonoBehaviour, IDamage
     [Header("Phase 1")]
     public float attackCooldownP1 = 1.5f;
     public int shotDamageP1 = 20;
-    public float shotSpeedP1 = 20f;
+    public float shotSpeedP1 = 25f;
     public int burstCountP1 = 1;
     public float burstSpacing = 0.12f;
 
@@ -325,6 +325,8 @@ public class BossAI : MonoBehaviour, IDamage
             }
         }
     }
+
+
 
     void OnDrawGizmosSelected()
     {
