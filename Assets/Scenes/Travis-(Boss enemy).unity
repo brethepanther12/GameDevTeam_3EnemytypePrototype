@@ -3830,7 +3830,7 @@ PrefabInstance:
     - target: {fileID: 1101868098296262399, guid: cc131ef6d9bc2bf45aa642b37955788b, type: 3}
       propertyPath: grappleCooldownUI
       value: 
-      objectReference: {fileID: 435028163}
+      objectReference: {fileID: 0}
     - target: {fileID: 3242214687390201362, guid: cc131ef6d9bc2bf45aa642b37955788b, type: 3}
       propertyPath: m_Name
       value: Player(v6)
@@ -11012,11 +11012,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: decd2b8b1baffde40bb120a9097cca9b, type: 3}
---- !u!4 &1792127710 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8223420741560371461, guid: cc131ef6d9bc2bf45aa642b37955788b, type: 3}
-  m_PrefabInstance: {fileID: 552749094}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1835184481
 GameObject:
   m_ObjectHideFlags: 0
@@ -15774,7 +15769,6 @@ RectTransform:
   - {fileID: 4090667268294291674}
   - {fileID: 4838936102206317226}
   - {fileID: 8889743356678783987}
-  - {fileID: 435028162}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -19985,7 +19979,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a1042bd628e32b142b13fb1f2172692d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ca42cb5ed19b28943b93bf3d00831142, type: 3}
   m_Type: 3
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -23500,6 +23494,8 @@ MonoBehaviour:
   BossHealthBarUI: {fileID: 0}
   BossHealthBarFill: {fileID: 0}
   BossNameText: {fileID: 1156977347519629202}
+  resumeDebounceSeconds: 0.2
+  playerAnimator: {fileID: 0}
   currentDifficulty: 0
 --- !u!224 &5332638747475397844
 RectTransform:
@@ -30515,7 +30511,6 @@ SceneRoots:
   - {fileID: 1122920401}
   - {fileID: 454434036}
   - {fileID: 1047437699}
-  - {fileID: 367008050}
   - {fileID: 552749094}
   - {fileID: 1410951804}
   - {fileID: 2054860462}

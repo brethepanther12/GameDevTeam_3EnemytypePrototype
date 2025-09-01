@@ -5539,6 +5539,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8836abaad1732894cb83872fe25272e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pauseMenuUI: {fileID: 0}
 --- !u!1 &3116662175458627168
 GameObject:
   m_ObjectHideFlags: 0
@@ -12338,7 +12339,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a1042bd628e32b142b13fb1f2172692d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ca42cb5ed19b28943b93bf3d00831142, type: 3}
   m_Type: 3
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -13943,6 +13944,8 @@ MonoBehaviour:
   BossHealthBarUI: {fileID: 0}
   BossHealthBarFill: {fileID: 0}
   BossNameText: {fileID: 0}
+  resumeDebounceSeconds: 0.2
+  playerAnimator: {fileID: 0}
   currentDifficulty: 0
 --- !u!1 &7445695873962520195
 GameObject:
